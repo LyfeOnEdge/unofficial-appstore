@@ -1,5 +1,5 @@
 # unofficial-appstore
-a proof-of-concept frontend gui for the hbas written in python
+a proof-of-concept desktop gui for the hbas written in python
 
 Just grabs the repo.json from the switchbru site and tiles out the contents based on the category.
 
