@@ -1,3 +1,9 @@
+sidecolumnwidth = 220
+bannerheight = sidecolumnwidth
+headerheight = 50
+offset = 5
+buttonsize = 40
+
 ##Text Styles
 #Normal Text
 smallertext = ("Trebuchet MS",8)

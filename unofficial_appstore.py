@@ -15,6 +15,7 @@ from modules.appstore_parser import parser
 from modules.webhandler import getJson
 from modules.locations import appstore_repo_url
 import pages.appstorepage as appstorepage
+import pages.detailpage as detailpage
 
 #Download the appstore json, uses etagging to check if it needs an update to minimize bandwidth
 store_json = getJson("appstore_repo",appstore_repo_url)
@@ -22,7 +23,7 @@ store_json = getJson("appstore_repo",appstore_repo_url)
 repo_parser = parser()
 repo_parser.load(store_json)
 
-pages = [appstorepage.appstorePage]
+pages = [detailpage.detailPage, appstorepage.appstorePage]
 
 geometry = {
 	"width" : 1080,

@@ -13,47 +13,44 @@ store_json = webhandler.getJson("appstore_repo",locations.appstore_repo_url)
 repo_parser = parser()
 repo_parser.load(os.path.join(locations.jsoncachefolder, "appstore_repo.json"))
 
-LEFT_COLUMN_WIDTH = 190
-HEADER_HEIGHT = 50
-
 class appstorePage(framework.Frame):
     def __init__(self, parent, controller, page_name):
         framework.Frame.__init__(self,parent,controller)
         self.controller = controller
 
-        self.left_column = cw.ThemedFrame(self, background_color = style.light_color)
-        self.left_column.place(relx = 0, rely = 0, width = LEFT_COLUMN_WIDTH, relheight = 1)
+        self.column = cw.ThemedFrame(self, background_color = style.light_color)
+        self.column.place(relx = 0, rely = 0, width = style.sidecolumnwidth, relheight = 1)
 
-        self.category_list = cw.ThemedFrame(self.left_column, background_color = style.light_color)
-        self.category_list.place(x=0, y=HEADER_HEIGHT, relwidth=1, relheight=1, height = - HEADER_HEIGHT)
+        self.category_list = cw.ThemedFrame(self.column, background_color = style.light_color)
+        self.category_list.place(x=0, y=style.headerheight, relwidth=1, relheight=1, height = - style.headerheight)
 
         self.category_listbox = cw.ThemedListbox(self.category_list)
         self.category_listbox.configure(activestyle = "none")
-        self.category_listbox.place(relwidth=1, relheight=1)
+        self.category_listbox.pack(fill="both", anchor="w")
         self.category_listbox.bind('<<ListboxSelect>>',self.CurSelet)
 
 
 
-        self.left_column_header = cw.ThemedFrame(self.left_column, background_color = style.light_color)
-        self.left_column_header.place(relx = 0, rely = 0, relwidth = 1, height = HEADER_HEIGHT)
+        self.column_header = cw.ThemedFrame(self.column, background_color = style.light_color)
+        self.column_header.place(relx = 0, rely = 0, relwidth = 1, height = style.headerheight)
 
-        self.left_column_header_title = cw.ThemedLabel(self.left_column_header,"Unofficial Appstore\nGPLv3",anchor="center",label_font=style.mediumboldtext, background = style.light_color)
-        self.left_column_header_title.place(relx = 0,rely = 0, relwidth = 1, relheight = 1)
+        self.column_header_title = cw.ThemedLabel(self.column_header,"Unofficial Appstore\nGPLv3",anchor="center",label_font=style.mediumboldtext, background = style.light_color)
+        self.column_header_title.place(relx = 0,rely = 0, relwidth = 1, relheight = 1)
 
 
         self.content_frame = cw.ThemedFrame(self, background_color = style.w)
-        self.content_frame.place(x = LEFT_COLUMN_WIDTH, width = -LEFT_COLUMN_WIDTH, rely = 0, relheight = 1, relwidth = 1)
+        self.content_frame.place(x = style.sidecolumnwidth, width = -style.sidecolumnwidth, rely = 0, relheight = 1, relwidth = 1)
 
         self.content_frame_header = cw.ThemedFrame(self.content_frame, background_color = style.w)
-        self.content_frame_header.place(relx = 0, rely = 0, relwidth = 1, height = HEADER_HEIGHT)
+        self.content_frame_header.place(relx = 0, rely = 0, relwidth = 1, height = style.headerheight)
 
         self.category_label = cw.ThemedLabel(self.content_frame_header,"",anchor="w",label_font=style.giantboldtext, background = style.w, foreground=style.b)
-        self.category_label.place(height=HEADER_HEIGHT, rely=0.5, y=-25, relwidth=0.5)
+        self.category_label.place(height=style.headerheight, rely=0.5, y=-25, relwidth=0.5)
 
 
         #The various content gets stacked on top of each other here.
         self.content_stacking_frame = cw.ThemedFrame(self.content_frame, background_color = style.w)
-        self.content_stacking_frame.place(relx = 0, y=HEADER_HEIGHT, relwidth = 1, relheight = 1, height=-HEADER_HEIGHT)
+        self.content_stacking_frame.place(relx = 0, y=style.headerheight, relwidth = 1, relheight = 1, height=-style.headerheight)
 
         all_frame = cf.categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.all)
         advanced_frame = cf.categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.advanced)

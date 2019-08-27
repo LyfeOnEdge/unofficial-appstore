@@ -39,7 +39,7 @@ class categoryFrame(cw.ThemedFrame):
             self.makeButton(self.canvas, self.framework, repo)
 
     def makeButton(self,frame, framework, repo):
-        button = store_app_square(frame, framework, repo)
+        button = store_app_square(frame, self.controller, framework, repo)
         self.buttons.append(button)
 
 
@@ -85,7 +85,8 @@ class categoryFrame(cw.ThemedFrame):
         
 
 class store_app_square(cw.ThemedFrame):
-    def __init__(self, parent, framework, repo):
+    def __init__(self, parent, controller, framework, repo):
+        self.controller = controller
         self.framework = framework
         self.repo = repo
         self.imageset = False
@@ -94,7 +95,7 @@ class store_app_square(cw.ThemedFrame):
 
         button_image =ImageTk.PhotoImage(Image.open(notfoundimage).resize((TILEWIDTH, TILEWIDTH), Image.ANTIALIAS))
         
-        self.buttonobj = button(self,image_object=button_image,callback=None,background = w)
+        self.buttonobj = cw.button(self,image_object=button_image,callback=lambda: self.open_details(repo),background = w)
         self.buttonobj.place(relwidth=1,relheight=1)
 
         try:
@@ -113,12 +114,15 @@ class store_app_square(cw.ThemedFrame):
         self.button_ttp = cw.tooltip(self.buttonobj,ttp)
         
         try:
-            self.buttonlabel = cw.ThemedLabel(self.buttonobj,repo["name"],anchor="center",label_font=smallboldtext,foreground=lg,background=w)
+            self.buttonlabel = cw.ThemedLabel(self.buttonobj,repo["title"],anchor="center",label_font=smallboldtext,foreground=lg,background=w)
             self.buttonlabel.place(rely=1, relx=0.5, x=-0.5*TILEWIDTH, width=TILEWIDTH, y = -20,height=20) #width = TILEWIDTH-2*SEPARATORWIDTH
         except:
             pass
 
         self.framework.after(5000, self.image_loop)
+
+    def open_details(self, repo):
+        self.controller.frames["detailPage"].show(repo)
 
     def set_image(self):
         repo = self.repo
@@ -147,32 +151,3 @@ class store_app_square(cw.ThemedFrame):
         #Until the image has been set
         if not self.imageset:
             self.framework.after(1000, self.image_loop)
-
-
-class button(tk.Label):
-    def __init__(self,frame,callback=None,image_object= None,text_string=None,background=dark_color):
-        self.callback = callback
-
-        tk.Label.__init__(self,frame,
-            background=background,
-            foreground= w,
-            borderwidth= 0,
-            activebackground=light_color,
-            image=image_object,
-            text = text_string,
-            font = smallboldtext,
-            )
-        self.bind('<Button-1>', self.on_click)
-
-    #Use callback when our makeshift "button" clicked
-    def on_click(self, event=None):
-        if self.callback:
-            self.callback()
-
-    #Function to set the button's image
-    def setimage(self,image):
-        self.configure(image=image)
-
-    #Function to set the button's text
-    def settext(self,text):
-        self.configure(text=text)

@@ -8,7 +8,11 @@ opener = urllib.request.build_opener()
 opener.addheaders = [('User-agent', 'Mozilla/5.0')]
 urllib.request.install_opener(opener)
 
-APPSTORE_URL = "https://www.switchbru.com/appstore/packages/{}/{}"
+APPSTORE_URL = "https://www.switchbru.com/appstore/{}"
+IMAGE_BASE_URL = APPSTORE_URL.format("packages/{}/{}")
+APPSTORE_PACKAGE_URL = "https://www.switchbru.com/appstore/zips/{}.zip"
+
+DOWNLOADSFOLDER = "downloads"
 
 CACHEFOLDER = "cache"
 ICON  = "icon.png"
@@ -19,7 +23,7 @@ ICONBUFFER = {}
 
 
 ###Image handling
-def cacheimage(url,file):
+def download(url,file):
     try:
         urllib.request.urlretrieve(url,file)
         return file
@@ -37,7 +41,7 @@ def getImage(package, image_type):
     if os.path.isfile(image_file):
         return(image_file)
     else:
-        return cacheimage(APPSTORE_URL.format(package, image_type), image_file)
+        return download(IMAGE_BASE_URL.format(package, image_type), image_file)
 
 def getPackageIcon(package):
     if package in ICONBUFFER.keys():
@@ -53,11 +57,17 @@ def getScreenImage(package):
     SCREENBUFFER.update({package : screen})
     return screen
 
+#Downloads the current 
+def getPackage(package):
+    packageURL = APPSTORE_PACKAGE_URL.format(package)
+    packagefile = os.path.join(os.path.join(sys.path[0], DOWNLOADSFOLDER), "{}.zip".format(package))
+    return download(packageURL, packagefile)
 
 
 def test(package):
     getScreenImage(package)
     getPackageIcon(package)
+    getPackage(package)
 
 if __name__ == "__main__":
     #Test with the appstore

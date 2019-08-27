@@ -19,7 +19,7 @@ class ThemedFrame(tk.Frame):
 
 #themed author/ etc label
 class ThemedLabel(tk.Label):
-	def __init__(self,frame,label_text,label_font=smalltext,text_variable=None,background = light_color,foreground=lg,anchor="w",wraplength = None):
+	def __init__(self,frame,label_text,label_font=smalltext,text_variable=None,background = light_color,foreground=lg,anchor="w",wraplength = None, image = None):
 		tk.Label.__init__(self,frame,
 			background = background,
 			highlightthickness=0,
@@ -28,11 +28,15 @@ class ThemedLabel(tk.Label):
 			font=label_font,
 			foreground= foreground,
 			textvariable = text_variable,
+			image = image
 			)
 		if not wraplength == None:
 			self.configure(wraplength=wraplength)
 	def set(self,text):
 		self.configure(text=text)
+	def set_image(self,image):
+		self.configure(image=image)
+
 
 #themed author/ etc label
 class ThemedListbox(tk.Listbox):
@@ -153,3 +157,32 @@ class tooltip(ToolTipBase):
 
 	def showcontents(self):
 		ToolTipBase.showcontents(self, self.text)
+
+
+class button(tk.Label):
+    def __init__(self,frame,callback=None,image_object= None,text_string=None,background=dark_color):
+        self.callback = callback
+
+        tk.Label.__init__(self,frame,
+            background=background,
+            foreground= w,
+            borderwidth= 0,
+            activebackground=light_color,
+            image=image_object,
+            text = text_string,
+            font = smallboldtext,
+            )
+        self.bind('<Button-1>', self.on_click)
+
+    #Use callback when our makeshift "button" clicked
+    def on_click(self, event=None):
+        if self.callback:
+            self.callback()
+
+    #Function to set the button's image
+    def setimage(self,image):
+        self.configure(image=image)
+
+    #Function to set the button's text
+    def settext(self,text):
+        self.configure(text=text)

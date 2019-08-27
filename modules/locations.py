@@ -24,3 +24,4 @@ for folder in folders_to_init:
 etagfile = os.path.join(jsoncachefolder, "etags.json")
 
 notfoundimage = os.path.join(os.path.join(wd, "assets"), "notfound.png")
+backimage = os.path.join(os.path.join(wd, "assets"), "return.png")
