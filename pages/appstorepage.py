@@ -134,8 +134,17 @@ class appstorePage(framework.Frame):
         if not self.current_frame in self.searchable_frames:
             self.content_frame_header_searh_bar.place_forget()
         else:
-            self.content_frame_header_searh_bar.place(x = self.category_label.winfo_width() + style.offset, rely=0.5, y=-0.5*style.searchboxheight, height = style.searchboxheight, relwidth = 1, width = - (self.category_label.winfo_width() + 2 * style.offset))
+            category_label_offset = self.category_label.winfo_width()
+            #If the category label has been populated
+            if category_label_offset > style.offset:
+                self.content_frame_header_searh_bar.place(x = category_label_offset + style.offset, rely=0.5, y=-0.5*style.searchboxheight, height = style.searchboxheight, relwidth = 1, width = - (category_label_offset + 2 * style.offset))
+            else:
+                self.content_frame_header_searh_bar.place_forget()
+                self.controller.after(20, self.update_search_bar_position)
 
+
+
+            
 
     def CurSelet(self, event):
         try:

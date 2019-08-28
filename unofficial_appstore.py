@@ -26,8 +26,8 @@ repo_parser.load(store_json)
 pages = [detailpage.detailPage, appstorepage.appstorePage]
 
 geometry = {
-	"width" : 1080,
-	"height" : 720,
+	"width" : 710,
+	"height" : 525,
 }
 
 def startGUI():

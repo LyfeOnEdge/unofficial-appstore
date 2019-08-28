@@ -87,14 +87,16 @@ class detailPage(framework.Frame):
         self.content_frame.place(x = 0, width = -style.sidecolumnwidth, rely = 0, relheight = 1, relwidth = 1)
 
         self.content_frame_header = cw.ThemedFrame(self.content_frame, background_color = style.w)
-        self.content_frame_header.place(x = 5, width = - 5, rely = 0, relwidth = 1, height = style.headerheight)
+        self.content_frame_header.place(x = style.offset, width = - 2 * style.offset, rely = 0, relwidth = 1, height = style.headerheight)
 
         self.content_frame_body = cw.ThemedFrame(self.content_frame, background_color = style.w)
-        self.content_frame_body.place(x = 5, width = - 5, y = style.headerheight,relwidth = 1, height = -style.headerheight, relheight=1)
+        self.content_frame_body.place(x = style.offset, width = - 2 * style.offset, y = style.headerheight,relwidth = 1, height = -style.headerheight, relheight=1)
 
-        # self.content_banner_image = cw.ThemedLabel(self.content_frame_body,"",background = style.w,foreground=style.w,anchor="n",wraplength = None, image = None)
-        # self.content_banner_image.place(x=0, y = style.headerheight, relwidth=1, height=style.bannerheight,)
+        self.content_banner_image = cw.ThemedLabel(self.content_frame_body,"",background = style.w,foreground=style.w,anchor="center",wraplength = None)
+        self.content_banner_image.place(x=0, y = 0, relwidth=1, relheight = 0.5)
 
+        self.content_frame_details = cw.ScrolledText(self.content_frame_body, wrap = 'word', font = style.smalltext)
+        self.content_frame_details.place(rely=0.5, relx=0,relwidth=1,relheight=0.5,x=+style.offset, width = - 2 * (style.offset), height=-style.offset)
 
         #Displays app name
         self.header_label = cw.ThemedLabel(self.content_frame_header,"",anchor="w",label_font=style.giantboldtext, background = style.w, foreground=style.b)
@@ -134,20 +136,37 @@ class detailPage(framework.Frame):
         self.column_extracted.set("Install size: {} KB".format(repo["extracted"]))
 
 
+        self.content_frame_details.configure(state="normal")
+        self.content_frame_details.delete('1.0', "end")
+
+        #Makes newlines in details print correctly
+        details = repo["details"].replace("\\n", """
+"""
+            )
+        self.content_frame_details.insert("1.0", details)
+        self.content_frame_details.configure(state="disabled")
+
+
         self.header_label.set(repo["title"])
         self.header_author.set(repo["author"])
 
-        # self.bannerimage = Image.open(getScreenImage(repo["name"]))
+        self.bannerimage = getScreenImage(repo["name"])
 
-        # # basewidth = 300
-        # # img = Image.open(self.bannerimage)
-        # # wpercent = (basewidth/float(img.size[0]))
-        # # hsize = int((float(img.size[1])*float(wpercent)))
-        # # img = img.resize((basewidth,hsize), Image.ANTIALIAS)
-        # # img.save('sompic.jpg')
+        if self.bannerimage:
+            self.updateimage(self.bannerimage)
+        else:
+            self.updateimage(locations.notfoundimage)
+            print("failed to download screenshot for {}".format(repo["name"]))
 
-        # self.content_banner_image.set_image(ImageTk.PhotoImage(self.bannerimage))
 
+
+
+    def updateimage(self,image_path):
+        art_image = Image.open(image_path)
+        # art_image = art_image.resize((infoframewidth, infoframewidth), Image.ANTIALIAS)
+        art_image = ImageTk.PhotoImage(art_image)
+        self.content_banner_image.configure(image=art_image)
+        self.content_banner_image.image = art_image
 
 
 

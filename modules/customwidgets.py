@@ -19,7 +19,7 @@ class ThemedFrame(tk.Frame):
 
 #themed author/ etc label
 class ThemedLabel(tk.Label):
-	def __init__(self,frame,label_text,label_font=smalltext,text_variable=None,background = light_color,foreground=lg,anchor="w",wraplength = None, image = None):
+	def __init__(self,frame,label_text,label_font=smalltext,text_variable=None,background = light_color,foreground=lg,anchor="w",wraplength = None):
 		tk.Label.__init__(self,frame,
 			background = background,
 			highlightthickness=0,
@@ -28,14 +28,12 @@ class ThemedLabel(tk.Label):
 			font=label_font,
 			foreground= foreground,
 			textvariable = text_variable,
-			image = image
 			)
 		if not wraplength == None:
 			self.configure(wraplength=wraplength)
 	def set(self,text):
 		self.configure(text=text)
-	def set_image(self,image):
-		self.configure(image=image)
+
 
 
 #themed author/ etc label

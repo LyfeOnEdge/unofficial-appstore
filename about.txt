@@ -4,7 +4,7 @@ This app is free and open source because the users (like you!) deserve it. Let's
 
 Credits:
 - Original app:
-VGMoose, Pwscind, rw-r-r_0644, Zarklord1, Maschell, Roman, qwarktheawesome, Whovian9369, crc-32, rakujira
+VGMoose, PWScind, rw-r-r_0644, Zarklord1, Maschell, Roman, qwarktheawesome, Whovian9369, crc-32, rakujira
 - Unofficial python rewrite:
 LyfeOnEdge
 
