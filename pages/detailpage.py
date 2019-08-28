@@ -7,7 +7,7 @@ import modules.webhandler as webhandler
 import modules.categoryframe as cf
 import modules.locations as locations
 from modules.appstore_parser import parser
-from modules.appstore_web import getScreenImage, getPackageIcon
+from modules.appstore_web import getScreenImage, getPackageIcon, getPackage
 import tkinter.constants
 from PIL import Image, ImageTk
 
@@ -19,6 +19,7 @@ class detailPage(framework.Frame):
     def __init__(self, parent, controller, page_name):
         framework.Frame.__init__(self,parent,controller)
         self.controller = controller
+        self.repo = None
 
         self.column = cw.ThemedFrame(self, background_color = style.light_color)
         self.column.place(relx = 1, rely = 0, width = style.sidecolumnwidth, relheight = 1, x = - style.sidecolumnwidth)
@@ -60,6 +61,19 @@ class detailPage(framework.Frame):
         self.column_extracted = cw.ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
         self.column_extracted.place(x = 5, width = - 5, y = 4 * style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
 
+        self.column_download_button = cw.button(self.column_body, 
+            callback = self.trigger_download, 
+            text_string = "DOWNLOAD", 
+            font=style.mediumboldtext, 
+            background=style.dark_color
+            ).place(rely=1,relx=0.5,x = - 1.5 * (style.buttonsize), y = - 2 * (style.buttonsize + style.offset), width = 3 * style.buttonsize, height = style.buttonsize)
+
+        self.column_open_url_button = cw.button(self.column_body, 
+            callback = self.trigger_open_tab, 
+            text_string = "VISIT PAGE", 
+            font=style.mediumboldtext, 
+            background=style.dark_color
+            ).place(rely=1,relx=0.5,x = - 1.5 * (style.buttonsize), y = - 3 * (style.buttonsize + style.offset), width = 3 * style.buttonsize, height = style.buttonsize)
 
         self.back_image = ImageTk.PhotoImage(Image.open(locations.backimage).resize((style.buttonsize, style.buttonsize), Image.ANTIALIAS))
 
@@ -91,6 +105,7 @@ class detailPage(framework.Frame):
         self.header_author.place(rely=0.65, y=0, relheight=0.35)
 
     def update_page(self,repo):
+        self.repo = repo
         try:
             web_dls = repo["web_dls"]
         except:
@@ -139,3 +154,17 @@ class detailPage(framework.Frame):
     def show(self, repo):
         self.tkraise()
         self.update_page(repo)
+
+    def trigger_download(self):
+        if self.repo:
+            package = self.repo["name"]
+            result = getPackage(package)
+            print("Downloaded {}".format(package) if result else "Failed to download zip for package {}".format(package))
+
+    def trigger_open_tab(self):
+        if self.repo:
+            try:
+                url = self.repo["url"]
+                webhandler.opentab(url)
+            except:
+                print("Failed to open tab for url {}".format(url))

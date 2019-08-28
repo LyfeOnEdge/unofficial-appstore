@@ -16,6 +16,7 @@ repo_parser.load(os.path.join(locations.jsoncachefolder, "appstore_repo.json"))
 class appstorePage(framework.Frame):
     def __init__(self, parent, controller, page_name):
         framework.Frame.__init__(self,parent,controller)
+        self.current_frame = None
         self.controller = controller
 
         self.column = cw.ThemedFrame(self, background_color = style.light_color)
@@ -28,7 +29,6 @@ class appstorePage(framework.Frame):
         self.category_listbox.configure(activestyle = "none")
         self.category_listbox.pack(fill="both", anchor="w")
         self.category_listbox.bind('<<ListboxSelect>>',self.CurSelet)
-
 
 
         self.column_header = cw.ThemedFrame(self.column, background_color = style.light_color)
@@ -45,9 +45,10 @@ class appstorePage(framework.Frame):
         self.content_frame_header.place(relx = 0, rely = 0, relwidth = 1, height = style.headerheight)
 
         self.category_label = cw.ThemedLabel(self.content_frame_header,"",anchor="w",label_font=style.giantboldtext, background = style.w, foreground=style.b)
-        self.category_label.place(height=style.headerheight, rely=0.5, y=-25, relwidth=0.5)
+        self.category_label.place(height=style.headerheight, rely=0.5, y=-25)
 
-
+        self.content_frame_header_searh_bar = cw.SearchBox(self.content_frame_header, command = self.search)
+        
         #The various content gets stacked on top of each other here.
         self.content_stacking_frame = cw.ThemedFrame(self.content_frame, background_color = style.w)
         self.content_stacking_frame.place(relx = 0, y=style.headerheight, relwidth = 1, relheight = 1, height=-style.headerheight)
@@ -57,10 +58,13 @@ class appstorePage(framework.Frame):
         concepts_frame = cf.categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.concepts)
         emus_frame = cf.categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.emus)
         games_frame = cf.categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.games)
-        # loaders_frame = cf.categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.loaders)
+        loaders_frame = cf.categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.loaders)
         themes_frame = cf.categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.themes)
         tools_frame = cf.categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.tools)
-        # misc_frame = cf.categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.misc)
+        misc_frame = cf.categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.misc)
+        about_frame = aboutFrame(self.content_stacking_frame)
+
+        self.searchable_frames = [all_frame,advanced_frame,concepts_frame,emus_frame,games_frame,loaders_frame,themes_frame,tools_frame,misc_frame]
 
         self.frames = [
             {
@@ -95,10 +99,14 @@ class appstorePage(framework.Frame):
             "frame" : themes_frame,
             "text" : "Themes"
             },
-            # {
-            # "frame" : misc_frame,
-            # "text" : "MISC"
-            # }
+            {
+            "frame" : misc_frame,
+            "text" : "MISC"
+            },
+            {
+            "frame" : about_frame,
+            "text" : "About"
+            }
         ]
 
         #Add pages as frames to dict, with keyword being the name of the frame
@@ -119,6 +127,15 @@ class appstorePage(framework.Frame):
         frame.event_generate("<<ShowFrame>>")
         frame.tkraise()
         self.category_label.set(page_name)
+        self.controller.after(20, self.update_search_bar_position)
+        self.current_frame = frame
+
+    def update_search_bar_position(self):
+        if not self.current_frame in self.searchable_frames:
+            self.content_frame_header_searh_bar.place_forget()
+        else:
+            self.content_frame_header_searh_bar.place(x = self.category_label.winfo_width() + style.offset, rely=0.5, y=-0.5*style.searchboxheight, height = style.searchboxheight, relwidth = 1, width = - (self.category_label.winfo_width() + 2 * style.offset))
+
 
     def CurSelet(self, event):
         try:
@@ -133,3 +150,20 @@ class appstorePage(framework.Frame):
                     break
         except:
             pass
+
+    def search(self, searchterm):
+        for frame in self.searchable_frames:
+            frame.search(searchterm)
+
+
+class aboutFrame(cw.ThemedFrame):
+    def __init__(self,frame):
+        cw.ThemedFrame.__init__(self, frame, background_color = style.w)
+
+        with open(locations.aboutfile) as aboutfile:
+            abouttext = aboutfile.read()
+
+        self.abouttext = cw.ScrolledText(self, wrap = 'word', font = style.mediumtext)
+        self.abouttext.place(relwidth=1, relheight =1)
+        self.abouttext.insert("1.0", abouttext)
+        self.abouttext.configure(state="disabled")

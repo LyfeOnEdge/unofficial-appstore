@@ -48,7 +48,7 @@ class Frame(tk.Frame):
         self.on_refresh_callbacks.append(callback)
 
     def add_on_tick_callback(self, callback):
-        self.add_on_tick_callback.append(callback)
+        self.on_tick_callbacks.append(callback)
             
     def do_callbacks_list(self, callbacks_list):
         if callbacks_list:

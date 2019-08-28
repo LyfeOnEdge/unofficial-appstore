@@ -3,6 +3,9 @@ bannerheight = sidecolumnwidth
 headerheight = 50
 offset = 5
 buttonsize = 40
+thumbnailsize = 150
+searchboxheight = 30
+
 
 ##Text Styles
 #Normal Text

@@ -25,3 +25,5 @@ etagfile = os.path.join(jsoncachefolder, "etags.json")
 
 notfoundimage = os.path.join(os.path.join(wd, "assets"), "notfound.png")
 backimage = os.path.join(os.path.join(wd, "assets"), "return.png")
+
+aboutfile = os.path.join(wd, "about.txt")

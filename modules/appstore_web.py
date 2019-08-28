@@ -57,12 +57,14 @@ def getScreenImage(package):
     SCREENBUFFER.update({package : screen})
     return screen
 
-#Downloads the current 
+#Downloads the current zip of a package
 def getPackage(package):
-    packageURL = APPSTORE_PACKAGE_URL.format(package)
-    packagefile = os.path.join(os.path.join(sys.path[0], DOWNLOADSFOLDER), "{}.zip".format(package))
-    return download(packageURL, packagefile)
-
+    try:
+        packageURL = APPSTORE_PACKAGE_URL.format(package)
+        packagefile = os.path.join(os.path.join(sys.path[0], DOWNLOADSFOLDER), "{}.zip".format(package))
+        return download(packageURL, packagefile)
+    except Exception as e:
+        print("Error getting package zip {}".format(e))
 
 def test(package):
     getScreenImage(package)
