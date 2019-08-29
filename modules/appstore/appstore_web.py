@@ -21,8 +21,6 @@ SCREEN = "screen.png"
 SCREENBUFFER = {}
 ICONBUFFER = {}
 
-
-###Image handling
 def download(url,file):
     try:
         urllib.request.urlretrieve(url,file)
@@ -31,29 +29,30 @@ def download(url,file):
         print("failed to download file {} from url {}".format(file, url)) 
         return None
 
-def getImage(package, image_type):
+#Gets (downloads or grabs from cache) an image of a given type (icon or screenshot) for a given package
+def getImage(package, image_type, force = False):
     path = os.path.join(os.path.join(sys.path[0], CACHEFOLDER), package.replace(":",""))
     if not os.path.isdir(path):
         os.mkdir(path)
 
     image_file = os.path.join(path, image_type)
 
-    if os.path.isfile(image_file):
+    if os.path.isfile(image_file) and not force:
         return(image_file)
     else:
         return download(IMAGE_BASE_URL.format(package, image_type), image_file)
 
-def getPackageIcon(package):
+def getPackageIcon(package, force = False):
     if package in ICONBUFFER.keys():
         return ICONBUFFER[package]
-    icon = getImage(package, ICON)
+    icon = getImage(package, ICON, force = force)
     ICONBUFFER.update({package : icon})
     return icon
 
-def getScreenImage(package):
+def getScreenImage(package, force = False):
     if package in SCREENBUFFER.keys():
         return SCREENBUFFER[package]
-    screen = getImage(package, SCREEN)
+    screen = getImage(package, SCREEN, force = force)
     SCREENBUFFER.update({package : screen})
     return screen
 
@@ -64,7 +63,7 @@ def getPackage(package):
         packagefile = os.path.join(os.path.join(sys.path[0], DOWNLOADSFOLDER), "{}.zip".format(package))
         return download(packageURL, packagefile)
     except Exception as e:
-        print("Error getting package zip {}".format(e))
+        print("Error getting package zip for {} - {}".format(package, e))
 
 # def test(package):
 #     getScreenImage(package)
