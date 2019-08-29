@@ -1,9 +1,13 @@
 # unofficial-appstore
-a proof-of-concept desktop gui for the hbas written in python
-
-Just grabs the repo.json from the switchbru site and tiles out the contents based on the category.
+A proof-of-concept desktop gui for the Homebrew Appstore written in python
 
 Uses the switchbru site as a backend for icons
+
+Working Stuff:
+ - Dynamic Search
+ - Categories
+ - Downloading
+ - Opening Project Page
 
 Broken stuff:
  - Messy startup

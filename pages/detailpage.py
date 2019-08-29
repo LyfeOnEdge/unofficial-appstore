@@ -1,74 +1,76 @@
 import os
-import tkinter
-import modules.framework as framework
-import modules.customwidgets as cw
+
 import modules.style as style
-import modules.webhandler as webhandler
-import modules.categoryframe as cf
 import modules.locations as locations
-from modules.appstore_parser import parser
-from modules.appstore_web import getScreenImage, getPackageIcon, getPackage
-import tkinter.constants
+from modules.widgets import ThemedFrame, ThemedLabel, activeFrame, ScrolledText, button, tooltip
+from modules.appstore import parser, getScreenImage, getPackageIcon, getPackage
+from modules.webhandler import getJson, opentab
+
 from PIL import Image, ImageTk
 
-store_json = webhandler.getJson("appstore_repo",locations.appstore_repo_url)
+store_json = getJson("appstore_repo",locations.appstore_repo_url)
 repo_parser = parser()
 repo_parser.load(os.path.join(locations.jsoncachefolder, "appstore_repo.json"))
 
-class detailPage(framework.Frame):
+class detailPage(activeFrame):
     def __init__(self, parent, controller, page_name):
-        framework.Frame.__init__(self,parent,controller)
+        activeFrame.__init__(self,parent,controller)
         self.controller = controller
         self.repo = None
 
-        self.column = cw.ThemedFrame(self, background_color = style.light_color)
+        #Primary layout
+        #------------------------------
+        self.column = ThemedFrame(self, background_color = style.light_color)
         self.column.place(relx = 1, rely = 0, width = style.sidecolumnwidth, relheight = 1, x = - style.sidecolumnwidth)
 
-        self.column_body = cw.ThemedFrame(self.column, background_color = style.light_color)
+        self.column_body = ThemedFrame(self.column, background_color = style.light_color)
         self.column_body.place(relwidth=1, relheight=1)
-        # self.column_body.place(x=0, y=style.headerheight, relwidth=1, relheight=1, height = -style.headerheight)
 
 
-
-        self.column_title = cw.ThemedLabel(self.column_body,"",anchor="w",label_font=style.mediumboldtext, foreground = style.w, background = style.light_color)
+        self.column_title = ThemedLabel(self.column_body,"",anchor="w",label_font=style.mediumboldtext, foreground = style.w, background = style.light_color)
         self.column_title.place(x = 5, width = - 5, rely = 0, relwidth = 1, height = style.headerheight)
 
-        self.column_author = cw.ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
+
+        #------------------------------
+        self.column_author = ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
         self.column_author.place(x = 5, width = - 5, y = style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
 
-        self.column_version = cw.ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
+        self.column_version = ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
         self.column_version.place(x = 5, width = - 5, y = 1.333 * style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
 
-        self.column_license = cw.ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
+        self.column_license = ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
         self.column_license.place(x = 5, width = - 5, y = 1.666 * style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
+        #------------------------------
 
 
-
-        self.column_package = cw.ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
+        #------------------------------
+        self.column_package = ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
         self.column_package.place(x = 5, width = - 5, y = 2.333 * style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
 
-        self.column_downloads = cw.ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
+        self.column_downloads = ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
         self.column_downloads.place(x = 5, width = - 5, y = 2.666 * style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
 
-        self.column_updated = cw.ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
+        self.column_updated = ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
         self.column_updated.place(x = 5, width = - 5, y = 3.00 * style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
+        #------------------------------
 
-
-
-        self.column_downloaded = cw.ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
+        #------------------------------
+        self.column_downloaded = ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
         self.column_downloaded.place(x = 5, width = - 5, y = 3.66 * style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
+        #------------------------------
 
-        self.column_extracted = cw.ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
+
+        self.column_extracted = ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
         self.column_extracted.place(x = 5, width = - 5, y = 4 * style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
 
-        self.column_download_button = cw.button(self.column_body, 
+        self.column_download_button = button(self.column_body, 
             callback = self.trigger_download, 
             text_string = "DOWNLOAD", 
             font=style.mediumboldtext, 
             background=style.dark_color
             ).place(rely=1,relx=0.5,x = - 1.5 * (style.buttonsize), y = - 2 * (style.buttonsize + style.offset), width = 3 * style.buttonsize, height = style.buttonsize)
 
-        self.column_open_url_button = cw.button(self.column_body, 
+        self.column_open_url_button = button(self.column_body, 
             callback = self.trigger_open_tab, 
             text_string = "VISIT PAGE", 
             font=style.mediumboldtext, 
@@ -77,33 +79,31 @@ class detailPage(framework.Frame):
 
         self.back_image = ImageTk.PhotoImage(Image.open(locations.backimage).resize((style.buttonsize, style.buttonsize), Image.ANTIALIAS))
 
-        self.column_backbutton = cw.button(self.column_body, image_object=self.back_image, callback=lambda: self.controller.show_frame("appstorePage"), background=style.light_color)
+        self.column_backbutton = button(self.column_body, image_object=self.back_image, callback=lambda: self.controller.show_frame("appstorePage"), background=style.light_color)
         self.column_backbutton.place(rely=1,relx=1,x = -(style.buttonsize + style.offset), y = -(style.buttonsize + style.offset))
-        self.column_backbutton_ttp = cw.tooltip(self.column_backbutton,"Back to list")
+        self.column_backbutton_ttp = tooltip(self.column_backbutton,"Back to list")
 
-
-
-        self.content_frame = cw.ThemedFrame(self, background_color = style.w)
+        self.content_frame = ThemedFrame(self, background_color = style.w)
         self.content_frame.place(x = 0, width = -style.sidecolumnwidth, rely = 0, relheight = 1, relwidth = 1)
 
-        self.content_frame_header = cw.ThemedFrame(self.content_frame, background_color = style.w)
+        self.content_frame_header = ThemedFrame(self.content_frame, background_color = style.w)
         self.content_frame_header.place(x = style.offset, width = - 2 * style.offset, rely = 0, relwidth = 1, height = style.headerheight)
 
-        self.content_frame_body = cw.ThemedFrame(self.content_frame, background_color = style.w)
+        self.content_frame_body = ThemedFrame(self.content_frame, background_color = style.w)
         self.content_frame_body.place(x = style.offset, width = - 2 * style.offset, y = style.headerheight,relwidth = 1, height = -style.headerheight, relheight=1)
 
-        self.content_banner_image = cw.ThemedLabel(self.content_frame_body,"",background = style.w,foreground=style.w,anchor="center",wraplength = None)
+        self.content_banner_image = ThemedLabel(self.content_frame_body,"",background = style.w,foreground=style.w,anchor="center",wraplength = None)
         self.content_banner_image.place(x=0, y = 0, relwidth=1, relheight = 0.5)
 
-        self.content_frame_details = cw.ScrolledText(self.content_frame_body, wrap = 'word', font = style.smalltext)
+        self.content_frame_details = ScrolledText(self.content_frame_body, wrap = 'word', font = style.smalltext)
         self.content_frame_details.place(rely=0.5, relx=0,relwidth=1,relheight=0.5,x=+style.offset, width = - 2 * (style.offset), height=-style.offset)
 
         #Displays app name
-        self.header_label = cw.ThemedLabel(self.content_frame_header,"",anchor="w",label_font=style.giantboldtext, background = style.w, foreground=style.b)
+        self.header_label = ThemedLabel(self.content_frame_header,"",anchor="w",label_font=style.giantboldtext, background = style.w, foreground=style.b)
         self.header_label.place(rely=0, y=0, relheight=0.65)
 
         #Displays app name
-        self.header_author = cw.ThemedLabel(self.content_frame_header,"",anchor="w",label_font=style.smalltext, background = style.w, foreground=style.light_color)
+        self.header_author = ThemedLabel(self.content_frame_header,"",anchor="w",label_font=style.smalltext, background = style.w, foreground=style.light_color)
         self.header_author.place(rely=0.65, y=0, relheight=0.35)
 
     def update_page(self,repo):
@@ -139,7 +139,7 @@ class detailPage(framework.Frame):
         self.content_frame_details.configure(state="normal")
         self.content_frame_details.delete('1.0', "end")
 
-        #Makes newlines in details print correctly
+        #Makes newlines in details print correctly. Hacky but :shrug:
         details = repo["details"].replace("\\n", """
 """
             )
@@ -153,22 +153,17 @@ class detailPage(framework.Frame):
         self.bannerimage = getScreenImage(repo["name"])
 
         if self.bannerimage:
-            self.updateimage(self.bannerimage)
+            self.update_banner(self.bannerimage)
         else:
-            self.updateimage(locations.notfoundimage)
+            self.update_banner(locations.notfoundimage)
             print("failed to download screenshot for {}".format(repo["name"]))
 
-
-
-
-    def updateimage(self,image_path):
+    def update_banner(self,image_path):
         art_image = Image.open(image_path)
         # art_image = art_image.resize((infoframewidth, infoframewidth), Image.ANTIALIAS)
         art_image = ImageTk.PhotoImage(art_image)
         self.content_banner_image.configure(image=art_image)
         self.content_banner_image.image = art_image
-
-
 
     def show(self, repo):
         self.tkraise()
@@ -184,6 +179,6 @@ class detailPage(framework.Frame):
         if self.repo:
             try:
                 url = self.repo["url"]
-                webhandler.opentab(url)
+                opentab(url)
             except:
                 print("Failed to open tab for url {}".format(url))

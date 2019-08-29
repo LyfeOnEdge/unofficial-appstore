@@ -66,11 +66,11 @@ def getPackage(package):
     except Exception as e:
         print("Error getting package zip {}".format(e))
 
-def test(package):
-    getScreenImage(package)
-    getPackageIcon(package)
-    getPackage(package)
+# def test(package):
+#     getScreenImage(package)
+#     getPackageIcon(package)
+#     getPackage(package)
 
-if __name__ == "__main__":
-    #Test with the appstore
-    test("appstore")
+# if __name__ == "__main__":
+#     #Test with the appstore
+#     test("appstore")

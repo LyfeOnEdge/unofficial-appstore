@@ -9,9 +9,8 @@ if sys.version_info[0] < 3 or sys.version_info[1] < 6: #Trying to import tkinter
 import tkinter as tk
 print("Using tkinter version {}".format(tk.Tcl().eval('info patchlevel')))
 
-from modules.framemanager import FrameManager
-from modules.appstore_web import getPackageIcon
-from modules.appstore_parser import parser
+from modules.widgets import frameManager
+from modules.appstore import getPackageIcon, parser
 from modules.webhandler import getJson
 from modules.locations import appstore_repo_url
 import pages.appstorepage as appstorepage
@@ -31,7 +30,7 @@ geometry = {
 }
 
 def startGUI():
-	gui = FrameManager(pages,geometry)
+	gui = frameManager(pages,geometry)
 	get_repo_icons(gui)
 	gui.title("unofficial appstore %s" % version)
 	gui.mainloop()

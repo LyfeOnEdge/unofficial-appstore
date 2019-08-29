@@ -1,3 +1,4 @@
+#Spacing
 sidecolumnwidth = 220
 bannerheight = sidecolumnwidth
 headerheight = 50
@@ -5,7 +6,7 @@ offset = 5
 buttonsize = 40
 thumbnailsize = 150
 searchboxheight = 30
-
+tileoffset = 4
 
 ##Text Styles
 #Normal Text

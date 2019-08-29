@@ -15,21 +15,20 @@ MANIFEST_PREFIX = "U: "
 version = "1.0"
 print("appstore compat version {}".format(version))
 
-#Default appstore entry struct
-def appstore_entry():
-    struct = {
-        "title" : None, #TITLE (NOT ALWAYS PACKAGE NAME)
-        "author" : None,
-        "category" : None,
-        "version" : None,
-        "url" : None, # STANDARD GITHUB URL
-        "license": None, 
-        "description": None,
-        "details" : None, 
-        "changelog" : None,#LAST GITHUB UPDATE NOTES
-    }
-    return struct
-
+# #Default appstore entry struct
+# def appstore_entry():
+#     struct = {
+#         "title" : None, #TITLE (NOT ALWAYS PACKAGE NAME)
+#         "author" : None,
+#         "category" : None,
+#         "version" : None,
+#         "url" : None, # STANDARD GITHUB URL
+#         "license": None, 
+#         "description": None,
+#         "details" : None, 
+#         "changelog" : None,#LAST GITHUB UPDATE NOTES
+#     }
+#     return struct
 
 #Check if the appstore packages folder has been inited
 def check_if_get_init(basepath):
@@ -43,7 +42,7 @@ def check_if_get_init(basepath):
         pass
 
 #Get the contents of a package's info file as a dict
-def get_package_info(basepath, package):
+def get_package_entry(basepath, package):
     if not basepath: return
     #Append package name to packages directory
     pacdir = os.path.join(PACKAGES_DIR, package)
@@ -63,15 +62,14 @@ def get_package_info(basepath, package):
         return None
 
 #Get a package's json file value, returns none if it fails
-def get_package_value(basepath, package, value):
+def get_package_entry(basepath, package, value):
     if not basepath: return
     #Get the package json data
-    package_info = get_package_info(basepath, package)
+    package_info = get_package_entry(basepath, package)
     #If data was retrieved, return the value
     if package_info:
         # print(package_info[value])
         return package_info[value]
-
 
 #Get the installed version of a package, return "not installed" if failed
 def get_package_version(basepath, package):

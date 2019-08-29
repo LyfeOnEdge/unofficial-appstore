@@ -2,7 +2,6 @@ import os, sys
 #Folder and file definitions for easy access
 appstore_repo_url = "https://www.switchbru.com/appstore/repo.json"
 
-
 wd = sys.path[0]
 
 folders_to_init = []

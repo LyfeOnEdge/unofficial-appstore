@@ -1,7 +1,6 @@
 import tkinter as tk
-from modules.style import dark_color
 
-class Frame(tk.Frame):
+class activeFrame(tk.Frame):
     def __init__(self, parent, controller, tick_delay = 250):
         self.controller = controller
         self.tick_delay = tick_delay
@@ -11,9 +10,7 @@ class Frame(tk.Frame):
         self.done_loading = False
 
         tk.Frame.__init__(self,parent, 
-            background = dark_color,
             highlightthickness=0,
-            highlightbackground=dark_color,
             borderwidth = 0
             )
 
