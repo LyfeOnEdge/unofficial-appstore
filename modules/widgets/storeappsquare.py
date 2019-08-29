@@ -11,7 +11,7 @@ class storeAppSquare(ThemedFrame):
         self.framework = framework
         self.repo = repo
         self.imageset = False
-        ThemedFrame.__init__(self, parent, background_color = style.w)
+        ThemedFrame.__init__(self, parent, background = style.w)
         self.place(width=style.thumbnailsize, height=style.thumbnailsize)
 
         button_image = ImageTk.PhotoImage(Image.open(notfoundimage).resize((style.thumbnailsize, style.thumbnailsize), Image.ANTIALIAS))

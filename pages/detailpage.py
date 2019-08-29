@@ -2,7 +2,7 @@ import os
 
 import modules.style as style
 import modules.locations as locations
-from modules.widgets import ThemedFrame, ThemedLabel, activeFrame, ScrolledText, button, tooltip
+from modules.widgets import ThemedFrame, ThemedLabel, activeFrame, scrolledText, button, tooltip
 from modules.appstore import parser, getScreenImage, getPackageIcon, getPackage
 from modules.webhandler import getJson, opentab
 
@@ -20,10 +20,10 @@ class detailPage(activeFrame):
 
         #Primary layout
         #------------------------------
-        self.column = ThemedFrame(self, background_color = style.light_color)
+        self.column = ThemedFrame(self, background = style.light_color)
         self.column.place(relx = 1, rely = 0, width = style.sidecolumnwidth, relheight = 1, x = - style.sidecolumnwidth)
 
-        self.column_body = ThemedFrame(self.column, background_color = style.light_color)
+        self.column_body = ThemedFrame(self.column, background = style.light_color)
         self.column_body.place(relwidth=1, relheight=1)
 
 
@@ -83,19 +83,19 @@ class detailPage(activeFrame):
         self.column_backbutton.place(rely=1,relx=1,x = -(style.buttonsize + style.offset), y = -(style.buttonsize + style.offset))
         self.column_backbutton_ttp = tooltip(self.column_backbutton,"Back to list")
 
-        self.content_frame = ThemedFrame(self, background_color = style.w)
+        self.content_frame = ThemedFrame(self, background = style.w)
         self.content_frame.place(x = 0, width = -style.sidecolumnwidth, rely = 0, relheight = 1, relwidth = 1)
 
-        self.content_frame_header = ThemedFrame(self.content_frame, background_color = style.w)
+        self.content_frame_header = ThemedFrame(self.content_frame, background = style.w)
         self.content_frame_header.place(x = style.offset, width = - 2 * style.offset, rely = 0, relwidth = 1, height = style.headerheight)
 
-        self.content_frame_body = ThemedFrame(self.content_frame, background_color = style.w)
+        self.content_frame_body = ThemedFrame(self.content_frame, background = style.w)
         self.content_frame_body.place(x = style.offset, width = - 2 * style.offset, y = style.headerheight,relwidth = 1, height = -style.headerheight, relheight=1)
 
         self.content_banner_image = ThemedLabel(self.content_frame_body,"",background = style.w,foreground=style.w,anchor="center",wraplength = None)
         self.content_banner_image.place(x=0, y = 0, relwidth=1, relheight = 0.5)
 
-        self.content_frame_details = ScrolledText(self.content_frame_body, wrap = 'word', font = style.smalltext)
+        self.content_frame_details = scrolledText(self.content_frame_body, wrap = 'word', font = style.smalltext)
         self.content_frame_details.place(rely=0.5, relx=0,relwidth=1,relheight=0.5,x=+style.offset, width = - 2 * (style.offset), height=-style.offset)
 
         #Displays app name
