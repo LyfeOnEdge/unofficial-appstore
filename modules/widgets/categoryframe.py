@@ -22,14 +22,17 @@ class categoryFrame(tk.Frame):
         #This is the canvas I'm trying to get to scroll
         self.canvas = tk.Canvas(self, bg=style.w, relief=tk.constants.SUNKEN)
         self.canvas.config(
-            width=self.winfo_width(), #Parent frame width
+            width=100, #Parent frame width
             highlightthickness=0)
-
         sbar = tk.Scrollbar(self)
         sbar.config(command=self.canvas.yview)                   
         self.canvas.config(yscrollcommand=sbar.set)              
         sbar.pack(side=tk.constants.RIGHT, fill=tk.constants.Y)                     
-        self.canvas.pack(side=tk.constants.LEFT, expand=tk.constants.YES, fill=tk.constants.BOTH)       
+        self.canvas.pack(side=tk.constants.LEFT, expand=tk.constants.YES, fill=tk.constants.BOTH)
+
+        self.canvas_frame = tk.Frame(self.canvas, background = style.w, border = 0, highlightthickness = 0)
+
+        self.canvas.create_window(0,0, window=self.canvas_frame, anchor='nw')
 
         self.bind("<Configure>", self.configure)
         self.bind("<<ShowFrame>>", self.on_show_frame)
@@ -43,7 +46,7 @@ class categoryFrame(tk.Frame):
 
     def makeButtonList(self):
         for repo in self.repos:
-            self.makeButton(self.canvas, self.framework, repo)
+            self.makeButton(self.canvas_frame, self.framework, repo)
         self.current_buttons = self.buttons
 
     #instantiates button, adds it to list
@@ -53,7 +56,8 @@ class categoryFrame(tk.Frame):
 
     #Tiles buttons
     def buildFrame(self):
-        _framewidth = self.canvas.winfo_width()
+        _framewidth = self.winfo_width()
+        self.canvas_frame.config(width=_framewidth)
 
         #Get integer number of tiles fittable in the window
         _maxperrow = _framewidth // style.thumbnailsize
@@ -65,8 +69,9 @@ class categoryFrame(tk.Frame):
         _y = 0
         _x = 0
 
+        spacing = style.thumbnailsize+2*style.tileoffset
         for button in self.current_buttons:
-            button.grid(row=_y, column = _x, sticky="nsew")
+            button.place(x=_x * spacing + style.tileoffset, y = _y * spacing + style.tileoffset, height = style.thumbnailsize, width = style.thumbnailsize)
 
             _x += 1
 
@@ -74,15 +79,11 @@ class categoryFrame(tk.Frame):
                 _x = 0
                 _y += 1
 
-        for xs in range(0, _maxperrow):
-            self.canvas.grid_columnconfigure(xs, minsize=style.thumbnailsize+2*style.tileoffset, pad=style.tileoffset)
-
-        for ys in range(0, _y):
-            self.canvas.grid_rowconfigure(ys, minsize=style.thumbnailsize+2*style.tileoffset, pad=style.tileoffset)
-
         #Update the size of the canvas and configure the scrollable area
-        self.canvas.config(height = (_y + 1) * (style.thumbnailsize+2*style.tileoffset))
-        self.canvas.config(scrollregion=self.canvas.bbox("all"))
+        _canvasheight = (_y + 1) * (style.thumbnailsize+2*style.tileoffset)
+        self.canvas_frame.config(height = _canvasheight,width= _framewidth)
+        self.canvas.config(scrollregion=(0,0,_framewidth, _canvasheight))
+        # self.canvas.update_idletasks()
            
 
     def search(self, searchterm):
@@ -133,3 +134,48 @@ class categoryFrame(tk.Frame):
 
     def on_show_frame(self, event):
         self.framework.refresh()
+
+
+class VerticalScrolledFrame(tk.Frame):
+    """A pure Tkinter scrollable frame that actually works!
+    * Use the 'interior' attribute to place widgets inside the scrollable frame
+    * Construct and pack/place/grid normally
+    * This frame only allows vertical scrolling
+
+    """
+    def __init__(self, parent, *args, **kw):
+        tk.Frame.__init__(self, parent, *args, **kw)       
+
+        # create a canvas object and a vertical scrollbar for scrolling it
+        vscrollbar = tk.Scrollbar(self, orient=VERTICAL)
+        vscrollbar.pack(fill=Y, side=RIGHT, expand=FALSE)
+        canvas = tk.Canvas(self, bd=0, highlightthickness=0,
+                        yscrollcommand=vscrollbar.set)
+        canvas.pack(side=LEFT, fill=BOTH, expand=TRUE)
+        vscrollbar.config(command=canvas.yview)
+
+        # reset the view
+        canvas.xview_moveto(0)
+        canvas.yview_moveto(0)
+
+        # create a frame inside the canvas which will be scrolled with it
+        self.interior = interior = tk.Frame(canvas)
+        interior_id = canvas.create_window(0, 0, window=interior,
+                                           anchor=NW)
+
+        # track changes to the canvas and frame width and sync them,
+        # also updating the scrollbar
+        def _configure_interior(event):
+            # update the scrollbars to match the size of the inner frame
+            size = (interior.winfo_reqwidth(), interior.winfo_reqheight())
+            canvas.config(scrollregion="0 0 %s %s" % size)
+            if interior.winfo_reqwidth() != canvas.winfo_width():
+                # update the canvas's width to fit the inner frame
+                canvas.config(width=interior.winfo_reqwidth())
+        interior.bind('<Configure>', _configure_interior)
+
+        def _configure_canvas(event):
+            if interior.winfo_reqwidth() != canvas.winfo_width():
+                # update the inner frame's width to fill the canvas
+                canvas.itemconfigure(interior_id, width=parent.winfo_width())
+        canvas.bind('<Configure>', _configure_canvas)
