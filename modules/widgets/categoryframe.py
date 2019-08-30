@@ -19,7 +19,6 @@ class categoryFrame(tk.Frame):
         self.search_pending = False
         tk.Frame.__init__(self, parent, background = style.w, border = 0, highlightthickness = 0)
 
-        #This is the canvas I'm trying to get to scroll
         self.canvas = tk.Canvas(self, bg=style.w, relief=tk.constants.SUNKEN)
         self.canvas.config(
             width=100, #Parent frame width
