@@ -80,6 +80,10 @@ class appstore_handler(object):
             #Extract info file
             zipObj.extract(PACKAGE_INFO, path = packagedir)
 
+            print("Extracted: {}".format(json.dumps(zipObj.namelist(), indent = 4)))
+
+        print("Installed {} version {}".format(repo["title"], repo["version"]))
+
 
     #THIS DOES NOT UNINSTALL THE CONTENT
     #Removes a package entry by deleting the package 
