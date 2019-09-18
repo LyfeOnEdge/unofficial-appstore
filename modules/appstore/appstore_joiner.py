@@ -39,35 +39,25 @@ class appstore_handler(object):
         package = repo["name"]
         #Append base directory to packages directory
         packagesdir = os.path.join(self.base_install_path, PACKAGES_DIR)
+        if not os.path.isdir(packagesdir):
+            os.makedirs(packagesdir)
         #Append package folder to packages directory
         packagedir = os.path.join(packagesdir, package)
+        if not os.path.isdir(packagedir):
+            os.mkdir(packagedir)
 
         #Download the package from the switchbru site
         appstore_zip = getPackage(package)
         if not appstore_zip:
             print("Failed to download zip for package {}".format(package))
+            return
 
-        package_data = self.handle_zip(appstore_zip)
-
-        manifest_file = os.path.join(packagedir, PACKAGE_MANIFEST)
-
-        info_file = os.path.join(packagedir, PACKAGE_INFO)
-
-    def handle_zip(self, in_zip):
-        if not self.check_path(): return self.warn_path_not_set()
-        zip_contents = extract_zip_to_memory(in_zip)
-
-        #Get manifest and info from zip dict, remove em
-        manifest = zip_contents.pop("manifest.install")
-        info = zip_contents.pop("info.json")
-
-        for f in zip_contents.keys():
-            out_file = os.path.join(self.base_install_path, f)
-            with open(out_file, 'wb') as out_f:
-                out_f.write(zip_contents[f])
-
-        return {"manifest" : manifest, "info" : info}
-
-def extract_zip_to_memory(in_zip):
-    in_zip=ZipFile(in_zip)
-    return {name: in_zip.read(name) for name in in_zip.namelist()}
+        with ZipFile(appstore_zip) as zipObj:
+            #Extract everything but the manifest and the info file
+            for filename in zipObj.namelist():
+                if not ("manifest.install" in filename or "info.json" in filename):
+                    zipObj.extract(filename, path = self.base_install_path)
+            #Extract manifest
+            zipObj.extract(PACKAGE_MANIFEST, path = packagedir)
+            #Extract info file
+            zipObj.extract(PACKAGE_INFO, path = packagedir)
