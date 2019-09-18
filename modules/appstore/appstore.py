@@ -1,7 +1,9 @@
-#Some basic scripts for package managing appstore entries
+#Some basic scripts for installing appstore zips given the package name
 #Copyright LyfeOnEdge 2019
 #Licensed under GPL3
-import os, json, shutil
+import sys, os, shutil, json
+from zipfile import ZipFile
+from .appstore_web import getPackage
 
 #Standard path to find the appstore at
 PACKAGES_DIR = "switch/appstore/.get/packages"
@@ -9,172 +11,146 @@ PACKAGES_DIR = "switch/appstore/.get/packages"
 PACKAGE_INFO = "info.json"
 #Name of pagkade manifest file
 PACKAGE_MANIFEST = "manifest.install"
-#The prefix used to designate each line in the manifest
-MANIFEST_PREFIX = "U: "
 
-version = "1.0"
-print("appstore compat version {}".format(version))
+#python object to hold appstore entrys data
+class appstore_handler(object):
+    def __init__(self):
+        self.base_install_path = None
 
-# #Default appstore entry struct
-# def appstore_entry():
-#     struct = {
-#         "title" : None, #TITLE (NOT ALWAYS PACKAGE NAME)
-#         "author" : None,
-#         "category" : None,
-#         "version" : None,
-#         "url" : None, # STANDARD GITHUB URL
-#         "license": None, 
-#         "description": None,
-#         "details" : None, 
-#         "changelog" : None,#LAST GITHUB UPDATE NOTES
-#     }
-#     return struct
+    #Check if the appstore packages folder has been inited
+    def check_if_get_init(self,path):
+        if not path: return
+        #Append package name to packages directory
+        packagesdir = os.path.join(path, PACKAGES_DIR)
+        try:
+            return os.path.isdir(packagesdir)
+        except:
+            pass
 
-#Check if the appstore packages folder has been inited
-def check_if_get_init(basepath):
-    if not basepath: return
-    #Append package name to packages directory
-    packagesdir = os.path.join(basepath, PACKAGES_DIR)
-    try:
-        return os.path.isdir(packagesdir)
-    except:
-        pass
+    def init_get(self, path):
+        if not path: return
+        if not check_if_get_init(path):
+            packagesdir = os.path.join(path, PACKAGES_DIR)
+            os.mkdir(packagesdir)
+        else:
+            print("Appstore packages dir already inited")
+            return
 
-def init_get(basepath):
-    if not basepath: return
-    if not check_if_get_init(basepath):
-        packagesdir = os.path.join(basepath, PACKAGES_DIR)
-        os.mkdir(packagesdir)
-    else:
-        print("Appstore packages dir already inited")
-        return
+    def warn_path_not_set(self):
+        print("Warning: appstore path not set, not continuing with install")
 
-#Get the contents of a package's info file as a dict
-def get_package_entry(basepath, package):
-    if not basepath: return
-    #Append package name to packages directory
-    pacdir = os.path.join(PACKAGES_DIR, package)
-    #Append base directory to packages directory
-    packagedir = os.path.join(basepath, pacdir)
-    #Append package loc to info file name
-    pkg = os.path.join(packagedir, PACKAGE_INFO)
+    #Set this to a root of an sd card or in a dir to test
+    def set_path(self, path):
+        self.base_install_path = path
+        print("Set package path to %s" % path)
 
-    try:
-        with open(pkg, encoding="utf-8") as infojson:
-            return json.load(infojson)
-    except FileNotFoundError:
-        pass
-    except:
-        print("Failed to open repo data for {}".format(package))
+    def check_path(self):
+        return self.base_install_path
 
-#Get a package's json file value, returns none if it fails
-def get_package_value(basepath, package, value):
-    if not basepath: return
-    #Get the package json data
-    package_info = get_package_entry(basepath, package)
-    #If data was retrieved, return the value
-    if package_info:
-        # print(package_info[value])
-        return package_info[value]
+    def install_package(self, repo):
+        if not self.check_path(): return self.warn_path_not_set()
+        if not repo:
+            print("No repo data passed to appstore handler, not continuing with install")
+        if not self.check_if_get_init(self.base_install_path):
+            print("Appstore get folder not initiated, not continuing with install")
 
-#Get the installed version of a package, return "not installed" if failed
-def get_package_version(basepath, package):
-    #Get the package json data
-    ver = get_package_value(basepath, package, "version")
-    return ver or "not installed"
+        package = repo["name"]
+        #Append base directory to packages directory
+        packagesdir = os.path.join(self.base_install_path, PACKAGES_DIR)
+        if not os.path.isdir(packagesdir):
+            os.makedirs(packagesdir)
+        #Append package folder to packages directory
+        packagedir = os.path.join(packagesdir, package)
+        if not os.path.isdir(packagedir):
+            os.mkdir(packagedir)
 
-#Returns a package's manifest as a list
-def get_package_manifest(basepath, package):
-    if not basepath: return
-    #Append package name to packages directory
-    pacdir = os.path.join(PACKAGES_DIR, package)
-    #Append base directory to packages directory
-    packagedir = os.path.join(basepath, pacdir)
-    #Append package loc to manifest file name
-    manifestfile = os.path.join(packagedir, PACKAGE_MANIFEST)
-    print(manifestfile)
-    if not os.path.isfile(manifestfile):
-        print("couldn't find manifest")
-        return
+        #Download the package from the switchbru site
+        appstore_zip = getPackage(package)
+        if not appstore_zip:
+            print("Failed to download zip for package {}".format(package))
+            return
 
-    mf = []
-    #open the manifest, append the current base path to each line
-    with open(manifestfile, "r") as maf:
-        for fileline in maf:
-            fl = fileline.replace(MANIFEST_PREFIX, "")
-            fl = fl.strip().replace("\n", "")
-            mf.append(os.path.join(basepath,fl))
-
-    return mf
-
-#Removes a package entry by deleting the package 
-#folder containing the manifest and info.json
-def remove_store_entry(basepath, package):
-    if not basepath: return
-    #Append package name to packages directory
-    pacdir = os.path.join(PACKAGES_DIR, package)
-    #Append base directory to packages directory
-    packagedir = os.path.join(basepath, pacdir)
-    try:
-        shutil.rmtree(packagedir, ignore_errors=True)
-        print("Removed appstore entry")
-    except Exception as e:
-        print("Error removing store entry for {} - {}".format(package, e))
-
-#Based on vgmoose's version checking script,
-#makes github versions conform to appstore versions
-def parse_version_to_store_equivalent(ver, name):
-    ver = ver.lower().strip("v")
-    if name:
-        ver = ver.replace(name.lower(), "") 
-    ver = ver.split(" ")[0].replace("switch", "").strip("-")
-    return ver
+        with ZipFile(appstore_zip) as zipObj:
+            #Extract everything but the manifest and the info file
+            for filename in zipObj.namelist():
+                if not ("manifest.install" in filename or "info.json" in filename):
+                    zipObj.extract(filename, path = self.base_install_path)
+            #Extract manifest
+            zipObj.extract(PACKAGE_MANIFEST, path = packagedir)
+            #Extract info file
+            zipObj.extract(PACKAGE_INFO, path = packagedir)
 
 
+    #THIS DOES NOT UNINSTALL THE CONTENT
+    #Removes a package entry by deleting the package 
+    #folder containing the manifest and info.json
+    def remove_store_entry(self, package):
+        if not self.check_path(): return self.warn_path_not_set()
+        #Append package name to packages directory
+        pacdir = os.path.join(PACKAGES_DIR, package)
+        #Append base directory to packages directory
+        packagedir = os.path.join(self.base_install_path, pacdir)
+        try:
+            shutil.rmtree(packagedir, ignore_errors=True)
+            print("Removed appstore entry")
+        except Exception as e:
+            print("Error removing store entry for {} - {}".format(package, e))
 
-#Creates an HBAppstore entry for a given package and manifest
-#Store_entry is a dict in the form defined at the top of the file
-#This function is not official and may break stuff
-def create_store_entry(basepath, store_entry, manifest, package):
-    if not basepath: return
-    #Append base directory to packages directory
-    packagesdir = os.path.join(basepath, PACKAGES_DIR)
-    #Append package folder to packages directory
-    packagedir = os.path.join(packagesdir, package)
-    #Append manifest filename to package folder
-    manifest_file = os.path.join(packagedir, PACKAGE_MANIFEST)
-    #Append info file filename to package folder
-    info_file = os.path.join(packagedir,PACKAGE_INFO)
 
-    #If the package dir hasn't been inited yet, make it
-    if not os.path.isdir(packagedir):
-        os.makedirs(packagedir)
+    #Get the contents of a package's info file as a dict
+    def get_package_entry(self, package):
+        if not self.check_path(): return self.warn_path_not_set()
+        #Append package name to packages directory
+        pacdir = os.path.join(PACKAGES_DIR, package)
+        #Append base directory to packages directory
+        packagedir = os.path.join(self.base_install_path, pacdir)
+        #Append package loc to info file name
+        pkg = os.path.join(packagedir, PACKAGE_INFO)
 
-    #Clean up the manifest lines, ensures line format
-    #is consistent with 
-    filemanifest = []
-    if type(manifest) == str:
-        path = manifest.replace("\\","/").strip("/")
-        filemanifest.append(path)
-    else:
-        for file in manifest:
-            file = str(file)
-            path = file.replace("\\","/").strip("/")
-            filemanifest.append(path)
-    print(filemanifest)
+        try:
+            with open(pkg, encoding="utf-8") as infojson:
+                return json.load(infojson)
+        except FileNotFoundError:
+            pass
+        except:
+            print("Failed to open repo data for {}".format(package))
 
-    #Add the manifest prefix 
-    prepped_manifest = []
-    #Prep manifest lines with 'U:' marker and write
-    with open(manifest_file, 'w+') as mf:
-        for entry in filemanifest:
-            newline = "{}{}\n".format(MANIFEST_PREFIX,entry)
-            prepped_manifest.append(newline)
-        mf.writelines(prepped_manifest)
-        print("wrote manifest\n")
+    #Get a package's json file value, returns none if it fails
+    def get_package_value(self, package, value):
+        if not self.check_path(): return self.warn_path_not_set()
+        #Get the package json data
+        package_info = get_package_entry(self.base_install_path, package)
+        #If data was retrieved, return the value
+        if package_info:
+            # print(package_info[value])
+            return package_info[value]
 
-    #Write info file
-    with open(info_file, 'w+') as inf:
-        json.dump(store_entry, inf, indent=4,)
+    #Get the installed version of a package, return "not installed" if failed
+    def get_package_version(self, package):
+        #Get the package json data
+        ver = get_package_value(self.base_install_path, package, "version")
+        return ver or "not installed"
 
-    print("Created appstore entry for {} \n{}".format(package, json.dumps(store_entry,indent=4)))
+    #Returns a package's manifest as a list
+    def get_package_manifest(self, package):
+        if not self.check_path(): return self.warn_path_not_set()
+        #Append package name to packages directory
+        pacdir = os.path.join(PACKAGES_DIR, package)
+        #Append base directory to packages directory
+        packagedir = os.path.join(self.base_install_path, pacdir)
+        #Append package loc to manifest file name
+        manifestfile = os.path.join(packagedir, PACKAGE_MANIFEST)
+        print(manifestfile)
+        if not os.path.isfile(manifestfile):
+            print("couldn't find manifest")
+            return
+
+        mf = []
+        #open the manifest, append the current base path to each line
+        with open(manifestfile, "r") as maf:
+            for fileline in maf:
+                fl = fileline.replace(MANIFEST_PREFIX, "")
+                fl = fl.strip().replace("\n", "")
+                mf.append(os.path.join(self.base_install_path,fl))
+
+        return mf

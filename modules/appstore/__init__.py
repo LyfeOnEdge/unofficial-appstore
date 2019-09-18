@@ -1,4 +1,3 @@
-from .appstore import *
-from .appstore_parser import *
-from .appstore_web import *
-from .appstore_joiner import appstore_handler
+from .appstore import appstore_handler
+from .appstore_parser import parser
+from .appstore_web import getImage, getPackageIcon, getPackage
