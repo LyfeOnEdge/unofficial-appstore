@@ -10,35 +10,33 @@ import tkinter as tk
 print("Using tkinter version {}".format(tk.Tcl().eval('info patchlevel')))
 
 from modules.widgets import frameManager
-from modules.appstore import getPackageIcon, parser
+from modules.appstore import getPackageIcon, parser, appstore_handler
 from modules.webhandler import getJson
 from modules.locations import appstore_repo_url
-import pages.appstorepage as appstorepage
-import pages.detailpage as detailpage
+from pages import pagelist
 
 #Download the appstore json, uses etagging to check if it needs an update to minimize bandwidth
 store_json = getJson("appstore_repo",appstore_repo_url)
 #Parse the json into categories
 repo_parser = parser()
 repo_parser.load(store_json)
-
-pages = [detailpage.detailPage, appstorepage.appstorePage]
+#Shared tool for installing apps via the switchbru site
+store_handler = appstore_handler()
 
 geometry = {
-	"width" : 710,
-	"height" : 525,
+	"width" : 780,
+	"height" : 575,
 }
 
 def startGUI():
-	gui = frameManager(pages,geometry)
-	get_repo_icons(gui)
+	gui = frameManager(pagelist,geometry,store_handler,repo_parser)
+	pre_load_icons()
 	gui.title("unofficial appstore %s" % version)
 	gui.mainloop()
 
 #Helps with pre-loading a lot of images
-def get_repo_icons(app):
+def pre_load_icons():
 	threads = [] 
-
 	for repo in repo_parser.all:
 		threads.append(threading.Thread(target=getPackageIcon, args=[repo["name"]]))
 
@@ -48,3 +46,7 @@ def get_repo_icons(app):
 if __name__ == '__main__':
 	startGUI()
 	
+
+# USE .after
+# max retries
+# download from base file via a thread that gets made and started immediately then returns

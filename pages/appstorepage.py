@@ -1,20 +1,16 @@
 import os
-
+import tkinter.filedialog
 import modules.style as style
 import modules.locations as locations
-from modules.widgets import ThemedFrame, ThemedListbox, ThemedLabel, searchBox, categoryFrame, activeFrame, scrolledText
-from modules.webhandler import getJson
-from modules.appstore import parser
-
-store_json = getJson("appstore_repo",locations.appstore_repo_url)
-repo_parser = parser()
-repo_parser.load(os.path.join(locations.jsoncachefolder, "appstore_repo.json"))
+from modules.widgets import ThemedFrame, ThemedListbox, ThemedLabel, searchBox, categoryFrame, activeFrame, scrolledText, button
 
 class appstorePage(activeFrame):
-    def __init__(self, parent, controller, page_name):
+    def __init__(self, parent, controller, page_name, appstore_handler, repo_parser):
         activeFrame.__init__(self,parent,controller)
         self.current_frame = None
         self.controller = controller
+        self.appstore_handler = appstore_handler
+        self.repo_parser = repo_parser
 
         self.column = ThemedFrame(self, background = style.light_color)
         self.column.place(relx = 0, rely = 0, width = style.sidecolumnwidth, relheight = 1)
@@ -27,13 +23,21 @@ class appstorePage(activeFrame):
         self.category_listbox.pack(fill="both", anchor="w")
         self.category_listbox.bind('<<ListboxSelect>>',self.CurSelet)
 
-
         self.column_header = ThemedFrame(self.column, background = style.light_color)
         self.column_header.place(relx = 0, rely = 0, relwidth = 1, height = style.headerheight)
 
         self.column_header_title = ThemedLabel(self.column_header,"Unofficial Appstore\nGPLv3",anchor="center",label_font=style.mediumboldtext, background = style.light_color)
         self.column_header_title.place(relx = 0,rely = 0, relwidth = 1, relheight = 1)
 
+        self.column_footer = ThemedFrame(self.column, background = style.light_color)
+        self.column_footer.place(relx = 0, rely = 1, relwidth = 1, height = style.headerheight, y = - style.footerheight)
+
+        self.column_set_sd = button(self.column_footer, 
+            callback = self.set_sd, 
+            text_string = "Select Switch SD Root", 
+            font=style.mediumboldtext, 
+            background=style.dark_color
+            ).place(relwidth = 1, relheight = 1, y = style.offset, x = style.offset, width = - 2 * style.offset, height = - 2 * style.offset)
 
         self.content_frame = ThemedFrame(self)
         self.content_frame.place(x = style.sidecolumnwidth, width = -style.sidecolumnwidth, rely = 0, relheight = 1, relwidth = 1)
@@ -50,15 +54,15 @@ class appstorePage(activeFrame):
         self.content_stacking_frame = ThemedFrame(self.content_frame)
         self.content_stacking_frame.place(relx = 0, y=style.headerheight, relwidth = 1, relheight = 1, height=-style.headerheight)
 
-        all_frame = categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.all)
-        advanced_frame = categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.advanced)
-        concepts_frame = categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.concepts)
-        emus_frame = categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.emus)
-        games_frame = categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.games)
-        loaders_frame = categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.loaders)
-        themes_frame = categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.themes)
-        tools_frame = categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.tools)
-        misc_frame = categoryFrame(self.content_stacking_frame, self.controller, self, repo_parser.misc)
+        all_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.all)
+        advanced_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.advanced)
+        concepts_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.concepts)
+        emus_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.emus)
+        games_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.games)
+        loaders_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.loaders)
+        themes_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.themes)
+        tools_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.tools)
+        misc_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.misc)
         about_frame = aboutFrame(self.content_stacking_frame)
 
         self.searchable_frames = [all_frame,advanced_frame,concepts_frame,emus_frame,games_frame,loaders_frame,themes_frame,tools_frame,misc_frame]
@@ -113,7 +117,7 @@ class appstorePage(activeFrame):
             frame = E["frame"]
             self.content_frames[page_name] = frame
             frame.place(relx = 0, rely = 0, relwidth = 1, relheight = 1)
-            self.category_listbox.insert("end", page_name)
+            self.category_listbox.insert("end", " {}".format(page_name))
 
         self.show_frame("All Apps")
         self.loaded()
@@ -147,7 +151,7 @@ class appstorePage(activeFrame):
             frame = None
             for f in self.frames:
                 t = f["text"]
-                if t == picked:
+                if t.strip() == picked.strip():
                     self.show_frame(t)
                     break
         except:
@@ -156,6 +160,12 @@ class appstorePage(activeFrame):
     def search(self, searchterm):
         for frame in self.searchable_frames:
             frame.search(searchterm)
+
+
+
+    def set_sd(self):
+        chosensdpath = tkinter.filedialog.askdirectory(initialdir="/",  title='Please select your SD card')
+        self.appstore_handler.set_path(chosensdpath)
 
 #Super basic about frame, pulls from about.txt
 class aboutFrame(ThemedFrame):

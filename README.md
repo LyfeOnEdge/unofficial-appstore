@@ -11,7 +11,4 @@ Uses the switchbru site as a backend for icons
  - Opening Project Page
 
 ##### Broken stuff:
- - Messy startup
- - Scrolling canvas is broken
-
-
+ - Large downloads cause blocking until the download is finished

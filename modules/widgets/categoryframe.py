@@ -3,6 +3,7 @@ from PIL import Image, ImageTk
 
 import modules.style as style
 from .storeappsquare import storeAppSquare
+from .customwidgets import ThemedLabel
 from modules.appstore import getPackageIcon
 from modules.locations import notfoundimage
 
@@ -19,32 +20,51 @@ class categoryFrame(tk.Frame):
         self.search_pending = False
         tk.Frame.__init__(self, parent, background = style.w, border = 0, highlightthickness = 0)
 
-        #This is the canvas I'm trying to get to scroll
+        #make canvas and scroll bar
         self.canvas = tk.Canvas(self, bg=style.w, relief=tk.constants.SUNKEN)
         self.canvas.config(
             width=100, #Parent frame width
             highlightthickness=0)
-        sbar = tk.Scrollbar(self)
-        sbar.config(command=self.canvas.yview)                   
-        self.canvas.config(yscrollcommand=sbar.set)              
-        sbar.pack(side=tk.constants.RIGHT, fill=tk.constants.Y)                     
+        self.scrollbar = tk.Scrollbar(self)
+
+        #Bind sidebar to canvas and vv
+        self.scrollbar.config(command=self.canvas.yview)                   
+        self.canvas.config(yscrollcommand=self.scrollbar.set) 
+
+        #pack the sidebar and canvas
+        self.scrollbar.pack(side=tk.constants.RIGHT, fill=tk.constants.Y)                     
         self.canvas.pack(side=tk.constants.LEFT, expand=tk.constants.YES, fill=tk.constants.BOTH)
 
+        #A frame to put in the canvas window
         self.canvas_frame = tk.Frame(self.canvas, background = style.w, border = 0, highlightthickness = 0)
+        self.canvas_frame.bind("<MouseWheel>", self.on_mouse_wheel)
 
+        #Creates a "window" and places the canvas in it
         self.canvas.create_window(0,0, window=self.canvas_frame, anchor='nw')
 
+        #Bind resize
         self.bind("<Configure>", self.configure)
-        self.bind("<<ShowFrame>>", self.on_show_frame)
 
+        #Bind frame raise
+        self.bind("<<ShowFrame>>", self.configure)
+
+        #Build buttons from passed repo
         self.makeButtonList()
         self.buildFrame()
 
-        self.framework.add_on_tick_callback(self.searchPoll)
-
         self.framework.add_on_refresh_callback(self.buildFrame)
 
+    def rebuild(self, new_repos):
+        print("Rebuilding")
+        self.repos = new_repos
+        self.current_buttons = None
+        for button in self.buttons:
+            button.place_forget()
+        self.makeButtonList()
+        self.buildFrame()
+
     def makeButtonList(self):
+        self.buttons = []
         for repo in self.repos:
             self.makeButton(self.canvas_frame, self.framework, repo)
         self.current_buttons = self.buttons
@@ -52,85 +72,114 @@ class categoryFrame(tk.Frame):
     #instantiates button, adds it to list
     def makeButton(self,frame, framework, repo):
         button = storeAppSquare(frame, self.controller, framework, repo)
+        button.buttonobj.bind("<MouseWheel>", self.on_mouse_wheel)
         self.buttons.append(button)
 
-    #Tiles buttons
-    def buildFrame(self):
-        _framewidth = self.winfo_width()
-        self.canvas_frame.config(width=_framewidth)
+        #Tiles buttons
+    def buildFrame(self): 
+        #if there is content to build with
+        if self.current_buttons:
+            _spacing = style.thumbnailsize+2*style.tileoffset
+            #Set the width 
+            _framewidth = self.winfo_width() - self.scrollbar.winfo_width()
+            self.canvas_frame.config(width=_framewidth)
 
-        #Get integer number of tiles fittable in the window
-        _maxperrow = _framewidth // style.thumbnailsize
+            #Get integer number of tiles fittable in the window
+            _maxperrow = _framewidth // _spacing
 
-        #If there's not enough room to build anything
-        if not _maxperrow:
-            return
+            #If there's not enough room to build anything
+            if not _maxperrow:
+                return
 
-        _y = 0
-        _x = 0
+            empty_space = _framewidth - (_maxperrow * _spacing)
 
-        spacing = style.thumbnailsize+2*style.tileoffset
-        for button in self.current_buttons:
-            button.place(x=_x * spacing + style.tileoffset, y = _y * spacing + style.tileoffset, height = style.thumbnailsize, width = style.thumbnailsize)
+            space_offset = empty_space / (_maxperrow + 1)
 
-            _x += 1
+            _y = 0
+            _x = 0
 
-            if _x == _maxperrow:
-                _x = 0
-                _y += 1
+            for button in self.current_buttons:
+                button.place(x=_x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset, height = style.thumbnailsize, width = style.thumbnailsize)
+                
+                if not button.buttontitlelabel:
+                    button.buttontitlelabel = ThemedLabel(self.canvas_frame,button.repo["title"],anchor="e",label_font=style.mediumboldtext,foreground=style.b,background=style.w)
+                    button.buttontitlelabel.bind("<MouseWheel>", self.on_mouse_wheel)
 
-        #Update the size of the canvas and configure the scrollable area
-        _canvasheight = (_y + 1) * (style.thumbnailsize+2*style.tileoffset)
-        self.canvas_frame.config(height = _canvasheight,width= _framewidth)
-        self.canvas.config(scrollregion=(0,0,_framewidth, _canvasheight))
-        # self.canvas.update_idletasks()
-           
+                if not button.buttonauthorlabel:
+                    button.buttonauthorlabel = ThemedLabel(self.canvas_frame,button.repo["author"],anchor="e",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
+                    button.buttonauthorlabel.bind("<MouseWheel>", self.on_mouse_wheel)
+
+                if not button.buttonversionlabel:
+                    button.buttonversionlabel = ThemedLabel(self.canvas_frame,button.repo["version"],anchor="w",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
+                    button.buttonversionlabel.bind("<MouseWheel>", self.on_mouse_wheel)
+
+                if not button.buttonseparator:
+                    button.buttonseparator = tk.Label(self.canvas_frame, background=style.lg, borderwidth= 0)
+
+                button.buttontitlelabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailsize - 2.5 * style.buttontextheight - 3, height = style.buttontextheight, width = style.thumbnailsize)
+                button.buttonauthorlabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailsize - style.buttontextheight - 3, height = style.buttontextheight, width = style.thumbnailsize)
+                button.buttonversionlabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailsize - style.buttontextheight - 3, height = style.buttontextheight)
+                button.buttonseparator.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailsize - 1, height = 1, width = style.thumbnailsize)
+
+                _x += 1
+
+                if _x == _maxperrow:
+                    _x = 0
+                    _y += 1
+
+            #Update the size of the canvas and configure the scrollable area
+            _canvasheight = (_y + 1) * (style.thumbnailsize+2*style.tileoffset)
+            if _canvasheight < self.winfo_height():
+                _canvasheight = self.winfo_height()
+            self.canvas_frame.config(height = _canvasheight,width= _framewidth)
+            self.canvas.config(scrollregion=(0,0,_framewidth, _canvasheight))
+            self.canvas_frame.update_idletasks()
 
     def search(self, searchterm):
-        if not self.isSearching:
-            self.isSearching = True
-            if searchterm:
-                search_categories = ["name", "title", "description"]
+        def doSearch():
+            search_categories = ["name", "title", "description"]
 
-                new_buttons = []
+            new_buttons = []
 
-                for button in self.buttons:
-                    for category in search_categories:
-                        if searchterm.lower() in button.repo[category].lower():
+            for button in self.buttons:
+                for category in search_categories:
+                    compare_string = button.repo[category]
+                    if compare_string:
+                        if searchterm.lower() in compare_string.lower():
                             if not button in new_buttons:
                                 new_buttons.append(button)
 
-                self.current_buttons = new_buttons
-            else:
-                self.current_buttons = self.buttons
+            return new_buttons
 
-            #Clear button layout
-            self.clear()
-
-            self.buildFrame()
-            self.isSearching = False
+        if searchterm:
+            result = doSearch()
         else:
-            self.search_pending = True
-            self.searchterm = searchterm
+            result = self.buttons[:]
 
-    #This function is called at a set tickrate by the pages parent class scheduler, via passing the constructor to add_on_tick_callback
-    #allows a search to que as well as update the searchterm while causing less blocking
-    #Tkinter optimization
-    def searchPoll(self):
-        if not self.isSearching:
-            if self.search_pending:
-                self.search_pending = False
-                self.search(self.searchterm)        
+        self.current_buttons = result
 
+        #Clear button layout
+        self.clear()
+
+        self.buildFrame()
 
     def clear(self):
         # for child in self.scroller.winfo_children():
         #     child.grid_forget()
         for button in self.buttons:
-            button.grid_forget()
+            button.place_forget()
+            if button.buttontitlelabel:
+                button.buttontitlelabel.place_forget()
+            if button.buttonauthorlabel:
+                button.buttonauthorlabel.place_forget()
+            if button.buttonversionlabel:
+                button.buttonversionlabel.place_forget()
+            if button.buttonseparator:
+                button.buttonseparator.place_forget()
 
     def configure(self, event):
         self.framework.refresh()
 
-    def on_show_frame(self, event):
-        self.framework.refresh()
+    def on_mouse_wheel(self, event):
+        self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        return "break"

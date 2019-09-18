@@ -2,7 +2,7 @@ import tkinter as tk
 
 #Frame handler, raises and pages in z layer
 class frameManager(tk.Tk):
-    def __init__(self, pages, geometry):
+    def __init__(self, pages, geometry, appstore_handler, repo_parser):
         tk.Tk.__init__(self)
                
         self.geometry("{}x{}".format(geometry["width"],geometry["height"])) 
@@ -21,7 +21,7 @@ class frameManager(tk.Tk):
         if pages:
             for F in (pages):
                 page_name = F.__name__
-                frame = F(parent=container, controller=self,page_name=page_name) 
+                frame = F(parent=container, controller=self, page_name=page_name, appstore_handler = appstore_handler, repo_parser = repo_parser) 
                 self.frames[page_name] = frame
 
                 frame.grid(row=0, column=0, sticky="nsew")

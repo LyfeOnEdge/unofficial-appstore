@@ -36,10 +36,18 @@ def check_if_get_init(basepath):
     #Append package name to packages directory
     packagesdir = os.path.join(basepath, PACKAGES_DIR)
     try:
-        if os.listdir(packagesdir):
-            return True
+        return os.path.isdir(packagesdir)
     except:
         pass
+
+def init_get(basepath):
+    if not basepath: return
+    if not check_if_get_init(basepath):
+        packagesdir = os.path.join(basepath, PACKAGES_DIR)
+        os.mkdir(packagesdir)
+    else:
+        print("Appstore packages dir already inited")
+        return
 
 #Get the contents of a package's info file as a dict
 def get_package_entry(basepath, package):
@@ -53,16 +61,14 @@ def get_package_entry(basepath, package):
 
     try:
         with open(pkg, encoding="utf-8") as infojson:
-            info = json.load(infojson)
-        return info
+            return json.load(infojson)
     except FileNotFoundError:
         pass
     except:
         print("Failed to open repo data for {}".format(package))
-        return None
 
 #Get a package's json file value, returns none if it fails
-def get_package_entry(basepath, package, value):
+def get_package_value(basepath, package, value):
     if not basepath: return
     #Get the package json data
     package_info = get_package_entry(basepath, package)
@@ -101,8 +107,34 @@ def get_package_manifest(basepath, package):
 
     return mf
 
+#Removes a package entry by deleting the package 
+#folder containing the manifest and info.json
+def remove_store_entry(basepath, package):
+    if not basepath: return
+    #Append package name to packages directory
+    pacdir = os.path.join(PACKAGES_DIR, package)
+    #Append base directory to packages directory
+    packagedir = os.path.join(basepath, pacdir)
+    try:
+        shutil.rmtree(packagedir, ignore_errors=True)
+        print("Removed appstore entry")
+    except Exception as e:
+        print("Error removing store entry for {} - {}".format(package, e))
+
+#Based on vgmoose's version checking script,
+#makes github versions conform to appstore versions
+def parse_version_to_store_equivalent(ver, name):
+    ver = ver.lower().strip("v")
+    if name:
+        ver = ver.replace(name.lower(), "") 
+    ver = ver.split(" ")[0].replace("switch", "").strip("-")
+    return ver
+
+
+
 #Creates an HBAppstore entry for a given package and manifest
 #Store_entry is a dict in the form defined at the top of the file
+#This function is not official and may break stuff
 def create_store_entry(basepath, store_entry, manifest, package):
     if not basepath: return
     #Append base directory to packages directory
@@ -146,26 +178,3 @@ def create_store_entry(basepath, store_entry, manifest, package):
         json.dump(store_entry, inf, indent=4,)
 
     print("Created appstore entry for {} \n{}".format(package, json.dumps(store_entry,indent=4)))
-
-#Removes a package entry by deleting the package 
-#folder containing the manifest and info.json
-def remove_store_entry(basepath, package):
-    if not basepath: return
-    #Append package name to packages directory
-    pacdir = os.path.join(PACKAGES_DIR, package)
-    #Append base directory to packages directory
-    packagedir = os.path.join(basepath, pacdir)
-    try:
-        shutil.rmtree(packagedir, ignore_errors=True)
-        print("Removed appstore entry")
-    except Exception as e:
-        print("Error removing store entry for {} - {}".format(package, e))
-
-#Based on vgmoose's version checking script,
-#makes github versions conform to appstore versions
-def parse_version_to_store_equivalent(ver, name):
-    ver = ver.lower().strip("v")
-    if name:
-        ver = ver.replace(name.lower(), "") 
-    ver = ver.split(" ")[0].replace("switch", "").strip("-")
-    return ver

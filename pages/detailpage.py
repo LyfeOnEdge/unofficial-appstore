@@ -3,19 +3,16 @@ import os
 import modules.style as style
 import modules.locations as locations
 from modules.widgets import ThemedFrame, ThemedLabel, activeFrame, scrolledText, button, tooltip
-from modules.appstore import parser, getScreenImage, getPackageIcon, getPackage
-from modules.webhandler import getJson, opentab
+from modules.appstore import parser, getScreenImage
+from modules.webhandler import opentab
 
 from PIL import Image, ImageTk
 
-store_json = getJson("appstore_repo",locations.appstore_repo_url)
-repo_parser = parser()
-repo_parser.load(os.path.join(locations.jsoncachefolder, "appstore_repo.json"))
-
 class detailPage(activeFrame):
-    def __init__(self, parent, controller, page_name):
+    def __init__(self, parent, controller, page_name, appstore_handler, repo_parser):
         activeFrame.__init__(self,parent,controller)
         self.controller = controller
+        self.appstore_handler = appstore_handler
         self.repo = None
 
         #Primary layout
@@ -59,13 +56,12 @@ class detailPage(activeFrame):
         self.column_downloaded.place(x = 5, width = - 5, y = 3.66 * style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
         #------------------------------
 
-
         self.column_extracted = ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
         self.column_extracted.place(x = 5, width = - 5, y = 4 * style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
 
         self.column_download_button = button(self.column_body, 
             callback = self.trigger_download, 
-            text_string = "DOWNLOAD", 
+            text_string = "INSTALL", 
             font=style.mediumboldtext, 
             background=style.dark_color
             ).place(rely=1,relx=0.5,x = - 1.5 * (style.buttonsize), y = - 2 * (style.buttonsize + style.offset), width = 3 * style.buttonsize, height = style.buttonsize)
@@ -171,9 +167,7 @@ class detailPage(activeFrame):
 
     def trigger_download(self):
         if self.repo:
-            package = self.repo["name"]
-            result = getPackage(package)
-            print("Downloaded {}".format(package) if result else "Failed to download zip for package {}".format(package))
+            self.appstore_handler.install_package(self.repo)
 
     def trigger_open_tab(self):
         if self.repo:
