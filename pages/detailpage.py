@@ -168,6 +168,8 @@ class detailPage(activeFrame):
     def trigger_download(self):
         if self.repo:
             self.appstore_handler.install_package(self.repo)
+            #One of the few time I'll ever need to use the controller, triggers a reload of the list frames
+            self.controller.frames["appstorePage"].reload_category_frames()
 
     def trigger_open_tab(self):
         if self.repo:

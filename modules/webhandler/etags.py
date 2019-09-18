@@ -33,8 +33,7 @@ def accessETaggedFile(url, file):
         print("file {} - Updated".format(file))
     except urllib.error.URLError as e:
         if e.reason == "Not Modified": #304 error, what we want to see if nothing has been updated
-            pass
-            # print("file {} - {}".format(file, e.reason))
+            print("file {} - {}".format(file, e.reason))
         else:  
             print("etag download error - {} - {}\n\n".format(file, e.reason))
             return None

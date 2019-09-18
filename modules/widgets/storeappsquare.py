@@ -34,10 +34,11 @@ class storeAppSquare(ThemedFrame):
         self.button_ttp = tooltip(self.buttonobj,ttp)
         
         #Placeholders used by the category frame when building the button, fixes the disappearing text issue
-        self.buttontitlelabel = None
-        self.buttonauthorlabel = None
-        self.buttonversionlabel = None
-        self.buttonseparator = None
+        self.buttontitlelabel = None #Placeholder used for the button title
+        self.buttonauthorlabel = None #Placeholder for the button author
+        self.buttonversionlabel = None #Placeholder for the current cersion
+        self.buttonseparator = None #Placeholder for underline in each button
+        self.buttonstatuslabel = None #Placeholder for download / version status
         
         self.framework.after(5000, self.image_loop)
 

@@ -20,7 +20,7 @@ store_json = getJson("appstore_repo",appstore_repo_url)
 #Parse the json into categories
 repo_parser = parser()
 repo_parser.load(store_json)
-#Shared tool for installing apps via the switchbru site
+#Shared tool for installing and managing hbas apps via the switchbru site on the sd card
 store_handler = appstore_handler()
 
 geometry = {

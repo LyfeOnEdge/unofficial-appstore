@@ -16,6 +16,7 @@ PACKAGE_MANIFEST = "manifest.install"
 class appstore_handler(object):
     def __init__(self):
         self.base_install_path = None
+        self.packages = None
 
     #Check if the appstore packages folder has been inited
     def check_if_get_init(self,path):
@@ -42,7 +43,8 @@ class appstore_handler(object):
     #Set this to a root of an sd card or in a dir to test
     def set_path(self, path):
         self.base_install_path = path
-        print("Set package path to %s" % path)
+        print("Set SD Root path to %s" % path)
+        self.get_packages()
 
     def check_path(self):
         return self.base_install_path
@@ -123,7 +125,7 @@ class appstore_handler(object):
     def get_package_value(self, package, value):
         if not self.check_path(): return self.warn_path_not_set()
         #Get the package json data
-        package_info = get_package_entry(self.base_install_path, package)
+        package_info = self.get_package_entry(package)
         #If data was retrieved, return the value
         if package_info:
             # print(package_info[value])
@@ -132,7 +134,7 @@ class appstore_handler(object):
     #Get the installed version of a package, return "not installed" if failed
     def get_package_version(self, package):
         #Get the package json data
-        ver = get_package_value(self.base_install_path, package, "version")
+        ver = self.get_package_value(package, "version")
         return ver or "not installed"
 
     #Returns a package's manifest as a list
@@ -158,3 +160,29 @@ class appstore_handler(object):
                 mf.append(os.path.join(self.base_install_path,fl))
 
         return mf
+
+    def get_packages(self, silent = False):
+        if not self.check_path(): return self.warn_path_not_set()
+        packagedir = os.path.join(self.base_install_path, PACKAGES_DIR)
+        packages_dir_items = os.listdir(packagedir)
+        packages = []
+        #Go through items in packages dir
+        for possible_package in packages_dir_items:
+            #Find the path of the package
+            pathed_package = os.path.join(packagedir, possible_package)
+            package_json = os.path.join(pathed_package, PACKAGE_INFO)
+            #check if the json exists (isfile will result in exception if it doesn't exist, it's unlikely to find a folder named info.json, either way exists() will have to be called)
+            if os.path.exists(package_json):
+                packages.append(possible_package)
+        self.packages = packages
+        if not silent:
+            print("Found packages -\n{}".format(json.dumps(packages, indent = 4)))
+        return packages
+
+
+    def clean_version(self, ver, name):
+        ver = ver.lower().strip("v")
+        if name:
+            ver = ver.replace(name.lower(), "") 
+        ver = ver.split(" ")[0].replace("switch", "").strip("-")
+        return ver

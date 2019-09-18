@@ -10,6 +10,7 @@ thumbnailheight = 175
 searchboxheight = 30
 tileoffset = 4
 buttontextheight = 15
+statussize = buttontextheight
 
 ##Text Styles
 #Normal Text

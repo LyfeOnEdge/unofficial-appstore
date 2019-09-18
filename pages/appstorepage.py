@@ -16,7 +16,7 @@ class appstorePage(activeFrame):
         self.column.place(relx = 0, rely = 0, width = style.sidecolumnwidth, relheight = 1)
 
         self.category_list = ThemedFrame(self.column, background = style.light_color)
-        self.category_list.place(x=0, y=style.headerheight, relwidth=1, relheight=1, height = - style.headerheight)
+        self.category_list.place(x=0, y=style.headerheight, relwidth=1, relheight=1, height = - (style.headerheight + style.footerheight))
 
         self.category_listbox = ThemedListbox(self.category_list)
         self.category_listbox.configure(activestyle = "none")
@@ -54,18 +54,18 @@ class appstorePage(activeFrame):
         self.content_stacking_frame = ThemedFrame(self.content_frame)
         self.content_stacking_frame.place(relx = 0, y=style.headerheight, relwidth = 1, relheight = 1, height=-style.headerheight)
 
-        all_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.all)
-        advanced_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.advanced)
-        concepts_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.concepts)
-        emus_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.emus)
-        games_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.games)
-        loaders_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.loaders)
-        themes_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.themes)
-        tools_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.tools)
-        misc_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.misc)
+        all_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.all, self.appstore_handler)
+        advanced_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.advanced, self.appstore_handler)
+        concepts_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.concepts, self.appstore_handler)
+        emus_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.emus, self.appstore_handler)
+        games_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.games, self.appstore_handler)
+        loaders_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.loaders, self.appstore_handler)
+        themes_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.themes, self.appstore_handler)
+        tools_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.tools, self.appstore_handler)
+        misc_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.misc, self.appstore_handler)
         about_frame = aboutFrame(self.content_stacking_frame)
 
-        self.searchable_frames = [all_frame,advanced_frame,concepts_frame,emus_frame,games_frame,loaders_frame,themes_frame,tools_frame,misc_frame]
+        self.category_frames = [all_frame,advanced_frame,concepts_frame,emus_frame,games_frame,loaders_frame,themes_frame,tools_frame,misc_frame]
 
         self.frames = [
             {
@@ -132,7 +132,7 @@ class appstorePage(activeFrame):
         self.current_frame = frame
 
     def update_search_bar_position(self):
-        if not self.current_frame in self.searchable_frames:
+        if not self.current_frame in self.category_frames:
             self.content_frame_header_searh_bar.place_forget()
         else:
             category_label_offset = self.category_label.winfo_width()
@@ -158,14 +158,17 @@ class appstorePage(activeFrame):
             pass
 
     def search(self, searchterm):
-        for frame in self.searchable_frames:
+        for frame in self.category_frames:
             frame.search(searchterm)
 
-
+    def reload_category_frames(self):
+        for frame in self.category_frames:
+            frame.configure(None)
 
     def set_sd(self):
         chosensdpath = tkinter.filedialog.askdirectory(initialdir="/",  title='Please select your SD card')
         self.appstore_handler.set_path(chosensdpath)
+        self.reload_category_frames()
 
 #Super basic about frame, pulls from about.txt
 class aboutFrame(ThemedFrame):
