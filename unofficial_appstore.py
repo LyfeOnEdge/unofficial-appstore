@@ -45,7 +45,6 @@ def pre_load_icons():
 
 if __name__ == '__main__':
 	startGUI()
-	
 
 # USE .after
 # max retries

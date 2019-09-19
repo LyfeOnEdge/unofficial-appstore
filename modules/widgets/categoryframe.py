@@ -210,6 +210,8 @@ class categoryFrame(tk.Frame):
                 button.buttonversionlabel.place_forget()
             if button.buttonseparator:
                 button.buttonseparator.place_forget()
+            if button.buttonstatuslabel:
+                button.buttonstatuslabel.place_forget()
 
     def configure(self, event):
         self.framework.refresh()

@@ -8,6 +8,7 @@ class appstorePage(activeFrame):
     def __init__(self, parent, controller, page_name, appstore_handler, repo_parser):
         activeFrame.__init__(self,parent,controller)
         self.current_frame = None
+        self.last_selection = None
         self.controller = controller
         self.appstore_handler = appstore_handler
         self.repo_parser = repo_parser
@@ -21,7 +22,7 @@ class appstorePage(activeFrame):
         self.category_listbox = ThemedListbox(self.category_list)
         self.category_listbox.configure(activestyle = "none")
         self.category_listbox.pack(fill="both", anchor="w")
-        self.category_listbox.bind('<<ListboxSelect>>',self.CurSelet)
+        self.category_listbox.bind('<<ListboxSelect>>',self.select_frame)
 
         self.column_header = ThemedFrame(self.column, background = style.light_color)
         self.column_header.place(relx = 0, rely = 0, relwidth = 1, height = style.headerheight)
@@ -59,13 +60,12 @@ class appstorePage(activeFrame):
         concepts_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.concepts, self.appstore_handler)
         emus_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.emus, self.appstore_handler)
         games_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.games, self.appstore_handler)
-        loaders_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.loaders, self.appstore_handler)
         themes_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.themes, self.appstore_handler)
         tools_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.tools, self.appstore_handler)
         misc_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.misc, self.appstore_handler)
         about_frame = aboutFrame(self.content_stacking_frame)
 
-        self.category_frames = [all_frame,advanced_frame,concepts_frame,emus_frame,games_frame,loaders_frame,themes_frame,tools_frame,misc_frame]
+        self.category_frames = [all_frame,advanced_frame,concepts_frame,emus_frame,games_frame,themes_frame,tools_frame,misc_frame]
 
         self.frames = [
             {
@@ -88,10 +88,6 @@ class appstorePage(activeFrame):
             "frame" : advanced_frame,
             "text" : "Advanced"
             },
-            # {
-            # "frame" : loaders_frame,
-            # "text" : "Loaders"
-            # },
             {
             "frame" : concepts_frame,
             "text" : "Concepts"
@@ -118,6 +114,8 @@ class appstorePage(activeFrame):
             self.content_frames[page_name] = frame
             frame.place(relx = 0, rely = 0, relwidth = 1, relheight = 1)
             self.category_listbox.insert("end", " {}".format(page_name))
+            self.category_listbox.select_set(0) #sets focus on the first item in listbox
+            self.category_listbox.event_generate("<<ListboxSelect>>")
 
         self.show_frame("All Apps")
         self.loaded()
@@ -143,25 +141,27 @@ class appstorePage(activeFrame):
                 self.content_frame_header_searh_bar.place_forget()
                 self.controller.after(20, self.update_search_bar_position)
 
-    def CurSelet(self, event):
+    def select_frame(self, event):
         try:
             widget = event.widget
             selection=widget.curselection()
             picked = widget.get(selection[0])
-            frame = None
-            for f in self.frames:
-                t = f["text"]
-                if t.strip() == picked.strip():
-                    self.show_frame(t)
-                    break
+            if not picked == self.last_selection:
+                frame = None
+                for f in self.frames:
+                    t = f["text"]
+                    if t.strip() == picked.strip():
+                        self.show_frame(t)
+                        break
+                self.last_selection == picked
         except:
             pass
 
     def search(self, searchterm):
-        for frame in self.category_frames:
-            frame.search(searchterm)
+        self.current_frame.search(searchterm)
 
     def reload_category_frames(self):
+        print("Reloading frames")
         for frame in self.category_frames:
             frame.configure(None)
 

@@ -11,6 +11,8 @@ PACKAGES_DIR = "switch/appstore/.get/packages"
 PACKAGE_INFO = "info.json"
 #Name of pagkade manifest file
 PACKAGE_MANIFEST = "manifest.install"
+#The prefix used to designate each line in the manifest
+MANIFEST_PREFIX = "U: "
 
 #python object to hold appstore entrys data
 class appstore_handler(object):
@@ -38,7 +40,7 @@ class appstore_handler(object):
             return
 
     def warn_path_not_set(self):
-        print("Warning: appstore path not set, not continuing with install")
+        print("Warning: appstore path not set")
 
     #Set this to a root of an sd card or in a dir to test
     def set_path(self, path):
@@ -46,15 +48,24 @@ class appstore_handler(object):
         print("Set SD Root path to %s" % path)
         self.get_packages()
 
+    def reload(self):
+        self.set_path(self.base_install_path)
+
     def check_path(self):
         return self.base_install_path
 
     def install_package(self, repo):
         if not self.check_path(): return self.warn_path_not_set()
         if not repo:
-            print("No repo data passed to appstore handler, not continuing with install")
+            print("No repo data passed to appstore handler.")
+            print("Not continuing with install")
+            return
         if not self.check_if_get_init(self.base_install_path):
-            print("Appstore get folder not initiated, not continuing with install")
+            print("Appstore get folder not initiated.")
+            print("Not continuing with install")
+            return
+
+
 
         package = repo["name"]
         #Append base directory to packages directory
@@ -73,18 +84,81 @@ class appstore_handler(object):
             return
 
         with ZipFile(appstore_zip) as zipObj:
+            namelist = zipObj.namelist()
+            #Easy check to see if info and manifest files are in the zip
+            if not PACKAGE_MANIFEST in namelist:
+                print("Failed to find package manifest in zip... Stopping install, no files have been changed on the SD card")
+                return
+            if not PACKAGE_INFO in namelist:
+                print("Failed to find package info in zip... Stopping install, no files have been changed on the SD card")
+                return
+
             #Extract everything but the manifest and the info file
+            extract_manifest = [] 
             for filename in zipObj.namelist():
-                if not ("manifest.install" in filename or "info.json" in filename):
+                if filename == PACKAGE_MANIFEST or filename == PACKAGE_INFO:
+                    pass
+                else:
                     zipObj.extract(filename, path = self.base_install_path)
+                    extract_manifest.append(filename)
+
+            print("Extracted: {}".format(json.dumps(extract_manifest, indent = 4)))
+                
             #Extract manifest
             zipObj.extract(PACKAGE_MANIFEST, path = packagedir)
             #Extract info file
             zipObj.extract(PACKAGE_INFO, path = packagedir)
 
-            print("Extracted: {}".format(json.dumps(zipObj.namelist(), indent = 4)))
+            print("Wrote package manifest and info.")
 
         print("Installed {} version {}".format(repo["title"], repo["version"]))
+
+        #Refreshes the current packages
+        self.reload()
+
+    #Uninstalls a package given a chunk from the repo
+    def uninstall_package(self, repo):
+        if not self.check_path(): return self.warn_path_not_set()
+        if not repo:
+            print("No repo data passed to appstore handler.")
+            print("Not continuing with uninstall")
+            return
+        if not self.check_if_get_init(self.base_install_path):
+            print("Appstore get folder not initiated.")
+            print("Not continuing with uninstall")
+            return
+
+        package = repo["name"]
+        if not self.get_package_entry(package):
+            print("Could not find package in currently selected location.")
+            print("Not continuing with uninstall")
+            return
+
+        print("Uninstalling {}".format(package))
+
+        filestoremove = self.get_package_manifest(package)
+        if 'str' in str(type(filestoremove)):
+            file = os.path.join(self.base_install_path,filestoremove)
+            if os.path.isfile(file):  
+                os.remove(file)
+                print("removed {}".format(file))
+        else:
+            #Go through the previous ziplist in reverse, this way folders get cleaned up
+            for path in reversed(filestoremove):
+                file = os.path.join(self.base_install_path,path) 
+                if os.path.isfile(file):  
+                    os.remove(file)
+                    print("removed {}".format(file))
+                elif os.path.isdir(file):
+                    if not os.listdir(file):
+                        os.rmdir(file)
+                        print("removed empty directory {}".format(file))
+
+            self.remove_store_entry(package)
+
+            print("Uninstalled package {}".format(package))
+
+            self.reload()
 
 
     #THIS DOES NOT UNINSTALL THE CONTENT
@@ -98,14 +172,14 @@ class appstore_handler(object):
         packagedir = os.path.join(self.base_install_path, pacdir)
         try:
             shutil.rmtree(packagedir, ignore_errors=True)
-            print("Removed appstore entry")
+            print("Removed appstore entry for {}".format(package))
         except Exception as e:
             print("Error removing store entry for {} - {}".format(package, e))
 
-
     #Get the contents of a package's info file as a dict
+    #Returns none if it doesn't exist
     def get_package_entry(self, package):
-        if not self.check_path(): return self.warn_path_not_set()
+        if not self.check_path(): return
         #Append package name to packages directory
         pacdir = os.path.join(PACKAGES_DIR, package)
         #Append base directory to packages directory
@@ -118,12 +192,12 @@ class appstore_handler(object):
                 return json.load(infojson)
         except FileNotFoundError:
             pass
-        except:
-            print("Failed to open repo data for {}".format(package))
+        except Exception as e:
+            print("Failed to open repo data for {} - {}".format(package, e))
 
     #Get a package's json file value, returns none if it fails
     def get_package_value(self, package, value):
-        if not self.check_path(): return self.warn_path_not_set()
+        if not self.check_path(): return
         #Get the package json data
         package_info = self.get_package_entry(package)
         #If data was retrieved, return the value

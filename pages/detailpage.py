@@ -59,19 +59,26 @@ class detailPage(activeFrame):
         self.column_extracted = ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
         self.column_extracted.place(x = 5, width = - 5, y = 4 * style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
 
-        self.column_download_button = button(self.column_body, 
-            callback = self.trigger_download, 
-            text_string = "INSTALL", 
-            font=style.mediumboldtext, 
-            background=style.dark_color
-            ).place(rely=1,relx=0.5,x = - 1.5 * (style.buttonsize), y = - 2 * (style.buttonsize + style.offset), width = 3 * style.buttonsize, height = style.buttonsize)
-
         self.column_open_url_button = button(self.column_body, 
             callback = self.trigger_open_tab, 
             text_string = "VISIT PAGE", 
             font=style.mediumboldtext, 
             background=style.dark_color
+            ).place(rely=1,relx=0.5,x = - 1.5 * (style.buttonsize), y = - 4 * (style.buttonsize + style.offset), width = 3 * style.buttonsize, height = style.buttonsize)
+
+        self.column_install_button = button(self.column_body, 
+            callback = self.trigger_install, 
+            text_string = "INSTALL", 
+            font=style.mediumboldtext, 
+            background=style.dark_color
             ).place(rely=1,relx=0.5,x = - 1.5 * (style.buttonsize), y = - 3 * (style.buttonsize + style.offset), width = 3 * style.buttonsize, height = style.buttonsize)
+
+        self.column_uninstall_button = button(self.column_body, 
+            callback = self.trigger_uninstall, 
+            text_string = "UNINSTALL", 
+            font=style.mediumboldtext, 
+            background=style.dark_color
+            )
 
         self.back_image = ImageTk.PhotoImage(Image.open(locations.backimage).resize((style.buttonsize, style.buttonsize), Image.ANTIALIAS))
 
@@ -104,6 +111,8 @@ class detailPage(activeFrame):
 
     def update_page(self,repo):
         self.repo = repo
+        package = repo["name"]
+
         try:
             web_dls = repo["web_dls"]
         except:
@@ -123,7 +132,7 @@ class detailPage(activeFrame):
         self.column_license.set("License: {}".format(repo["license"]))
 
 
-        self.column_package.set("Package: {}".format(repo["name"]))
+        self.column_package.set("Package: {}".format(package))
         self.column_downloads.set("Downloads: {}".format(ttl_dls))
         self.column_updated.set("Updated: {}".format(repo["updated"]))
 
@@ -146,13 +155,20 @@ class detailPage(activeFrame):
         self.header_label.set(repo["title"])
         self.header_author.set(repo["author"])
 
-        self.bannerimage = getScreenImage(repo["name"])
+        self.bannerimage = getScreenImage(package)
 
         if self.bannerimage:
             self.update_banner(self.bannerimage)
         else:
             self.update_banner(locations.notfoundimage)
-            print("failed to download screenshot for {}".format(repo["name"]))
+            print("failed to download screenshot for {}".format(package))
+
+        #Hides or places the uninstalll button if not installed or installed respectively
+        #get_package_entry returns none if no package is found or if the sd path is not set
+        if self.appstore_handler.get_package_entry(package):
+            self.column_uninstall_button.place(rely=1,relx=0.5,x = - 1.5 * (style.buttonsize), y = - 2 * (style.buttonsize + style.offset), width = 3 * style.buttonsize, height = style.buttonsize)
+        else:
+            self.column_uninstall_button.place_forget()
 
     def update_banner(self,image_path):
         art_image = Image.open(image_path)
@@ -162,14 +178,23 @@ class detailPage(activeFrame):
         self.content_banner_image.image = art_image
 
     def show(self, repo):
-        self.tkraise()
         self.update_page(repo)
+        self.tkraise()
 
-    def trigger_download(self):
+    def trigger_install(self):
         if self.repo:
             self.appstore_handler.install_package(self.repo)
-            #One of the few time I'll ever need to use the controller, triggers a reload of the list frames
             self.controller.frames["appstorePage"].reload_category_frames()
+            self.reload()
+
+    def trigger_uninstall(self):
+        if self.repo:
+            self.appstore_handler.uninstall_package(self.repo)
+            self.controller.frames["appstorePage"].reload_category_frames()
+            self.reload()
+
+    def reload(self):
+        self.update_page(self.repo)
 
     def trigger_open_tab(self):
         if self.repo:
