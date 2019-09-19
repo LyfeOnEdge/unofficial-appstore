@@ -46,7 +46,7 @@ class ThemedListbox(tk.Listbox):
 			borderwidth = 0,
 			highlightthickness=0,
 			foreground= lg,
-			font = mediumboldtext,
+			font = largeboldtext,
 			activestyle=None
 		)
 		

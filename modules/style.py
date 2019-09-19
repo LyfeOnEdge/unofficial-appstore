@@ -1,12 +1,12 @@
 #Spacing
 sidecolumnwidth = 220
 bannerheight = sidecolumnwidth
-headerheight = 50
+headerheight = 70
 footerheight = headerheight
 offset = 5
 buttonsize = 40
-thumbnailsize = 250
-thumbnailheight = 175
+thumbnailwidth = 250
+thumbnailheight = 200
 searchboxheight = 30
 tileoffset = 4
 buttontextheight = 15

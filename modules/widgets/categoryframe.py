@@ -85,7 +85,7 @@ class categoryFrame(tk.Frame):
     def buildFrame(self): 
         #if there is content to build with
         if self.current_buttons:
-            _spacing = style.thumbnailsize+2*style.tileoffset
+            _spacing = style.thumbnailwidth+2*style.tileoffset
             #Set the width 
             _framewidth = self.winfo_width() - self.scrollbar.winfo_width()
             self.canvas_frame.config(width=_framewidth)
@@ -105,7 +105,7 @@ class categoryFrame(tk.Frame):
             _x = 0
 
             for button in self.current_buttons:
-                button.place(x=_x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset, height = style.thumbnailsize, width = style.thumbnailsize)
+                button.place(x=_x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset, height = style.thumbnailwidth, width = style.thumbnailwidth)
                 
                 if not button.buttontitlelabel:
                     button.buttontitlelabel = ThemedLabel(self.canvas_frame,button.repo["title"],anchor="e",label_font=style.mediumboldtext,foreground=style.b,background=style.w)
@@ -126,11 +126,11 @@ class categoryFrame(tk.Frame):
                 if not button.buttonseparator:
                     button.buttonseparator = tk.Label(self.canvas_frame, background=style.lg, borderwidth= 0)
 
-                button.buttontitlelabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailsize - 2.5 * style.buttontextheight - 3, height = style.buttontextheight, width = style.thumbnailsize)
-                button.buttonauthorlabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailsize - style.buttontextheight - 3, height = style.buttontextheight, width = style.thumbnailsize)
-                button.buttonversionlabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailsize - style.buttontextheight - 3, height = style.buttontextheight)
-                button.buttonseparator.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailsize - 1, height = 1, width = style.thumbnailsize)
-                button.buttonstatuslabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailsize - 2.5 * style.buttontextheight, height = style.buttontextheight)
+                button.buttontitlelabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth - 2.5 * style.buttontextheight + 3, width = style.thumbnailwidth)
+                button.buttonauthorlabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth - style.buttontextheight + 3, width = style.thumbnailwidth)
+                button.buttonversionlabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth - style.buttontextheight + 3)
+                button.buttonseparator.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth + 8, height = 1, width = style.thumbnailwidth)
+                button.buttonstatuslabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth - 2.5 * style.buttontextheight + 3)
 
                 status = None
                 package = button.repo["name"]
@@ -162,7 +162,7 @@ class categoryFrame(tk.Frame):
                     _y += 1
 
             #Update the size of the canvas and configure the scrollable area
-            _canvasheight = (_y + 1) * (style.thumbnailsize+2*style.tileoffset)
+            _canvasheight = (_y + 1) * (style.thumbnailwidth+2*style.tileoffset)
             if _canvasheight < self.winfo_height():
                 _canvasheight = self.winfo_height()
             self.canvas_frame.config(height = _canvasheight,width= _framewidth)

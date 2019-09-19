@@ -27,8 +27,11 @@ class appstorePage(activeFrame):
         self.column_header = ThemedFrame(self.column, background = style.light_color)
         self.column_header.place(relx = 0, rely = 0, relwidth = 1, height = style.headerheight)
 
-        self.column_header_title = ThemedLabel(self.column_header,"Unofficial Appstore\nGPLv3",anchor="center",label_font=style.mediumboldtext, background = style.light_color)
-        self.column_header_title.place(relx = 0,rely = 0, relwidth = 1, relheight = 1)
+        self.column_header_title = ThemedLabel(self.column_header,"Unofficial Appstore\nGPLv3",anchor="center",label_font=style.giantboldtext, background = style.light_color)
+        self.column_header_title.place(relx = 0,rely = 0, relwidth = 1, relheight = 1, height = - 1)
+
+        self.column_header_separator = ThemedLabel(self.column_header, "", background=style.lg)
+        self.column_header_separator.place(x = style.offset, rely = 1, y = - 1, relwidth = 1, width = -2 * style.offset)
 
         self.column_footer = ThemedFrame(self.column, background = style.light_color)
         self.column_footer.place(relx = 0, rely = 1, relwidth = 1, height = style.headerheight, y = - style.footerheight)
@@ -44,16 +47,16 @@ class appstorePage(activeFrame):
         self.content_frame.place(x = style.sidecolumnwidth, width = -style.sidecolumnwidth, rely = 0, relheight = 1, relwidth = 1)
 
         self.content_frame_header = ThemedFrame(self.content_frame)
-        self.content_frame_header.place(relx = 0, rely = 0, relwidth = 1, height = style.headerheight)
+        self.content_frame_header.place(relx = 0, rely = 0, relwidth = 1, height = style.searchboxheight)
 
         self.category_label = ThemedLabel(self.content_frame_header,"",anchor="w",label_font=style.giantboldtext, background = style.w, foreground=style.b)
-        self.category_label.place(height=style.headerheight, rely=0.5, y=-25)
+        self.category_label.place(relheight = 1, rely=0.5, y=-0.5*style.searchboxheight)
 
-        self.content_frame_header_searh_bar = searchBox(self.content_frame_header, command = self.search)
+        self.content_frame_header_search_bar = searchBox(self.content_frame_header, command = self.search)
         
         #The various content gets stacked on top of each other here.
         self.content_stacking_frame = ThemedFrame(self.content_frame)
-        self.content_stacking_frame.place(relx = 0, y=style.headerheight, relwidth = 1, relheight = 1, height=-style.headerheight)
+        self.content_stacking_frame.place(relx = 0, y=(style.searchboxheight + style.offset), relwidth = 1, relheight = 1, height=-(style.searchboxheight + style.offset))
 
         all_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.all, self.appstore_handler)
         advanced_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.advanced, self.appstore_handler)
@@ -131,14 +134,14 @@ class appstorePage(activeFrame):
 
     def update_search_bar_position(self):
         if not self.current_frame in self.category_frames:
-            self.content_frame_header_searh_bar.place_forget()
+            self.content_frame_header_search_bar.place_forget()
         else:
             category_label_offset = self.category_label.winfo_width()
             #If the category label has been populated, otherwise the offset is usually just a few pixels (prevents an ugly draw on launch)
             if category_label_offset > style.offset:
-                self.content_frame_header_searh_bar.place(x = category_label_offset + style.offset, rely=0.5, y=-0.5*style.searchboxheight, height = style.searchboxheight, relwidth = 1, width = - (category_label_offset + 2 * style.offset))
+                self.content_frame_header_search_bar.place(x = category_label_offset + style.offset, rely=0.5, y=-0.5*style.searchboxheight,relheight =1, relwidth = 1, width = - (category_label_offset + 2 * style.offset))
             else:
-                self.content_frame_header_searh_bar.place_forget()
+                self.content_frame_header_search_bar.place_forget()
                 self.controller.after(20, self.update_search_bar_position)
 
     def select_frame(self, event):
