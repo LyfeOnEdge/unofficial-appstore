@@ -191,7 +191,7 @@ class detailPage(activeFrame):
         if self.repo:
             self.appstore_handler.uninstall_package(self.repo)
             self.controller.frames["appstorePage"].reload_category_frames()
-            self.reload()
+            self.schedule_callback(self.reload(), 100)
 
     def reload(self):
         self.update_page(self.repo)

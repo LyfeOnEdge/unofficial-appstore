@@ -46,6 +46,7 @@ class appstore_handler(object):
     def set_path(self, path):
         self.base_install_path = path
         print("Set SD Root path to %s" % path)
+        self.packages = None
         self.get_packages()
 
     def reload(self):
@@ -64,8 +65,6 @@ class appstore_handler(object):
             print("Appstore get folder not initiated.")
             print("Not continuing with install")
             return
-
-
 
         package = repo["name"]
         #Append base directory to packages directory
@@ -238,20 +237,44 @@ class appstore_handler(object):
     def get_packages(self, silent = False):
         if not self.check_path(): return self.warn_path_not_set()
         packagedir = os.path.join(self.base_install_path, PACKAGES_DIR)
-        packages_dir_items = os.listdir(packagedir)
-        packages = []
-        #Go through items in packages dir
-        for possible_package in packages_dir_items:
-            #Find the path of the package
-            pathed_package = os.path.join(packagedir, possible_package)
-            package_json = os.path.join(pathed_package, PACKAGE_INFO)
-            #check if the json exists (isfile will result in exception if it doesn't exist, it's unlikely to find a folder named info.json, either way exists() will have to be called)
-            if os.path.exists(package_json):
-                packages.append(possible_package)
-        self.packages = packages
-        if not silent:
-            print("Found packages -\n{}".format(json.dumps(packages, indent = 4)))
-        return packages
+
+        if os.path.isdir(packagedir):
+            packages_dir_items = os.listdir(packagedir)
+
+            packages = []
+            #Go through items in packages dir
+            for possible_package in packages_dir_items:
+                #Find the path of the package
+                pathed_package = os.path.join(packagedir, possible_package)
+                package_json = os.path.join(pathed_package, PACKAGE_INFO)
+                #check if the json exists (isfile will result in exception if it doesn't exist, it's unlikely to find a folder named info.json, either way exists() will have to be called)
+                if os.path.exists(package_json):
+                    packages.append(possible_package)
+            self.packages = packages
+            if not silent:
+                print("Found packages -\n{}".format(json.dumps(packages, indent = 4)))
+            return packages
+
+    def edit_info(self, package, key, value):
+        if not self.check_path(): return self.warn_path_not_set()
+        packagedir = os.path.join(self.base_install_path, PACKAGES_DIR)
+        packagesdir = os.path.join(self.base_install_path, PACKAGES_DIR)
+        packagedir = os.path.join(packagesdir, package)
+        pkg = os.path.join(packagedir, PACKAGE_INFO)
+
+        try:
+            with open(pkg, encoding="utf-8") as infojson:
+                info = json.load(infojson)
+        except Exception as e:
+            print("Failed to open repo data for {} - {}".format(package, e))
+            return
+
+        info[key] = value
+
+        with open(pkg, "w", encoding ="utf-8") as infojson:
+            json.dump(info, infojson)
+
+        print(json.dumps(info, indent = 4))
 
 
     def clean_version(self, ver, name):

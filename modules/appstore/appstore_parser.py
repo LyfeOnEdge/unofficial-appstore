@@ -8,7 +8,6 @@ class parser(object):
     def __init__(self):
         self.all = []
         self.advanced = []
-        self.concepts = []
         self.emus = []
         self.games = []
         self.loaders = []
@@ -18,7 +17,7 @@ class parser(object):
 
         self.map = {
             "advanced" : self.advanced,
-            "concept" : self.concepts,
+            "concept" : self.misc,
             "emu" : self.emus,
             "game" : self.games,
             "loader" : self.loaders,

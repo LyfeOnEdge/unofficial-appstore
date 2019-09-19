@@ -2,16 +2,17 @@ import os
 import tkinter.filedialog
 import modules.style as style
 import modules.locations as locations
-from modules.widgets import ThemedFrame, ThemedListbox, ThemedLabel, searchBox, categoryFrame, activeFrame, scrolledText, button
+from modules.widgets import ThemedFrame, ThemedListbox, ThemedLabel, searchBox, categoryFrame, installed_categoryFrame, activeFrame, scrolledText, button
 
 class appstorePage(activeFrame):
     def __init__(self, parent, controller, page_name, appstore_handler, repo_parser):
-        activeFrame.__init__(self,parent,controller)
         self.current_frame = None
         self.last_selection = None
         self.controller = controller
+        self.path_set = None
         self.appstore_handler = appstore_handler
         self.repo_parser = repo_parser
+        activeFrame.__init__(self,parent,controller)
 
         self.column = ThemedFrame(self, background = style.light_color)
         self.column.place(relx = 0, rely = 0, width = style.sidecolumnwidth, relheight = 1)
@@ -20,7 +21,7 @@ class appstorePage(activeFrame):
         self.category_list.place(x=0, y=style.headerheight, relwidth=1, relheight=1, height = - (style.headerheight + style.footerheight))
 
         self.category_listbox = ThemedListbox(self.category_list)
-        self.category_listbox.configure(activestyle = "none")
+        self.category_listbox.configure(activestyle = "dotbox")
         self.category_listbox.pack(fill="both", anchor="w")
         self.category_listbox.bind('<<ListboxSelect>>',self.select_frame)
 
@@ -41,7 +42,10 @@ class appstorePage(activeFrame):
             text_string = "Select Switch SD Root", 
             font=style.mediumboldtext, 
             background=style.dark_color
-            ).place(relwidth = 1, relheight = 1, y = style.offset, x = style.offset, width = - 2 * style.offset, height = - 2 * style.offset)
+            ).place(relwidth = 1, relheight = 0.5, y = style.offset, x = style.offset, width = - 2 * style.offset, height = - 2 * style.offset)
+
+        self.column_sd_status_label = ThemedLabel(self.column_footer,"SD: Not Set",anchor="w",label_font=style.giantboldtext, background = style.light_color, foreground=style.b)
+        self.column_sd_status_label.place(x = style.offset, relheight = 0.5, rely=0.5, height = -style.offset, relwidth = 1, width = - 2 * style.offset)
 
         self.content_frame = ThemedFrame(self)
         self.content_frame.place(x = style.sidecolumnwidth, width = -style.sidecolumnwidth, rely = 0, relheight = 1, relwidth = 1)
@@ -60,15 +64,15 @@ class appstorePage(activeFrame):
 
         all_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.all, self.appstore_handler)
         advanced_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.advanced, self.appstore_handler)
-        concepts_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.concepts, self.appstore_handler)
         emus_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.emus, self.appstore_handler)
         games_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.games, self.appstore_handler)
         themes_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.themes, self.appstore_handler)
         tools_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.tools, self.appstore_handler)
         misc_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.misc, self.appstore_handler)
+        installed_frame = installed_categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.all, self.appstore_handler)
         about_frame = aboutFrame(self.content_stacking_frame)
 
-        self.category_frames = [all_frame,advanced_frame,concepts_frame,emus_frame,games_frame,themes_frame,tools_frame,misc_frame]
+        self.category_frames = [all_frame,advanced_frame,emus_frame,games_frame,themes_frame,tools_frame,misc_frame, installed_frame]
 
         self.frames = [
             {
@@ -92,16 +96,16 @@ class appstorePage(activeFrame):
             "text" : "Advanced"
             },
             {
-            "frame" : concepts_frame,
-            "text" : "Concepts"
-            },
-            {
             "frame" : themes_frame,
             "text" : "Themes"
             },
             {
             "frame" : misc_frame,
             "text" : "MISC"
+            },
+            {
+            "frame" : installed_frame,
+            "text" : "Installed"
             },
             {
             "frame" : about_frame,
@@ -156,9 +160,9 @@ class appstorePage(activeFrame):
                     if t.strip() == picked.strip():
                         self.show_frame(t)
                         break
-                self.last_selection == picked
-        except:
-            pass
+                self.last_selection = picked
+        except Exception as e:
+            print(e)
 
     def search(self, searchterm):
         self.current_frame.search(searchterm)
@@ -172,6 +176,17 @@ class appstorePage(activeFrame):
         chosensdpath = tkinter.filedialog.askdirectory(initialdir="/",  title='Please select your SD card')
         self.appstore_handler.set_path(chosensdpath)
         self.reload_category_frames()
+        self.path_set = True
+
+        if chosensdpath:
+            #Get the basename
+            basepath = os.path.basename(os.path.normpath(chosensdpath))
+            #If we didn't find it, assume it's a root dir and just return the whole path
+            if not basepath:
+                basepath = chosensdpath
+        else:
+            basepath = "Not Set"
+        self.column_sd_status_label.set("SD: {}".format(basepath))
 
 #Super basic about frame, pulls from about.txt
 class aboutFrame(ThemedFrame):
