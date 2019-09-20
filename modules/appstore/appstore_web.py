@@ -18,6 +18,10 @@ CACHEFOLDER = "cache"
 ICON  = "icon.png"
 SCREEN = "screen.png"
 
+ICONBLACKLIST = "modules/appstore/icon_blacklist.txt"
+with open(ICONBLACKLIST) as blacklistfile:
+    ICONBLACKLIST = blacklistfile.read()
+
 SCREENBUFFER = {}
 ICONBUFFER = {}
 
@@ -43,11 +47,12 @@ def getImage(package, image_type, force = False):
         return download(IMAGE_BASE_URL.format(package, image_type), image_file)
 
 def getPackageIcon(package, force = False):
-    if package in ICONBUFFER.keys():
-        return ICONBUFFER[package]
-    icon = getImage(package, ICON, force = force)
-    ICONBUFFER.update({package : icon})
-    return icon
+    if not package in ICONBLACKLIST:
+        if package in ICONBUFFER.keys():
+            return ICONBUFFER[package]
+        icon = getImage(package, ICON, force = force)
+        ICONBUFFER.update({package : icon})
+        return icon
 
 def getScreenImage(package, force = False):
     if package in SCREENBUFFER.keys():

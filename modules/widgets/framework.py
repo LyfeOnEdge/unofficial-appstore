@@ -7,6 +7,7 @@ class activeFrame(tk.Frame):
         self.needsRefresh = False
         self.on_refresh_callbacks = []
         self.on_tick_callbacks = []
+        self.waiting_tasks = {}
         self.done_loading = False
 
         tk.Frame.__init__(self,parent, 
@@ -37,6 +38,7 @@ class activeFrame(tk.Frame):
 
     def on_tick(self):
         self.do_callbacks_list(self.on_tick_callbacks)
+        self.do_waiting_tasks()
 
     def on_refresh(self):
         self.do_callbacks_list(self.on_refresh_callbacks)
@@ -67,3 +69,17 @@ class activeFrame(tk.Frame):
 
     def loaded_status(self):
         return self.done_loading
+
+    #Adds a task that gets called repetedly until it returns true
+    #DON'T EVER PUT ANYTHING BLOCKING HERE
+    #IT WILL CAUSE MAJOR SLOWDOWN
+    #THIS IS MEANT FOR THREADCHECKING
+    def add_waiting_task(self, taskname, constructor):
+        self.waiting_tasks[taskname] = constructor
+
+    #This gets called ontick above
+    def do_waiting_tasks(self):
+        if self.waiting_tasks:
+            for key in self.waiting_tasks.keys():
+                if self.waiting_tasks[key]():
+                    self.waiting_tasks.pop(key) #Remove task from waiting task if it returned sucessfully.

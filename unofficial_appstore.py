@@ -29,12 +29,12 @@ geometry = {
 }
 
 def startGUI():
-	gui = frameManager(pagelist,geometry,store_handler,repo_parser)
 	pre_load_icons()
+	gui = frameManager(pagelist,geometry,store_handler,repo_parser)
 	gui.title("unofficial appstore %s" % version)
 	gui.mainloop()
 
-#Helps with pre-loading a lot of images
+#Helps by pre-downloading the various icons
 def pre_load_icons():
 	threads = [] 
 	for repo in repo_parser.all:
@@ -45,7 +45,3 @@ def pre_load_icons():
 
 if __name__ == '__main__':
 	startGUI()
-
-# USE .after
-# max retries
-# download from base file via a thread that gets made and started immediately then returns

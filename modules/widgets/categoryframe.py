@@ -8,7 +8,7 @@ from modules.appstore import getPackageIcon
 from modules.locations import notfoundimage
 
 class categoryFrame(tk.Frame):
-    def __init__(self,parent,controller,framework, repos, appstore_handler):
+    def __init__(self,parent,controller,framework, repos, appstore_handler, icon_dict):
         #list of repos to be displayed by this frame
         self.repos = repos
         self.parent = parent
@@ -19,6 +19,7 @@ class categoryFrame(tk.Frame):
         self.current_buttons = [] #list to hold currently displayed buttons
         self.isSearching = False
         self.search_pending = False
+        self.icon_dict = icon_dict
         tk.Frame.__init__(self, parent, background = style.w, border = 0, highlightthickness = 0)
 
         #Shared images for the squares
@@ -72,12 +73,12 @@ class categoryFrame(tk.Frame):
     def makeButtonList(self):
         self.buttons = []
         for repo in self.repos:
-            self.makeButton(self.canvas_frame, self.framework, repo)
+            self.makeButton(self.canvas_frame, self.framework, repo, self.icon_dict)
         self.current_buttons = self.buttons
 
     #instantiates button, adds it to list
-    def makeButton(self,frame, framework, repo):
-        button = storeAppSquare(frame, self.controller, framework, repo)
+    def makeButton(self,frame, framework, repo, icon_dict):
+        button = storeAppSquare(frame, self.controller, framework, repo, icon_dict)
         button.buttonobj.bind("<MouseWheel>", self.on_mouse_wheel)
         self.buttons.append(button)
 
