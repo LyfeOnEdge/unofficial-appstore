@@ -81,4 +81,4 @@ class storeAppSquare(ThemedFrame):
 
         #Until the image has been set
         if not self.imageset:
-            self.framework.after(100, self.image_loop)
+            self.framework.after(50, self.image_loop)

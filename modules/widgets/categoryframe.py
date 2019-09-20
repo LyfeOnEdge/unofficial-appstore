@@ -20,6 +20,7 @@ class categoryFrame(tk.Frame):
         self.isSearching = False
         self.search_pending = False
         self.icon_dict = icon_dict
+        self.selected = False
         tk.Frame.__init__(self, parent, background = style.w, border = 0, highlightthickness = 0)
 
         #Shared images for the squares
@@ -61,6 +62,15 @@ class categoryFrame(tk.Frame):
 
         self.framework.add_on_refresh_callback(self.buildFrame)
 
+    def select(self):
+        self.selected = True
+
+    def deselect(self):
+        self.selected = False
+
+    def is_selected(self):
+        return self.selected
+
     def rebuild(self, new_repos):
         print("Rebuilding")
         self.repos = new_repos
@@ -84,95 +94,97 @@ class categoryFrame(tk.Frame):
 
         #Tiles buttons
     def buildFrame(self): 
-        #if there is content to build with
-        if self.current_buttons:
-            _spacing = style.thumbnailwidth+2*style.tileoffset
-            #Set the width 
-            _framewidth = self.winfo_width() - self.scrollbar.winfo_width()
-            self.canvas_frame.config(width=_framewidth)
+        #If frame is visible
+        if self.selected:
+            #if there is content to build with
+            if self.current_buttons:
+                _spacing = style.thumbnailwidth+2*style.tileoffset
+                #Set the width 
+                _framewidth = self.winfo_width() - self.scrollbar.winfo_width()
+                self.canvas_frame.config(width=_framewidth)
 
-            #Get integer number of tiles fittable in the window
-            _maxperrow = _framewidth // _spacing
+                #Get integer number of tiles fittable in the window
+                _maxperrow = _framewidth // _spacing
 
-            #If there's not enough room to build anything
-            if not _maxperrow:
-                return
+                #If there's not enough room to build anything
+                if not _maxperrow:
+                    return
 
-            empty_space = _framewidth - (_maxperrow * _spacing)
+                empty_space = _framewidth - (_maxperrow * _spacing)
 
-            space_offset = empty_space / (_maxperrow + 1)
+                space_offset = empty_space / (_maxperrow + 1)
 
-            _y = 0
-            _x = 0
+                _y = 0
+                _x = 0
 
-            for button in self.current_buttons:
-                button.place(x=_x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset, height = style.thumbnailwidth, width = style.thumbnailwidth)
-                
-                if not button.buttontitlelabel:
-                    button.buttontitlelabel = ThemedLabel(self.canvas_frame,button.repo["title"],anchor="e",label_font=style.mediumboldtext,foreground=style.b,background=style.w)
-                    button.buttontitlelabel.bind("<MouseWheel>", self.on_mouse_wheel)
+                for button in self.current_buttons:
+                    button.place(x=_x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset, height = style.thumbnailwidth, width = style.thumbnailwidth)
+                    
+                    if not button.buttontitlelabel:
+                        button.buttontitlelabel = ThemedLabel(self.canvas_frame,button.repo["title"],anchor="e",label_font=style.mediumboldtext,foreground=style.b,background=style.w)
+                        button.buttontitlelabel.bind("<MouseWheel>", self.on_mouse_wheel)
 
-                if not button.buttonauthorlabel:
-                    button.buttonauthorlabel = ThemedLabel(self.canvas_frame,button.repo["author"],anchor="e",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
-                    button.buttonauthorlabel.bind("<MouseWheel>", self.on_mouse_wheel)
+                    if not button.buttonauthorlabel:
+                        button.buttonauthorlabel = ThemedLabel(self.canvas_frame,button.repo["author"],anchor="e",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
+                        button.buttonauthorlabel.bind("<MouseWheel>", self.on_mouse_wheel)
 
-                if not button.buttonstatuslabel:
-                    button.buttonstatuslabel = ThemedLabel(self.canvas_frame,"",anchor="w",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
-                    button.buttonstatuslabel.bind("<MouseWheel>", self.on_mouse_wheel)
+                    if not button.buttonstatuslabel:
+                        button.buttonstatuslabel = ThemedLabel(self.canvas_frame,"",anchor="w",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
+                        button.buttonstatuslabel.bind("<MouseWheel>", self.on_mouse_wheel)
 
-                if not button.buttonversionlabel:
-                    button.buttonversionlabel = ThemedLabel(self.canvas_frame,button.repo["version"],anchor="w",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
-                    button.buttonversionlabel.bind("<MouseWheel>", self.on_mouse_wheel)
+                    if not button.buttonversionlabel:
+                        button.buttonversionlabel = ThemedLabel(self.canvas_frame,button.repo["version"],anchor="w",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
+                        button.buttonversionlabel.bind("<MouseWheel>", self.on_mouse_wheel)
 
-                if not button.buttonseparator:
-                    button.buttonseparator = tk.Label(self.canvas_frame, background=style.lg, borderwidth= 0)
+                    if not button.buttonseparator:
+                        button.buttonseparator = tk.Label(self.canvas_frame, background=style.lg, borderwidth= 0)
 
-                button.buttontitlelabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth - 2.5 * style.buttontextheight + 3, width = style.thumbnailwidth)
-                button.buttonauthorlabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth - style.buttontextheight + 3, width = style.thumbnailwidth)
-                button.buttonversionlabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth - style.buttontextheight + 3)
-                button.buttonseparator.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth + 8, height = 1, width = style.thumbnailwidth)
-                button.buttonstatuslabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth - 2.5 * style.buttontextheight + 3)
+                    button.buttontitlelabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth - 2.5 * style.buttontextheight + 3, width = style.thumbnailwidth)
+                    button.buttonauthorlabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth - style.buttontextheight + 3, width = style.thumbnailwidth)
+                    button.buttonversionlabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth - style.buttontextheight + 3)
+                    button.buttonseparator.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth + 8, height = 1, width = style.thumbnailwidth)
+                    button.buttonstatuslabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth - 2.5 * style.buttontextheight + 3)
 
-                status = None
-                package = button.repo["name"]
-                if self.appstore_handler.packages:
-                    if package in self.appstore_handler.packages:
-                        installed_version = self.appstore_handler.get_package_version(package)
+                    status = None
+                    package = button.repo["name"]
+                    if self.appstore_handler.packages:
+                        if package in self.appstore_handler.packages:
+                            installed_version = self.appstore_handler.get_package_version(package)
 
-                        if self.appstore_handler.clean_version(installed_version, package) == self.appstore_handler.clean_version(installed_version, package):
-                            status = "UPTODATE"
-                        elif self.appstore_handler.clean_version(installed_version, package) < self.appstore_handler.clean_version(installed_version, package):
-                            status = "NEEDSUPDATE"
+                            if self.appstore_handler.clean_version(installed_version, package) == self.appstore_handler.clean_version(installed_version, package):
+                                status = "UPTODATE"
+                            elif self.appstore_handler.clean_version(installed_version, package) < self.appstore_handler.clean_version(installed_version, package):
+                                status = "NEEDSUPDATE"
+                        else:
+                            status = "NOTINSTALLED"
                     else:
                         status = "NOTINSTALLED"
-                else:
-                    status = "NOTINSTALLED"
 
-                status_map = {
-                "UPTODATE" : self.installed_image,
-                "NEEDSUPDATE" : self.update_image,
-                "NOTINSTALLED" : self.get_image
-                }
+                    status_map = {
+                    "UPTODATE" : self.installed_image,
+                    "NEEDSUPDATE" : self.update_image,
+                    "NOTINSTALLED" : self.get_image
+                    }
 
-                button.buttonstatuslabel.configure(image=status_map[status])
+                    button.buttonstatuslabel.configure(image=status_map[status])
 
-                _x += 1
+                    _x += 1
 
-                if _x == _maxperrow:
-                    _x = 0
-                    _y += 1
+                    if _x == _maxperrow:
+                        _x = 0
+                        _y += 1
 
-            #Update the size of the canvas and configure the scrollable area
-            _canvasheight = (_y + 1) * (style.thumbnailwidth+2*style.tileoffset)
-            if _canvasheight < self.winfo_height():
-                _canvasheight = self.winfo_height()
-            self.canvas_frame.config(height = _canvasheight,width= _framewidth)
-            self.canvas.config(scrollregion=(0,0,_framewidth, _canvasheight))
-            self.canvas_frame.update_idletasks()
+                #Update the size of the canvas and configure the scrollable area
+                _canvasheight = (_y + 1) * (style.thumbnailwidth+2*style.tileoffset)
+                if _canvasheight < self.winfo_height():
+                    _canvasheight = self.winfo_height()
+                self.canvas_frame.config(height = _canvasheight,width= _framewidth)
+                self.canvas.config(scrollregion=(0,0,_framewidth, _canvasheight))
+                self.canvas_frame.update_idletasks()
 
     def search(self, searchterm):
         def doSearch():
-            search_categories = ["name", "title", "description"]
+            search_categories = ["name", "title", "author"]
 
             new_buttons = []
 

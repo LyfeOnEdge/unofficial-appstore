@@ -23,7 +23,7 @@ class appstorePage(activeFrame):
         self.category_list.place(x=0, y=style.headerheight, relwidth=1, relheight=1, height = - (style.headerheight + style.footerheight))
 
         self.category_listbox = ThemedListbox(self.category_list)
-        self.category_listbox.configure(activestyle = "dotbox")
+        self.category_listbox.configure(activestyle = "none")
         self.category_listbox.pack(fill="both", anchor="w")
         self.category_listbox.bind('<<ListboxSelect>>',self.select_frame)
 
@@ -136,6 +136,12 @@ class appstorePage(activeFrame):
         frame.tkraise()
         self.category_label.set(page_name)
         self.controller.after(20, self.update_search_bar_position)
+
+        for frm in self.category_frames:
+            frm.deselect()
+        if frame in self.category_frames:
+            frame.select()
+
         self.current_frame = frame
 
     def update_search_bar_position(self):
