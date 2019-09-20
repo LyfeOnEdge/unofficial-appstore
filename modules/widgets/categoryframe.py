@@ -75,8 +75,7 @@ class categoryFrame(tk.Frame):
         print("Rebuilding")
         self.repos = new_repos
         self.current_buttons = None
-        for button in self.buttons:
-            button.place_forget()
+        self.clear()
         self.makeButtonList()
         self.buildFrame()
 

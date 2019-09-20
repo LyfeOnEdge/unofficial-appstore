@@ -26,7 +26,6 @@ class installed_categoryFrame(categoryFrame):
 
     def rebuild(self, _):
         print("Rebuilding")
-        for button in self.buttons:
-            button.place_forget()
+        self.clear()
         self.makeButtonList()
         self.buildFrame()
