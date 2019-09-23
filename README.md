@@ -12,6 +12,10 @@ Uses the switchbru/4TU team's site as a backend for image and package downloads.
 ##### Working Stuff:
  - Dynamic Search
  - Categories
- - Downloading and tracking with the appstore
- - Opening Project Page
- - Threaded operations mean the app no longer becomes unresonsive with big downloads
+ - Downloading directly from the switchbru/4tu site
+ - Tracking with the appstore
+ - Opening project pages
+ - Threaded operations mean the app no longer becomes unresponsive with big downloads
+
+##### Future plans:
+ - Direct memloader integration (SD only) for installation directly over usb 
