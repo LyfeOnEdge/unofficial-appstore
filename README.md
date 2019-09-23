@@ -1,4 +1,8 @@
 # unofficial-appstore
+
+![Unofficial Appstore](https://i.imgur.com/bN2NItf.png)
+
+
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)]() [![Releases](https://img.shields.io/github/downloads/LyfeOnEdge/unofficial-appstore/total.svg)]() [![LatestVer](https://img.shields.io/github/release-pre/LyfeOnEdge/unofficial-appstore.svg)]()
 
 # About
@@ -7,10 +11,6 @@ A desktop gui for the Homebrew Appstore written in python.
 Uses the switchbru/4TU team's site as a backend for image and package downloads.
 
 One of the main goals of this app is to provide a homebrew management tool that doesn't require the switch to access the internet.
-
-![Unofficial Appstore](https://i.imgur.com/bN2NItf.png)
-
-![Details page](https://i.imgur.com/adN4bfY.png)
 
 ##### Working Stuff:
  - Dynamic Search
