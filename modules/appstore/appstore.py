@@ -20,27 +20,27 @@ class appstore_handler(object):
         self.base_install_path = None
         self.packages = None
 
+    def warn_path_not_set(self):
+        print("Warning: appstore path not set")
+
     #Check if the appstore packages folder has been inited
-    def check_if_get_init(self,path):
-        if not path: return
+    def check_if_get_init(self):
+        if not self.check_path(): return self.warn_path_not_set()
         #Append package name to packages directory
-        packagesdir = os.path.join(path, PACKAGES_DIR)
+        packagesdir = os.path.join(self.base_install_path, PACKAGES_DIR)
         try:
             return os.path.isdir(packagesdir)
         except:
             pass
 
-    def init_get(self, path):
-        if not path: return
-        if not check_if_get_init(path):
-            packagesdir = os.path.join(path, PACKAGES_DIR)
-            os.mkdir(packagesdir)
+    def init_get(self):
+        if not self.check_path(): return self.warn_path_not_set()
+        if not self.check_if_get_init():
+            packagesdir = os.path.join(self.base_install_path, PACKAGES_DIR)
+            os.makedirs(packagesdir)
         else:
             print("Appstore packages dir already inited")
             return
-
-    def warn_path_not_set(self):
-        print("Warning: appstore path not set")
 
     #Set this to a root of an sd card or in a dir to test
     def set_path(self, path):
@@ -68,7 +68,7 @@ class appstore_handler(object):
         if progress_funtion:
             progress_funtion("Package data passed", 20)
 
-        if not self.check_if_get_init(self.base_install_path):
+        if not self.check_if_get_init():
             print("Appstore get folder not initiated.")
             print("Not continuing with install")
             return
@@ -154,7 +154,7 @@ class appstore_handler(object):
             print("No repo entry data passed to appstore handler.")
             print("Not continuing with uninstall")
             return
-        if not self.check_if_get_init(self.base_install_path):
+        if not self.check_if_get_init():
             print("Appstore get folder not initiated.")
             print("Not continuing with uninstall")
             return

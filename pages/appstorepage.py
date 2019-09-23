@@ -10,7 +10,6 @@ class appstorePage(activeFrame):
         self.current_frame = None
         self.last_selection = None
         self.controller = controller
-        self.path_set = None
         self.appstore_handler = appstore_handler
         self.repo_parser = repo_parser
         self.icon_dict = icon_dict()
@@ -129,6 +128,7 @@ class appstorePage(activeFrame):
 
         self.show_frame("All Apps")
         self.loaded()
+        self.add_on_refresh_callback(self.update_sd_path)
 
     def show_frame(self, page_name):
         #Show a frame for the given page name
@@ -185,17 +185,22 @@ class appstorePage(activeFrame):
         chosensdpath = tkinter.filedialog.askdirectory(initialdir="/",  title='Please select your SD card')
         self.appstore_handler.set_path(chosensdpath)
         self.reload_category_frames()
-        self.path_set = True
+        self.update_sd_path()
 
+    def update_sd_path(self):
+        chosensdpath = self.appstore_handler.check_path()
         if chosensdpath:
             #Get the basename
             basepath = os.path.basename(os.path.normpath(chosensdpath))
             #If we didn't find it, assume it's a root dir and just return the whole path
             if not basepath:
                 basepath = chosensdpath
+            else:
+                basepath = "Not Set"
         else:
             basepath = "Not Set"
         self.column_sd_status_label.set("SD: {}".format(basepath))
+
 
 #Super basic about frame, pulls from about.txt
 class aboutFrame(ThemedFrame):

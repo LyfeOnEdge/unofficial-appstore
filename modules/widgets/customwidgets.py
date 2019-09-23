@@ -70,7 +70,7 @@ class navbutton(tk.Label):
 			activebackground=light_color,
 			image=image_object,
 			text = text_string,
-			font = navbuttonfont,
+			font = smallboldtext,
 			)
 		self.bind('<Button-1>', self.on_click)
 

@@ -1,10 +1,11 @@
 import os
-
+import tkinter.filedialog
 import modules.style as style
 import modules.locations as locations
 from modules.widgets import ThemedFrame, ThemedLabel, activeFrame, scrolledText, button, tooltip, progressFrame
 from modules.appstore import parser, getScreenImage
 from modules.webhandler import opentab
+from .yesnopage import yesnoPage
 
 from PIL import Image, ImageTk
 
@@ -72,7 +73,8 @@ class detailPage(activeFrame):
             text_string = "INSTALL", 
             font=style.mediumboldtext, 
             background=style.dark_color
-            ).place(rely=1,relx=0.5,x = - 1.5 * (style.buttonsize), y = - 3 * (style.buttonsize + style.offset), width = 3 * style.buttonsize, height = style.buttonsize)
+            )
+        self.column_install_button.place(rely=1,relx=0.5,x = - 1.5 * (style.buttonsize), y = - 3 * (style.buttonsize + style.offset), width = 3 * style.buttonsize, height = style.buttonsize)
 
         self.column_uninstall_button = button(self.column_body, 
             callback = self.trigger_uninstall, 
@@ -111,6 +113,8 @@ class detailPage(activeFrame):
         self.header_author.place(rely=0.65, y=0, relheight=0.35)
 
         self.progress_bar = progressFrame(self)
+
+        self.yesnoPage = yesnoPage(self)
 
     def update_page(self,repo):
         self.repo = repo
@@ -170,8 +174,12 @@ class detailPage(activeFrame):
         #get_package_entry returns none if no package is found or if the sd path is not set
         if self.appstore_handler.get_package_entry(package):
             self.column_uninstall_button.place(rely=1,relx=0.5,x = - 1.5 * (style.buttonsize), y = - 2 * (style.buttonsize + style.offset), width = 3 * style.buttonsize, height = style.buttonsize)
+            if self.column_install_button:    
+                self.column_install_button.settext("UPDATE")
         else:
             self.column_uninstall_button.place_forget()
+            if self.column_install_button:
+                self.column_install_button.settext("INSTALL")
 
     def update_banner(self,image_path):
         art_image = Image.open(image_path)
@@ -189,8 +197,17 @@ class detailPage(activeFrame):
             self.reload()
 
     def trigger_install(self):
-        if self.repo:
-            self.async_threader.install_package(self.repo, self.appstore_handler, self.progress_bar.update, self.reload_function)
+        if not self.appstore_handler.check_path():
+            self.set_sd()
+        if self.appstore_handler.check_if_get_init():
+            if self.repo:
+                self.async_threader.install_package(self.repo, self.appstore_handler, self.progress_bar.update, self.reload_function)
+        else:
+            self.yesnoPage.getanswer("The homebrew appstore has not been initiated here yet, would you like to initiate it?", self.init_get_then_continue)
+
+    def init_get_then_continue(self):
+        self.appstore_handler.init_get()
+        self.trigger_install()
 
     def trigger_uninstall(self):
         if self.repo:
@@ -208,3 +225,8 @@ class detailPage(activeFrame):
                 opentab(url)
             except:
                 print("Failed to open tab for url {}".format(url))
+
+    def set_sd(self):
+        chosensdpath = tkinter.filedialog.askdirectory(initialdir="/",  title='Please select your SD card')
+        self.appstore_handler.set_path(chosensdpath)
+        self.reload()

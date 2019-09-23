@@ -12,7 +12,7 @@ tileoffset = 4
 buttontextheight = 15
 statussize = buttontextheight
 progressbarheight = 80
-
+yesnopagefooterheight = 70
 ##Text Styles
 #Normal Text
 smallertext = ("Trebuchet MS",8)
