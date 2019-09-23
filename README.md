@@ -1,6 +1,6 @@
 # unofficial-appstore
 
-![Unofficial Appstore](https://i.imgur.com/bN2NItf.png)
+![Unofficial Appstore](https://i.imgur.com/QrzIkjk.png)
 
 
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)]() [![Releases](https://img.shields.io/github/downloads/LyfeOnEdge/unofficial-appstore/total.svg)]() [![LatestVer](https://img.shields.io/github/release-pre/LyfeOnEdge/unofficial-appstore.svg)]()
