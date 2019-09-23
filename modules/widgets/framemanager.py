@@ -2,9 +2,9 @@ import tkinter as tk
 
 #Frame handler, raises and pages in z layer
 class frameManager(tk.Tk):
-    def __init__(self, pages, geometry, appstore_handler, repo_parser, async_threader):
+    def __init__(self, pages, geometry, appstore_handler, repo_parser, async_threader, update_status):
         tk.Tk.__init__(self)
-
+        self.update_status = update_status
         self.geometry("{}x{}".format(geometry["width"],geometry["height"])) 
         # self.resizable(False, False)
 

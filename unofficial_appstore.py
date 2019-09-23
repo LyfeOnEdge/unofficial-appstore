@@ -1,4 +1,4 @@
-version = "1.0"
+version = "1.1"
 print("Unofficial appstore version {}".format(version))
 
 import os, sys, platform, json, threading
@@ -14,6 +14,7 @@ from modules.appstore import getPackageIcon, parser, appstore_handler
 from modules.webhandler import getJson
 from modules.locations import appstore_repo_url
 from modules.async_threader import asyncThreader
+from modules.updater import check_for_update
 from pages import pagelist
 
 #Download the appstore json, uses etagging to check if it needs an update to minimize bandwidth
@@ -32,9 +33,9 @@ geometry = {
 	"height" : 575,
 }
 
-def startGUI():
+def startGUI(update_status):
 	pre_load_icons()
-	gui = frameManager(pagelist,geometry,store_handler,repo_parser,threader)
+	gui = frameManager(pagelist,geometry,store_handler,repo_parser,threader, update_status)
 	gui.title("unofficial appstore %s" % version)
 	gui.mainloop()
 
@@ -48,4 +49,5 @@ def pre_load_icons():
 		t.start()
 
 if __name__ == '__main__':
-	startGUI()
+	update_status = check_for_update(version)
+	startGUI(update_status)

@@ -4,6 +4,8 @@ import modules.style as style
 import modules.locations as locations
 from modules.widgets import ThemedFrame, ThemedListbox, ThemedLabel, searchBox, categoryFrame, installed_categoryFrame, activeFrame, scrolledText, button
 from modules.tk_image_sharer import icon_dict
+from modules.updater import update
+from .yesnopage import yesnoPage
 
 class appstorePage(activeFrame):
     def __init__(self, parent, controller, page_name, appstore_handler, repo_parser, async_threader):
@@ -127,6 +129,11 @@ class appstorePage(activeFrame):
             self.category_listbox.event_generate("<<ListboxSelect>>")
 
         self.show_frame("All Apps")
+
+        if self.controller.update_status:
+            self.yesnoPage = yesnoPage(self)
+            self.yesnoPage.getanswer("An update is available, would you like to download it?", update)
+
         self.loaded()
         self.add_on_refresh_callback(self.update_sd_path)
 
