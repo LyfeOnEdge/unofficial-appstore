@@ -2,9 +2,9 @@ import tkinter as tk
 
 #Frame handler, raises and pages in z layer
 class frameManager(tk.Tk):
-    def __init__(self, pages, geometry, appstore_handler, repo_parser):
+    def __init__(self, pages, geometry, appstore_handler, repo_parser, async_threader):
         tk.Tk.__init__(self)
-               
+
         self.geometry("{}x{}".format(geometry["width"],geometry["height"])) 
         # self.resizable(False, False)
 
@@ -21,7 +21,7 @@ class frameManager(tk.Tk):
         if pages:
             for F in (pages):
                 page_name = F.__name__
-                frame = F(parent=container, controller=self, page_name=page_name, appstore_handler = appstore_handler, repo_parser = repo_parser) 
+                frame = F(parent=container, controller=self, page_name=page_name, appstore_handler = appstore_handler, repo_parser = repo_parser, async_threader = async_threader) 
                 self.frames[page_name] = frame
 
                 frame.grid(row=0, column=0, sticky="nsew")
@@ -31,3 +31,7 @@ class frameManager(tk.Tk):
         frame = self.frames[page_name]
         frame.event_generate("<<ShowFrame>>")
         frame.tkraise()
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()

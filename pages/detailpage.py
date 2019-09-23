@@ -2,17 +2,18 @@ import os
 
 import modules.style as style
 import modules.locations as locations
-from modules.widgets import ThemedFrame, ThemedLabel, activeFrame, scrolledText, button, tooltip
+from modules.widgets import ThemedFrame, ThemedLabel, activeFrame, scrolledText, button, tooltip, progressFrame
 from modules.appstore import parser, getScreenImage
 from modules.webhandler import opentab
 
 from PIL import Image, ImageTk
 
 class detailPage(activeFrame):
-    def __init__(self, parent, controller, page_name, appstore_handler, repo_parser):
+    def __init__(self, parent, controller, page_name, appstore_handler, repo_parser, async_threader):
         activeFrame.__init__(self,parent,controller)
         self.controller = controller
         self.appstore_handler = appstore_handler
+        self.async_threader = async_threader
         self.repo = None
 
         #Primary layout
@@ -109,6 +110,8 @@ class detailPage(activeFrame):
         self.header_author = ThemedLabel(self.content_frame_header,"",anchor="w",label_font=style.smalltext, background = style.w, foreground=style.light_color)
         self.header_author.place(rely=0.65, y=0, relheight=0.35)
 
+        self.progress_bar = progressFrame(self)
+
     def update_page(self,repo):
         self.repo = repo
         package = repo["name"]
@@ -183,7 +186,8 @@ class detailPage(activeFrame):
 
     def trigger_install(self):
         if self.repo:
-            self.appstore_handler.install_package(self.repo)
+            self.async_threader.install_package(self.repo, self.appstore_handler, self.progress_bar.update)
+            # self.appstore_handler.install_package(self.repo)
             self.controller.frames["appstorePage"].reload_category_frames()
             self.reload()
 

@@ -17,7 +17,13 @@ class searchBox(tk.Frame):
 
         self._command = command
 
-        self.entry = tk.Entry(self, width=entry_width, background=entry_background, highlightcolor=style.b, highlightthickness=0, foreground = entry_foreground,borderwidth=2)
+        self.entry = tk.Entry(self,
+            width=entry_width,
+            background=entry_background,
+            highlightcolor=style.b, highlightthickness=0,
+            foreground = entry_foreground,
+            borderwidth=2,
+            relief = tk.constants.RIDGE)
         self.entry.place(x=+style.offset,y=0,relwidth=1,relheight=1,width=-style.offset)
         
         if entry_font:

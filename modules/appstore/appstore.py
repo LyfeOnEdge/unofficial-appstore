@@ -55,18 +55,34 @@ class appstore_handler(object):
     def check_path(self):
         return self.base_install_path
 
-    def install_package(self, repo):
+    #Installs an appstore
+    def install_package(self, repo_entry, progress_funtion = None):
         if not self.check_path(): return self.warn_path_not_set()
-        if not repo:
-            print("No repo data passed to appstore handler.")
+        if progress_funtion:
+            progress_funtion("Paths set", 10)
+
+        if not repo_entry:
+            print("No repo entry data passed to appstore handler.")
             print("Not continuing with install")
             return
+        if progress_funtion:
+            progress_funtion("Package data passed", 20)
+
         if not self.check_if_get_init(self.base_install_path):
             print("Appstore get folder not initiated.")
             print("Not continuing with install")
             return
+        if progress_funtion:
+            progress_funtion("Get folder found", 30)
 
-        package = repo["name"]
+        install_message = "Beginning install for package %s" % repo_entry["name"]
+
+        print(install_message)
+
+        if progress_funtion:
+            progress_funtion(install_message, 35)
+
+        package = repo_entry["name"]
         #Append base directory to packages directory
         packagesdir = os.path.join(self.base_install_path, PACKAGES_DIR)
         if not os.path.isdir(packagesdir):
@@ -76,11 +92,17 @@ class appstore_handler(object):
         if not os.path.isdir(packagedir):
             os.mkdir(packagedir)
 
+        if progress_funtion:
+            progress_funtion("Downloading package %s" % package, 40)
+
         #Download the package from the switchbru site
         appstore_zip = getPackage(package)
         if not appstore_zip:
             print("Failed to download zip for package {}".format(package))
             return
+
+        if progress_funtion:
+            progress_funtion("Extracting...", 60)
 
         with ZipFile(appstore_zip) as zipObj:
             namelist = zipObj.namelist()
@@ -102,24 +124,32 @@ class appstore_handler(object):
                     extract_manifest.append(filename)
 
             print("Extracted: {}".format(json.dumps(extract_manifest, indent = 4)))
+
+            if progress_funtion:
+                progress_funtion("Extract complete", 80)
                 
             #Extract manifest
             zipObj.extract(PACKAGE_MANIFEST, path = packagedir)
+            print("Wrote package manifest.")
+            if progress_funtion:
+                progress_funtion("Wrote package manifest", 90)
+
             #Extract info file
             zipObj.extract(PACKAGE_INFO, path = packagedir)
+            print("Wrote package info.")
+            if progress_funtion:
+                progress_funtion("Wrote package info", 100)
 
-            print("Wrote package manifest and info.")
-
-        print("Installed {} version {}".format(repo["title"], repo["version"]))
+        print("Installed {} version {}".format(repo_entry["title"], repo_entry["version"]))
 
         #Refreshes the current packages
         self.reload()
 
     #Uninstalls a package given a chunk from the repo
-    def uninstall_package(self, repo):
+    def uninstall_package(self, repo_entry):
         if not self.check_path(): return self.warn_path_not_set()
-        if not repo:
-            print("No repo data passed to appstore handler.")
+        if not repo_entry:
+            print("No repo entry data passed to appstore handler.")
             print("Not continuing with uninstall")
             return
         if not self.check_if_get_init(self.base_install_path):
@@ -127,7 +157,7 @@ class appstore_handler(object):
             print("Not continuing with uninstall")
             return
 
-        package = repo["name"]
+        package = repo_entry["name"]
         if not self.get_package_entry(package):
             print("Could not find package in currently selected location.")
             print("Not continuing with uninstall")
@@ -192,7 +222,7 @@ class appstore_handler(object):
         except FileNotFoundError:
             pass
         except Exception as e:
-            print("Failed to open repo data for {} - {}".format(package, e))
+            print("Failed to open repo_entry data for {} - {}".format(package, e))
 
     #Get a package's json file value, returns none if it fails
     def get_package_value(self, package, value):
@@ -266,7 +296,7 @@ class appstore_handler(object):
             with open(pkg, encoding="utf-8") as infojson:
                 info = json.load(infojson)
         except Exception as e:
-            print("Failed to open repo data for {} - {}".format(package, e))
+            print("Failed to open info data for {} - {}".format(package, e))
             return
 
         info[key] = value

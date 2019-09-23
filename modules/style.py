@@ -7,10 +7,11 @@ offset = 5
 buttonsize = 40
 thumbnailwidth = 250
 thumbnailheight = 200
-searchboxheight = 30
+searchboxheight = headerheight / 2
 tileoffset = 4
 buttontextheight = 15
 statussize = buttontextheight
+progressbarheight = 80
 
 ##Text Styles
 #Normal Text

@@ -13,6 +13,7 @@ from modules.widgets import frameManager
 from modules.appstore import getPackageIcon, parser, appstore_handler
 from modules.webhandler import getJson
 from modules.locations import appstore_repo_url
+from modules.async_threader import asyncThreader
 from pages import pagelist
 
 #Download the appstore json, uses etagging to check if it needs an update to minimize bandwidth
@@ -23,6 +24,9 @@ repo_parser.load(store_json)
 #Shared tool for installing and managing hbas apps via the switchbru site on the sd card
 store_handler = appstore_handler()
 
+#Async threader tool for getting asyncronously
+threader = asyncThreader()
+
 geometry = {
 	"width" : 780,
 	"height" : 575,
@@ -30,7 +34,7 @@ geometry = {
 
 def startGUI():
 	pre_load_icons()
-	gui = frameManager(pagelist,geometry,store_handler,repo_parser)
+	gui = frameManager(pagelist,geometry,store_handler,repo_parser,threader)
 	gui.title("unofficial appstore %s" % version)
 	gui.mainloop()
 
