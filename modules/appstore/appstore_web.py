@@ -14,9 +14,6 @@ APPSTORE_PACKAGE_URL = "https://www.switchbru.com/appstore/zips/{}.zip"
 
 DOWNLOADSFOLDER = "downloads"
 
-if not os.path.isdir(os.path.join(sys.path[0], DOWNLOADSFOLDER)):
-    os.mkdir(DOWNLOADSFOLDER)
-
 CACHEFOLDER = "cache"
 ICON  = "icon.png"
 SCREEN = "screen.png"
@@ -67,8 +64,11 @@ def getScreenImage(package, force = False):
 #Downloads the current zip of a package
 def getPackage(package):
     try:
+        downloadsfolder = os.path.join(sys.path[0], DOWNLOADSFOLDER)
+        if not os.math.isdir(downloadsfolder):
+            os.mkdir(downloadsfolder)
         packageURL = APPSTORE_PACKAGE_URL.format(package)
-        packagefile = os.path.join(os.path.join(sys.path[0], DOWNLOADSFOLDER), "{}.zip".format(package))
+        packagefile = os.path.join(downloadsfolder, "{}.zip".format(package))
         return download(packageURL, packagefile)
     except Exception as e:
         print("Error getting package zip for {} - {}".format(package, e))
