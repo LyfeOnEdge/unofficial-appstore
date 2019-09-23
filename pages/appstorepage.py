@@ -39,7 +39,7 @@ class appstorePage(activeFrame):
         self.column_header_separator.place(x = style.offset, rely = 1, y = - 1, relwidth = 1, width = -2 * style.offset)
 
         self.column_footer = ThemedFrame(self.column, background = style.light_color)
-        self.column_footer.place(relx = 0, rely = 1, relwidth = 1, height = style.headerheight, y = - style.footerheight)
+        self.column_footer.place(relx = 0, rely = 1, relwidth = 1, height = style.footerheight, y = - style.footerheight)
 
         self.column_set_sd = button(self.column_footer, 
             callback = self.set_sd, 
@@ -196,14 +196,13 @@ class appstorePage(activeFrame):
 
     def update_sd_path(self):
         chosensdpath = self.appstore_handler.check_path()
+        print(chosensdpath)
         if chosensdpath:
             #Get the basename
             basepath = os.path.basename(os.path.normpath(chosensdpath))
             #If we didn't find it, assume it's a root dir and just return the whole path
             if not basepath:
                 basepath = chosensdpath
-            else:
-                basepath = "Not Set"
         else:
             basepath = "Not Set"
         self.column_sd_status_label.set("SD: {}".format(basepath))

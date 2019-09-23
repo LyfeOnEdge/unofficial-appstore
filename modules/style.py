@@ -2,7 +2,7 @@
 sidecolumnwidth = 220
 bannerheight = sidecolumnwidth
 headerheight = 70
-footerheight = headerheight
+footerheight = 100
 offset = 5
 buttonsize = 40
 thumbnailwidth = 250
