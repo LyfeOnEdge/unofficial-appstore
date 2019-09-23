@@ -6,6 +6,7 @@ A desktop gui for the Homebrew Appstore written in python.
 Uses the switchbru/4TU team's site as a backend for image and package downloads.
 
 ![Unofficial Appstore](https://i.imgur.com/bN2NItf.png)
+
 ![Details page](https://i.imgur.com/adN4bfY.png)
 
 ##### Working Stuff:
