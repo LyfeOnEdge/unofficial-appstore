@@ -1,5 +1,5 @@
 # unofficial-appstore
-[![License](https://img.shields.io/badge/License-GPLv3-blue.svg)]() [![Releases](https://img.shields.io/github/downloads/LyfeOnEdge/HBUpdater/total.svg)]() [![LatestVer](https://img.shields.io/github/release-pre/LyfeOnEdge/HBUpdater.svg)]()
+[![License](https://img.shields.io/badge/License-GPLv3-blue.svg)]() [![Releases](https://img.shields.io/github/downloads/LyfeOnEdge/unofficial-appstore/total.svg)]() [![LatestVer](https://img.shields.io/github/release-pre/LyfeOnEdge/unofficial-appstore.svg)]()
 
 # About
 A desktop gui for the Homebrew Appstore written in python.
