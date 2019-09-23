@@ -6,6 +6,8 @@ A desktop gui for the Homebrew Appstore written in python.
 
 Uses the switchbru/4TU team's site as a backend for image and package downloads.
 
+One of the main goals of this app is to provide a homebrew management tool that doesn't require the switch to access the internet.
+
 ![Unofficial Appstore](https://i.imgur.com/bN2NItf.png)
 
 ![Details page](https://i.imgur.com/adN4bfY.png)
@@ -21,7 +23,7 @@ Uses the switchbru/4TU team's site as a backend for image and package downloads.
 ##### Future plans:
  - Direct memloader integration (SD only) for installation directly over usb 
 
-# How to use:
+# How to run:
 ##### Windows:
 - Extract unofficial-appstore.zip
 - Install [python](https://www.python.org/downloads/release/python-373/)
@@ -40,6 +42,15 @@ Uses the switchbru/4TU team's site as a backend for image and package downloads.
   - If you are missing dependencies do the following:
   - sudo apt-get install python3 python3-pip python3-tk
 - If you don't know how to do this you should probably be using Windows ;D
+
+# How to use:
+ - Connect your SD card to your computer
+ - Start the app
+ - Click the "Select SD root" button
+ - A file dialog should appear, select the root of your SD card
+ - Select an app you'd like to see more about
+ - Click install to have the app properly installed on to the SD card
+ - When you're done, unmount your SD card, put it in your SD card, and reboot.
 
 ##### Want to contribute? Have ideas? Questions? Great!
 You can find me here: 
