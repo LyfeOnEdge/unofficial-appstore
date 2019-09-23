@@ -10,7 +10,7 @@ A desktop gui for the Homebrew Appstore written in python.
 
 Uses the switchbru/4TU team's site as a backend for image and package downloads.
 
-One of the main goals of this app is to provide a homebrew management tool that doesn't require the switch to access the internet. Especially people who always keep their switch in airplane mode. 
+One of the main goals of this app is to provide a homebrew management tool that doesn't require the switch to access the internet. Especially useful for people who always keep their switch in airplane mode. 
 
 ##### Working Stuff:
  - Dynamic Search
