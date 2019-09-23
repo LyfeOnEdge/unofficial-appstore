@@ -101,7 +101,7 @@ def update():
 
     #Extract wherever it is being run from
     extract_dir = os.path.join(sys.path[0])
-    Extract to root
+    # Extract to root
     handleZIP(update_zip, extract_dir)
 
     sys.exit("Update complete!")
