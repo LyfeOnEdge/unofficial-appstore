@@ -19,6 +19,7 @@ One of the main goals of this app is to provide a homebrew management tool that 
  - Tracking with the appstore
  - Opening project pages
  - Threaded operations mean the app no longer becomes unresponsive with big downloads
+ - Self-updater
 
 ##### Future plans:
  - Direct memloader integration (SD only) for installation directly over usb 
