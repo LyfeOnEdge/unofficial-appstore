@@ -15,8 +15,8 @@ class asyncThreader():
         reference = url
         return url
 
-    def install_package(self, repo, appstore_handler_object, progress_function):
-        installThread(self.queue, repo, appstore_handler_object, progress_function)
+    def install_package(self, repo, appstore_handler_object, progress_function, reload_function):
+        installThread(self.queue, repo, appstore_handler_object, progress_function, reload_function)
 
     def periodiccall(self):
         self.checkqueue()
@@ -66,8 +66,8 @@ class asyncThreader():
 #         self.queue.put(msg)
 
 class installThread():
-    def __init__(self, queue, repo, appstore_handler_object, progress_function):
+    def __init__(self, queue, repo, appstore_handler_object, progress_function, reload_function):
         self.queue = queue
         self.repo = repo
-        thread = threading.Thread(target=appstore_handler_object.install_package, args=(self.repo, progress_function))
+        thread = threading.Thread(target=appstore_handler_object.install_package, args=(self.repo, progress_function, reload_function))
         thread.start()

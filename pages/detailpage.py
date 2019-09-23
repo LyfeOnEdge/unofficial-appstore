@@ -184,12 +184,13 @@ class detailPage(activeFrame):
         self.update_page(repo)
         self.tkraise()
 
-    def trigger_install(self):
-        if self.repo:
-            self.async_threader.install_package(self.repo, self.appstore_handler, self.progress_bar.update)
-            # self.appstore_handler.install_package(self.repo)
+    def reload_function(self):
             self.controller.frames["appstorePage"].reload_category_frames()
             self.reload()
+
+    def trigger_install(self):
+        if self.repo:
+            self.async_threader.install_package(self.repo, self.appstore_handler, self.progress_bar.update, self.reload_function)
 
     def trigger_uninstall(self):
         if self.repo:

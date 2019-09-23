@@ -55,8 +55,8 @@ class appstore_handler(object):
     def check_path(self):
         return self.base_install_path
 
-    #Installs an appstore
-    def install_package(self, repo_entry, progress_funtion = None):
+    #Installs an appstore package, pass and optional progress function for gui feed back or the reload function to reload at the end of the install process
+    def install_package(self, repo_entry, progress_funtion = None, reload_function = None):
         if not self.check_path(): return self.warn_path_not_set()
         if progress_funtion:
             progress_funtion("Paths set", 10)
@@ -143,6 +143,8 @@ class appstore_handler(object):
         print("Installed {} version {}".format(repo_entry["title"], repo_entry["version"]))
 
         #Refreshes the current packages
+        if reload_function:
+            reload_function()
         self.reload()
 
     #Uninstalls a package given a chunk from the repo
