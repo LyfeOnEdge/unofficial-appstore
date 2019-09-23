@@ -14,6 +14,9 @@ folders_to_init.append(jsoncachefolder)
 #Folder to cache author images
 imagecachefolder = os.path.join(cachefolder,"images")
 folders_to_init.append(imagecachefolder)
+#Download folder
+downloadsfolder = os.path.join(wd, "downloads")
+folders_to_init.append(downloadsfolder)
 
 for folder in folders_to_init:
 	if not os.path.isdir(folder):

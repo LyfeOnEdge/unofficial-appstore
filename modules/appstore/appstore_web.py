@@ -65,8 +65,6 @@ def getScreenImage(package, force = False):
 def getPackage(package):
     try:
         downloadsfolder = os.path.join(sys.path[0], DOWNLOADSFOLDER)
-        if not os.math.isdir(downloadsfolder):
-            os.mkdir(downloadsfolder)
         packageURL = APPSTORE_PACKAGE_URL.format(package)
         packagefile = os.path.join(downloadsfolder, "{}.zip".format(package))
         return download(packageURL, packagefile)
