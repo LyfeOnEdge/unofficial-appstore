@@ -14,6 +14,9 @@ APPSTORE_PACKAGE_URL = "https://www.switchbru.com/appstore/zips/{}.zip"
 
 DOWNLOADSFOLDER = "downloads"
 
+if not os.path.isdir(os.path.join(sys.path[0], DOWNLOADSFOLDER)):
+    os.mkdir(DOWNLOADSFOLDER)
+
 CACHEFOLDER = "cache"
 ICON  = "icon.png"
 SCREEN = "screen.png"
