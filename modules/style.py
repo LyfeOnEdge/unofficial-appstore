@@ -41,3 +41,9 @@ r = "#ff0000" #Red
 g = "#00ff00" #Green
 blu = "#0000ff" #Blue
 lg = "#acadaf" #Light gray
+
+
+
+
+
+pathdisplaytextcolor = lg

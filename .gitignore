@@ -1,3 +1,4 @@
 /cache/*
 /downloads/*
 *.pyc
+docu/python_setup_config.PNG

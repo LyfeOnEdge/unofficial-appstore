@@ -1,4 +1,4 @@
-version = "1.3"
+version = "1.4"
 print("Unofficial appstore version {}".format(version))
 
 import os, sys, platform, json, threading
@@ -6,7 +6,18 @@ print("Using Python {}.{}".format(sys.version_info[0],sys.version_info[1]))
 if sys.version_info[0] < 3 or sys.version_info[1] < 6: #Trying to import tkinter in the new syntax after python 2 causes a crash
 	sys.exit("Python 3.6 or greater is required to run this program.")
 
-import tkinter as tk
+try:
+	import tkinter as tk
+except:
+	input("Cannot start: Tkinter not installed, try `pip install Pillow` consult the readme for more information.")
+	sys.exit()
+
+try:
+	import PIL #Import pillow library
+except:
+	input("Cannot start: Pillow module not installed, try `pip install Pillow` or consult the readme for more information.")
+	sys.exit()
+
 print("Using tkinter version {}".format(tk.Tcl().eval('info patchlevel')))
 
 from modules.widgets import frameManager
@@ -21,11 +32,12 @@ from pages import pagelist
 store_json = getJson("appstore_repo",appstore_repo_url)
 #Parse the json into categories
 repo_parser = parser()
+repo_parser.blacklist_categories(["loader", "theme"])
 repo_parser.load(store_json)
 #Shared tool for installing and managing hbas apps via the switchbru site on the sd card
 store_handler = appstore_handler()
 
-#Async threader tool for getting asyncronously
+#Async threader tool for getting downloads and other functions asyncronously
 threader = asyncThreader()
 
 geometry = {
@@ -35,7 +47,7 @@ geometry = {
 
 def startGUI(update_status):
 	pre_load_icons()
-	gui = frameManager(pagelist,geometry,store_handler,repo_parser,threader, update_status)
+	gui = frameManager(pagelist,geometry,store_handler,repo_parser,threader,update_status)
 	gui.title("unofficial appstore %s" % version)
 	gui.mainloop()
 

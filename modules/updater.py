@@ -10,7 +10,7 @@ UPDATE_NAME = "unofficial_appstore"
 asset_pattern = [["unofficial-appstore"], ".zip"]
 UPDATEURL = "https://api.github.com/repos/LyfeOnEdge/unofficial-appstore/releases"
 
-print("Lyfe's github update grabber, using python {}.{}".format(sys.version_info[0],sys.version_info[1]))
+# print("Lyfe's github update grabber, using python {}.{}".format(sys.version_info[0],sys.version_info[1]))
 
 def download_object(remote_name, filename):
     r = urllib.request.urlopen(remote_name)
@@ -117,7 +117,4 @@ def check_for_update(current_version):
     latest_version = update_data["tag_name"]
 
     if float(latest_version) > float(current_version):
-        return True
-
-if __name__ == "__main__":
-    update()
+        return update_data["body"]

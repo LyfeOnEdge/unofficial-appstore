@@ -6,6 +6,8 @@ import json
 #python object to hold appstore repo
 class parser(object):
     def __init__(self):
+        self.blacklisted_categories_list = []
+
         self.all = []
         self.advanced = []
         self.emus = []
@@ -31,6 +33,12 @@ class parser(object):
         for key in self.map:
             self.list_list.append(self.map[key])
 
+    def blacklist_categories(self, categories_list):
+        self.blacklisted_categories_list = categories_list
+
+    def clear_blacklist(self):
+        self.blacklisted_categories_list = []
+
     def clear(self):
         for lis in self.list_list:
             lis = []
@@ -41,9 +49,17 @@ class parser(object):
         try:
             with open(appstore_json, encoding="utf-8") as repojson:
                 self.all = json.load(repojson)["packages"]
+            self.sort()
+            if self.blacklisted_categories_list:
+                for entry in self.all:
+                    for category in self.blacklisted_categories_list:
+                        if entry in self.map[category]:
+                            self.all.remove(entry)
+                            break
+
         except Exception as e:
             print("Exception loading appstore json %s" % e)
-        self.sort()
+        print("Found %s appstore entries" % len(self.all))
 
     #sorts list into smaller chunks
     def sort(self):

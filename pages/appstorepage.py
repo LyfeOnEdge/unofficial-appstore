@@ -48,7 +48,7 @@ class appstorePage(activeFrame):
             background=style.dark_color
             ).place(relwidth = 1, relheight = 0.5, y = style.offset, x = style.offset, width = - 2 * style.offset, height = - 2 * style.offset)
 
-        self.column_sd_status_label = ThemedLabel(self.column_footer,"SD: Not Set",anchor="w",label_font=style.giantboldtext, background = style.light_color, foreground=style.b)
+        self.column_sd_status_label = ThemedLabel(self.column_footer,"SD: Not Set",anchor="w",label_font=style.giantboldtext, background = style.light_color, foreground= style.pathdisplaytextcolor)
         self.column_sd_status_label.place(x = style.offset, relheight = 0.5, rely=0.5, height = -style.offset, relwidth = 1, width = - 2 * style.offset)
 
         self.content_frame = ThemedFrame(self)
@@ -70,13 +70,12 @@ class appstorePage(activeFrame):
         advanced_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.advanced, self.appstore_handler, self.icon_dict)
         emus_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.emus, self.appstore_handler, self.icon_dict)
         games_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.games, self.appstore_handler, self.icon_dict)
-        themes_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.themes, self.appstore_handler, self.icon_dict)
         tools_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.tools, self.appstore_handler, self.icon_dict)
         misc_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.misc, self.appstore_handler, self.icon_dict)
         installed_frame = installed_categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.all, self.appstore_handler, self.icon_dict)
         about_frame = aboutFrame(self.content_stacking_frame)
 
-        self.category_frames = [all_frame,advanced_frame,emus_frame,games_frame,themes_frame,tools_frame,misc_frame, installed_frame]
+        self.category_frames = [all_frame,advanced_frame,emus_frame,games_frame,tools_frame,misc_frame, installed_frame]
 
         self.frames = [
             {
@@ -98,10 +97,6 @@ class appstorePage(activeFrame):
             {
             "frame" : advanced_frame,
             "text" : "Advanced"
-            },
-            {
-            "frame" : themes_frame,
-            "text" : "Themes"
             },
             {
             "frame" : misc_frame,
@@ -130,9 +125,10 @@ class appstorePage(activeFrame):
 
         self.show_frame("All Apps")
 
+        print(self.controller.update_status)
         if self.controller.update_status:
             self.yesnoPage = yesnoPage(self)
-            self.yesnoPage.getanswer("An update is available, would you like to download it?", update)
+            self.yesnoPage.getanswer("An update is available, would you like to download it? \n Patch notes: \n {}".format(self.controller.update_status), update)
 
         self.loaded()
         self.add_on_refresh_callback(self.update_sd_path)
@@ -196,7 +192,6 @@ class appstorePage(activeFrame):
 
     def update_sd_path(self):
         chosensdpath = self.appstore_handler.check_path()
-        print(chosensdpath)
         if chosensdpath:
             #Get the basename
             basepath = os.path.basename(os.path.normpath(chosensdpath))
