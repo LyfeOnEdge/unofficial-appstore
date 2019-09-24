@@ -57,7 +57,7 @@ One of the main goals of this app is to provide a homebrew management tool that 
  - A file dialog should appear, select the root of your SD card
  - Select an app you'd like to see more about
  - Click install to have the app properly installed on to the SD card
- - When you're done, unmount your SD card, put it in your SD card, and reboot.
+ - When you're done, unmount your SD card, put it in your homebrewed Nintendo Switch, and reboot.
 
 ##### Want to contribute? Have ideas? Questions? Great!
 You can find me here: 
