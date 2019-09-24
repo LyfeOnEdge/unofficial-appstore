@@ -25,6 +25,10 @@ https://github.com/LyfeOnEdge/unofficial-appstore/releases
  - Self-updater
 
 #### Future plans:
+ - Add sorting to lists
+ - Thread window drawing
+ - Improve look and feel with google's material design
+ - Add "esc" and "backspace" as hotkeys to exit the details window
  - Direct memloader integration (SD only) for installation directly over usb 
 
 # How to run:
@@ -62,9 +66,13 @@ https://github.com/LyfeOnEdge/unofficial-appstore/releases
  - Click install to have the app properly installed on to the SD card
  - When you're done, unmount your SD card, put it in your homebrewed Nintendo Switch, and reboot.
 
-# Troubleshooting:
+### Troubleshooting:
  - If you are getting errors about tkinter or pillow look above at the setup instructions for your OS
  - Image download errors are to be expected, please do not report them.
+
+#### Known bugs:
+##### Linux:
+ -  the highlighted text for the selected category is black in the listbox instead of white
 
 
 #### Want to contribute? Have ideas? Questions? Great!
@@ -74,3 +82,5 @@ You can find me here:
 # Credits:
  - vgmoose, pwscind, and the 4TU team
  - sudotoph for testing
+
+
