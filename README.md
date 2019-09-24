@@ -31,6 +31,8 @@ https://github.com/LyfeOnEdge/unofficial-appstore/releases
  - Add "esc" and "backspace" as hotkeys to exit the details window
  - Direct memloader integration (SD only) for installation directly over usb 
 
+***
+
 # How to run:
 #### Windows:
 - Extract unofficial-appstore.zip
@@ -74,6 +76,7 @@ https://github.com/LyfeOnEdge/unofficial-appstore/releases
 ##### Linux:
  -  the highlighted text for the selected category is black in the listbox instead of white
 
+***
 
 #### Want to contribute? Have ideas? Questions? Great!
 You can find me here: 
