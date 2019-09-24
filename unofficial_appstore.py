@@ -29,7 +29,9 @@ from modules.updater import check_for_update
 from pages import pagelist
 
 #Download the appstore json, uses etagging to check if it needs an update to minimize bandwidth
+print("Getting updated appstore repo file")
 store_json = getJson("appstore_repo",appstore_repo_url)
+print("")
 #Parse the json into categories
 repo_parser = parser()
 repo_parser.blacklist_categories(["loader", "theme"])

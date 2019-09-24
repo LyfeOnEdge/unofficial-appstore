@@ -62,3 +62,7 @@ One of the main goals of this app is to provide a homebrew management tool that 
 ##### Want to contribute? Have ideas? Questions? Great!
 You can find me here: 
 **[4TU](https://discord.gg/5AnDNr)**
+
+# Credits:
+ - vgmoose, pwscind, and the 4TU team
+ - sudotoph for testing

@@ -125,7 +125,6 @@ class appstorePage(activeFrame):
 
         self.show_frame("All Apps")
 
-        print(self.controller.update_status)
         if self.controller.update_status:
             self.yesnoPage = yesnoPage(self)
             self.yesnoPage.getanswer("An update is available, would you like to download it? \n Patch notes: \n {}".format(self.controller.update_status), update)

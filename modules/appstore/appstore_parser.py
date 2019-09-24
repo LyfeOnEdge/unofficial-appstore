@@ -56,7 +56,6 @@ class parser(object):
                         if entry in self.map[category]:
                             self.all.remove(entry)
                             break
-
         except Exception as e:
             print("Exception loading appstore json %s" % e)
         print("Found %s appstore entries" % len(self.all))
