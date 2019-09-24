@@ -30,6 +30,8 @@ One of the main goals of this app is to provide a homebrew management tool that 
 - Install [python](https://www.python.org/downloads/release/python-373/)
     - __Make sure to keep the tcl/tk checkbox ticked if doing a custom installation__
     - You *must* restart your pc after installing python for the first time.
+- Open a command prompt, type `pip install Pillow`
+    - This installs a required image library [Pillow](https://pypi.org/project/Pillow/2.2.1/)
 - Double-click start_appstore.bat
 
 ##### Macintosh:
