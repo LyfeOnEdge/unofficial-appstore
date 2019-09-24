@@ -47,9 +47,9 @@ https://github.com/LyfeOnEdge/unofficial-appstore/releases
 #### Linux:
 - Extract unofficial-appstore.zip
 - Navigate to the directory in a terminal
-- Type `python unofficial-appstore.py`
+- Type `python3 unofficial-appstore.py`
 - If you are missing dependencies do the following:
-    - sudo apt-get install python3 python3-pip python3-tk python3-pil python3-pil.imagetk
+    - sudo apt install python3 python3-pip python3-tk python3-pil python3-pil.imagetk
 - If you don't know how to do this you should probably be using Windows ;D
 - __To run the app: `python3 unofficial-appstore.py`__
 
@@ -61,6 +61,11 @@ https://github.com/LyfeOnEdge/unofficial-appstore/releases
  - Select an app you'd like to see more about
  - Click install to have the app properly installed on to the SD card
  - When you're done, unmount your SD card, put it in your homebrewed Nintendo Switch, and reboot.
+
+# Troubleshooting:
+ - If you are getting errors about tkinter or pillow look above at the setup instructions for your OS
+ - Image download errors are to be expected, please do not report them.
+
 
 #### Want to contribute? Have ideas? Questions? Great!
 You can find me here: 
