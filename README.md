@@ -28,20 +28,22 @@ One of the main goals of this app is to provide a homebrew management tool that 
 ##### Windows:
 - Extract unofficial-appstore.zip
 - Install [python](https://www.python.org/downloads/release/python-373/)
+    - __Make sure to keep the tcl/tk checkbox ticked if doing a custom installation__
+    - You *must* restart your pc after installing python for the first time.
 - Double-click start_appstore.bat
 
 ##### Macintosh:
 - Extract unofficial-appstore.zip
 - Mac users may already have a compatible version of python installed, try double-clicking unofficial-appstore.py
---If the file opens in a text reader, close the reader and right-click the file and open it with pylauncher
+- If the file opens in a text reader, close the reader and right-click the file and open it with pylauncher
 - If this still doesn't work, install [python](https://www.python.org/downloads/release/python-373/)
 
 ##### Linux:
 - Extract unofficial-appstore.zip
 - Navigate to the directory in a terminal
 - Type "python unofficial-appstore.py"
-  - If you are missing dependencies do the following:
-  - sudo apt-get install python3 python3-pip python3-tk
+- If you are missing dependencies do the following:
+    - sudo apt-get install python3 python3-pip python3-tk
 - If you don't know how to do this you should probably be using Windows ;D
 
 # How to use:
