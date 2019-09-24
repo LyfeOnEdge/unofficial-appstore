@@ -78,12 +78,12 @@ https://github.com/LyfeOnEdge/unofficial-appstore/releases
 
 ***
 
+# Credits:
+ - vgmoose, pwscind, and the 4TU team
+ - sudotoph, guts for testing
+
 #### Want to contribute? Have ideas? Questions? Great!
 You can find me here: 
 **[4TU](https://discord.gg/5AnDNr)**
-
-# Credits:
- - vgmoose, pwscind, and the 4TU team
- - sudotoph for testing
 
 
