@@ -31,14 +31,13 @@ from pages import pagelist
 #Download the appstore json, uses etagging to check if it needs an update to minimize bandwidth
 print("Getting updated appstore repo file")
 store_json = getJson("appstore_repo",appstore_repo_url)
-print("")
 #Parse the json into categories
 repo_parser = parser()
 repo_parser.blacklist_categories(["loader", "theme"])
 repo_parser.load(store_json)
 #Shared tool for installing and managing hbas apps via the switchbru site on the sd card
 store_handler = appstore_handler()
-
+print("")
 #Async threader tool for getting downloads and other functions asyncronously
 threader = asyncThreader()
 

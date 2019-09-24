@@ -46,7 +46,7 @@ One of the main goals of this app is to provide a homebrew management tool that 
 - Navigate to the directory in a terminal
 - Type `python unofficial-appstore.py`
 - If you are missing dependencies do the following:
-    - sudo apt-get install python3 python3-pip python3-tk
+    - sudo apt-get install python3 python3-pip python3-tk python3-pil python3-pil.imagetk
 - If you don't know how to do this you should probably be using Windows ;D
 - __To run the app: `python3 unofficial-appstore.py`__
 

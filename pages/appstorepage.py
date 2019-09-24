@@ -127,7 +127,7 @@ class appstorePage(activeFrame):
 
         if self.controller.update_status:
             self.yesnoPage = yesnoPage(self)
-            self.yesnoPage.getanswer("An update is available, would you like to download it? \n Patch notes: \n {}".format(self.controller.update_status), update)
+            self.yesnoPage.getanswer("An update is available, would you like to download it?\nPatch notes:\n{}".format(self.controller.update_status), update)
 
         self.loaded()
         self.add_on_refresh_callback(self.update_sd_path)
