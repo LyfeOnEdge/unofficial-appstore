@@ -32,14 +32,14 @@ One of the main goals of this app is to provide a homebrew management tool that 
     - You *must* restart your pc after installing python for the first time.
 - Open a command prompt, type `pip install Pillow`
     - This installs a required image library [Pillow](https://pypi.org/project/Pillow/2.2.1/)
-__To run the app: double-click start_appstore.bat__
+- __To run the app: double-click start_appstore.bat__
 
 ##### Macintosh:
 - Extract unofficial-appstore.zip
 - Mac users may already have a compatible version of python installed, try double-clicking unofficial-appstore.py
 - If the file opens in a text reader, close the reader and right-click the file and open it with pylauncher
 - If this still doesn't work, install [python](https://www.python.org/downloads/release/python-373/)
-__To run the app: double-click unofficial-appstore.py__
+- __To run the app: double-click unofficial-appstore.py__
 
 ##### Linux:
 - Extract unofficial-appstore.zip
@@ -48,7 +48,7 @@ __To run the app: double-click unofficial-appstore.py__
 - If you are missing dependencies do the following:
     - sudo apt-get install python3 python3-pip python3-tk
 - If you don't know how to do this you should probably be using Windows ;D
-__To run the app: `python3 unofficial-appstore.py`__
+- __To run the app: `python3 unofficial-appstore.py`__
 
 # How to use:
  - Connect your SD card to your computer
