@@ -12,7 +12,10 @@ Uses the switchbru/4TU team's site as a backend for image and package downloads.
 
 One of the main goals of this app is to provide a homebrew management tool that doesn't require the switch to access the internet. Especially useful for people who always keep their switch in airplane mode. 
 
-##### Working Stuff:
+#### Download:
+https://github.com/LyfeOnEdge/unofficial-appstore/releases
+
+#### Working Stuff:
  - Dynamic Search
  - Categories
  - Downloading directly from the switchbru/4tu site
@@ -21,11 +24,11 @@ One of the main goals of this app is to provide a homebrew management tool that 
  - Threaded operations mean the app no longer becomes unresponsive with big downloads
  - Self-updater
 
-##### Future plans:
+#### Future plans:
  - Direct memloader integration (SD only) for installation directly over usb 
 
 # How to run:
-##### Windows:
+#### Windows:
 - Extract unofficial-appstore.zip
 - Install [python](https://www.python.org/downloads/release/python-373/)
     - __Make sure to keep the tcl/tk checkbox ticked if doing a custom installation__
@@ -34,14 +37,14 @@ One of the main goals of this app is to provide a homebrew management tool that 
     - This installs a required image library [Pillow](https://pypi.org/project/Pillow/2.2.1/)
 - __To run the app: double-click start_appstore.bat__
 
-##### Macintosh:
+#### Macintosh:
 - Extract unofficial-appstore.zip
 - Mac users may already have a compatible version of python installed, try double-clicking unofficial-appstore.py
 - If the file opens in a text reader, close the reader and right-click the file and open it with pylauncher
 - If this still doesn't work, install [python](https://www.python.org/downloads/release/python-373/)
 - __To run the app: double-click unofficial-appstore.py__
 
-##### Linux:
+#### Linux:
 - Extract unofficial-appstore.zip
 - Navigate to the directory in a terminal
 - Type `python unofficial-appstore.py`
@@ -57,9 +60,9 @@ One of the main goals of this app is to provide a homebrew management tool that 
  - A file dialog should appear, select the root of your SD card
  - Select an app you'd like to see more about
  - Click install to have the app properly installed on to the SD card
- - When you're done, unmount your SD card, put it in your SD card, and reboot.
+ - When you're done, unmount your SD card, put it in your homebrewed Nintendo Switch, and reboot.
 
-##### Want to contribute? Have ideas? Questions? Great!
+#### Want to contribute? Have ideas? Questions? Great!
 You can find me here: 
 **[4TU](https://discord.gg/5AnDNr)**
 
