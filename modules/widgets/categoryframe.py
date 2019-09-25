@@ -33,6 +33,12 @@ class categoryFrame(tk.Frame):
         self.installed_image = ImageTk.PhotoImage(Image.open("assets/INSTALLED.png").resize((style.statussize, style.statussize), Image.ANTIALIAS))
         self.update_image = ImageTk.PhotoImage(Image.open("assets/UPDATE.png").resize((style.statussize, style.statussize), Image.ANTIALIAS))
 
+        self.status_map = {
+            "UPTODATE" : self.installed_image,
+            "NEEDSUPDATE" : self.update_image,
+            "NOTINSTALLED" : self.get_image
+        }
+
         #make canvas and scroll bar
         self.canvas = tk.Canvas(self, bg=style.w, relief=tk.constants.SUNKEN)
         self.canvas.config(
@@ -63,7 +69,8 @@ class categoryFrame(tk.Frame):
 
         #Build buttons from passed repo
         self.makeButtonList()
-        self.buildFrame()
+        self.async_threader.do_async(self.buildFrame, [])
+        # self.buildFrame()
 
         self.framework.add_on_refresh_callback(self.buildFrame)
 
@@ -129,7 +136,7 @@ class categoryFrame(tk.Frame):
                     base_y = _y * _spacing + style.tileoffset
                     base_x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset)
 
-                    self.async_threader.async_button_place(self.buildButton, button, base_x, base_y)
+                    self.async_threader.do_async(self.buildButton, [button, base_x, base_y])
                     _x += 1
 
                     if _x == _maxperrow:
@@ -150,53 +157,57 @@ class categoryFrame(tk.Frame):
 
         button.place(x=base_x, y = base_y, height = style.thumbnailwidth, width = style.thumbnailwidth)
         
-        if not button.buttontitlelabel:
-            button.buttontitlelabel = ThemedLabel(self.canvas_frame,button.repo["title"],anchor="e",label_font=style.mediumboldtext,foreground=style.b,background=style.w)
-            button.buttontitlelabel.bind("<MouseWheel>", self.on_mouse_wheel)
+        def place_buttontitlelabel():
+            if not button.buttontitlelabel:
+                button.buttontitlelabel = ThemedLabel(self.canvas_frame,button.repo["title"],anchor="e",label_font=style.mediumboldtext,foreground=style.b,background=style.w)
+                button.buttontitlelabel.bind("<MouseWheel>", self.on_mouse_wheel)
+            button.buttontitlelabel.place(x = base_x, y =  label_y - 1.5 * style.buttontextheight, width = style.thumbnailwidth)
 
-        if not button.buttonauthorlabel:
-            button.buttonauthorlabel = ThemedLabel(self.canvas_frame,button.repo["author"],anchor="e",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
-            button.buttonauthorlabel.bind("<MouseWheel>", self.on_mouse_wheel)
+        def place_buttonauthorlabel():
+            if not button.buttonauthorlabel:
+                button.buttonauthorlabel = ThemedLabel(self.canvas_frame,button.repo["author"],anchor="e",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
+                button.buttonauthorlabel.bind("<MouseWheel>", self.on_mouse_wheel)
+            button.buttonauthorlabel.place(x = base_x, y = label_y, width = style.thumbnailwidth)
 
-        if not button.buttonstatuslabel:
-            button.buttonstatuslabel = ThemedLabel(self.canvas_frame,"",anchor="w",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
-            button.buttonstatuslabel.bind("<MouseWheel>", self.on_mouse_wheel)
+        def place_buttonstatuslabel():
+            if not button.buttonstatuslabel:
+                button.buttonstatuslabel = ThemedLabel(self.canvas_frame,"",anchor="w",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
+                button.buttonstatuslabel.bind("<MouseWheel>", self.on_mouse_wheel)
+            button.buttonstatuslabel.place(x = base_x, y = label_y - 1.5 * style.buttontextheight + 4)
 
-        if not button.buttonversionlabel:
-            button.buttonversionlabel = ThemedLabel(self.canvas_frame,button.repo["version"],anchor="w",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
-            button.buttonversionlabel.bind("<MouseWheel>", self.on_mouse_wheel)
+            status = None
+            package = button.repo["name"]
+            if self.appstore_handler.packages:
+                if package in self.appstore_handler.packages:
+                    installed_version = self.appstore_handler.get_package_version(package)
 
-        if not button.buttonseparator:
-            button.buttonseparator = tk.Label(self.canvas_frame, background=style.lg, borderwidth= 0)
-
-        button.buttontitlelabel.place(x = base_x, y =  label_y - 1.5 * style.buttontextheight, width = style.thumbnailwidth)
-        button.buttonauthorlabel.place(x = base_x, y = label_y, width = style.thumbnailwidth)
-        button.buttonversionlabel.place(x = base_x, y = label_y)
-        button.buttonseparator.place(x = base_x, y = label_y + 5, height = 1, width = style.thumbnailwidth)
-        button.buttonstatuslabel.place(x = base_x, y = label_y - 1.5 * style.buttontextheight + 4)
-
-        status = None
-        package = button.repo["name"]
-        if self.appstore_handler.packages:
-            if package in self.appstore_handler.packages:
-                installed_version = self.appstore_handler.get_package_version(package)
-
-                if self.appstore_handler.clean_version(installed_version, package) == self.appstore_handler.clean_version(installed_version, package):
-                    status = "UPTODATE"
-                elif self.appstore_handler.clean_version(installed_version, package) < self.appstore_handler.clean_version(installed_version, package):
-                    status = "NEEDSUPDATE"
+                    if self.appstore_handler.clean_version(installed_version, package) == self.appstore_handler.clean_version(installed_version, package):
+                        status = "UPTODATE"
+                    elif self.appstore_handler.clean_version(installed_version, package) < self.appstore_handler.clean_version(installed_version, package):
+                        status = "NEEDSUPDATE"
+                else:
+                    status = "NOTINSTALLED"
             else:
                 status = "NOTINSTALLED"
-        else:
-            status = "NOTINSTALLED"
 
-        status_map = {
-        "UPTODATE" : self.installed_image,
-        "NEEDSUPDATE" : self.update_image,
-        "NOTINSTALLED" : self.get_image
-        }
+            button.buttonstatuslabel.configure(image=self.status_map[status])
 
-        button.buttonstatuslabel.configure(image=status_map[status])
+        def place_buttonversionlabel():
+            if not button.buttonversionlabel:
+                button.buttonversionlabel = ThemedLabel(self.canvas_frame,button.repo["version"],anchor="w",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
+                button.buttonversionlabel.bind("<MouseWheel>", self.on_mouse_wheel)
+            button.buttonversionlabel.place(x = base_x, y = label_y)
+
+        def place_buttonseparator():
+            if not button.buttonseparator:
+                button.buttonseparator = tk.Label(self.canvas_frame, background=style.lg, borderwidth= 0)
+            button.buttonseparator.place(x = base_x, y = label_y + 5 + style.buttontextheight, height = 1, width = style.thumbnailwidth)
+
+        self.async_threader.do_async(place_buttontitlelabel, [])
+        self.async_threader.do_async(place_buttonauthorlabel, [])
+        self.async_threader.do_async(place_buttonstatuslabel, [])
+        self.async_threader.do_async(place_buttonversionlabel, [])
+        self.async_threader.do_async(place_buttonseparator, [])
 
     def search(self, searchterm):
         self.is_searching = True

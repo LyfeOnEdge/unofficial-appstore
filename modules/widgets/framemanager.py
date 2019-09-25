@@ -2,7 +2,14 @@ import tkinter as tk
 
 #Frame handler, raises and pages in z layer
 class frameManager(tk.Tk):
-    def __init__(self, pages, geometry, appstore_handler, repo_parser, async_threader, update_status):
+    def __init__(self, 
+        pages, #List of pages to put in outermost z-layer
+        geometry, #Startup size
+        appstore_handler, #Object to manage appstore sd content
+        repo_parser, #Object to deal with the appstore json
+        async_threader, #object to easily deal with a few async function
+        update_status): #Whether or not the app needs an update
+
         tk.Tk.__init__(self)
         self.update_status = update_status
         self.geometry("{}x{}".format(geometry["width"],geometry["height"])) 
@@ -25,6 +32,7 @@ class frameManager(tk.Tk):
                 self.frames[page_name] = frame
 
                 frame.grid(row=0, column=0, sticky="nsew")
+
 
     def show_frame(self, page_name):
         #Show frame for the given page name

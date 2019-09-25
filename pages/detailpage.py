@@ -85,7 +85,7 @@ class detailPage(activeFrame):
 
         self.back_image = ImageTk.PhotoImage(Image.open(locations.backimage).resize((style.buttonsize, style.buttonsize), Image.ANTIALIAS))
 
-        self.column_backbutton = button(self.column_body, image_object=self.back_image, callback=lambda: self.controller.show_frame("appstorePage"), background=style.light_color)
+        self.column_backbutton = button(self.column_body, image_object=self.back_image, callback=self.leave, background=style.light_color)
         self.column_backbutton.place(rely=1,relx=1,x = -(style.buttonsize + style.offset), y = -(style.buttonsize + style.offset))
         self.column_backbutton_ttp = tooltip(self.column_backbutton,"Back to list")
 
@@ -195,6 +195,13 @@ class detailPage(activeFrame):
         self.update_banner(locations.notfoundimage)
         # self.update_page(repo)
         self.tkraise()
+        for child in self.winfo_children():
+            child.bind("<Escape>", self.leave)
+
+    def leave(self):
+        self.controller.show_frame("appstorePage")
+        for child in self.winfo_children():
+            child.unbind("<Escape>")
 
     def reload_function(self):
             self.controller.frames["appstorePage"].reload_category_frames()
@@ -205,7 +212,7 @@ class detailPage(activeFrame):
             self.set_sd()
         if self.appstore_handler.check_if_get_init():
             if self.repo:
-                self.async_threader.install_package(self.repo, self.appstore_handler, self.progress_bar.update, self.reload_function)
+                self.async_threader.do_async(self.appstore_handler.install_package, [self.repo, self.progress_bar.update, self.reload_function])
         else:
             self.yesnoPage.getanswer("The homebrew appstore has not been initiated here yet, would you like to initiate it?", self.init_get_then_continue)
 
@@ -215,12 +222,12 @@ class detailPage(activeFrame):
 
     def trigger_uninstall(self):
         if self.repo:
-            self.appstore_handler.uninstall_package(self.repo)
+            self.async_threader.do_async(self.appstore_handler.uninstall_package, [self.repo])
             self.controller.frames["appstorePage"].reload_category_frames()
             self.schedule_callback(self.reload(), 100)
 
     def reload(self):
-        self.update_page(self.repo)
+        self.async_threader.do_async(self.update_page, [self.repo])
 
     def trigger_open_tab(self):
         if self.repo:

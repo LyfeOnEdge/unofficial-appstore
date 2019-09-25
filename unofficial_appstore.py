@@ -28,19 +28,19 @@ from modules.locations import appstore_repo_url
 from modules.async_threader import asyncThreader
 from modules.updater import check_for_update
 from pages import pagelist
+from timeit import default_timer as timer
 
+#Async threader tool for getting downloads and other functions asyncronously
+threader = asyncThreader()
 #Download the appstore json, uses etagging to check if it needs an update to minimize bandwidth
 print("Getting updated appstore repo file")
 store_json = getJson("appstore_repo",appstore_repo_url)
 #Parse the json into categories
 repo_parser = parser()
 repo_parser.blacklist_categories(["loader", "theme"])
-repo_parser.load(store_json)
+threader.do_async(repo_parser.load, [store_json])
 #Shared tool for installing and managing hbas apps via the switchbru site on the sd card
 store_handler = appstore_handler()
-print("")
-#Async threader tool for getting downloads and other functions asyncronously
-threader = asyncThreader()
 
 geometry = {
 	"width" : 780,
