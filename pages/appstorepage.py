@@ -7,6 +7,8 @@ from modules.tk_image_sharer import icon_dict
 from modules.updater import update
 from .yesnopage import yesnoPage
 
+
+
 class appstorePage(activeFrame):
     def __init__(self, parent, controller, page_name, appstore_handler, repo_parser, async_threader):
         self.current_frame = None
@@ -154,7 +156,7 @@ class appstorePage(activeFrame):
             category_label_offset = self.category_label.winfo_width()
             #If the category label has been populated, otherwise the offset is usually just a few pixels (prevents an ugly draw on launch)
             if category_label_offset > style.offset:
-                self.content_frame_header_search_bar.place(x = category_label_offset, rely=0.5, y=-0.5*style.searchboxheight,relheight =1, relwidth = 1, width = - (category_label_offset + 2 * style.offset))
+                self.content_frame_header_search_bar.place(x = category_label_offset, rely=0.5, y=-0.5*style.searchboxheight + style.offset,relheight =1, relwidth = 1, width = - (category_label_offset + 2 * style.offset), height = - 2 *style.offset)
             else:
                 self.content_frame_header_search_bar.place_forget()
                 self.controller.after(20, self.update_search_bar_position)

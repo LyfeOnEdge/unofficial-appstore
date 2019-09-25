@@ -1,6 +1,6 @@
 import tkinter as tk
 from PIL import Image, ImageTk
-
+from timeit import default_timer as timer
 import modules.style as style
 from .storeappsquare import storeAppSquare
 from .customwidgets import ThemedLabel
@@ -17,10 +17,14 @@ class categoryFrame(tk.Frame):
         self.appstore_handler = appstore_handler #Tool to get installed package data etc
         self.buttons = []   #List to hold buttons for this page
         self.current_buttons = [] #list to hold currently displayed buttons
-        self.isSearching = False
-        self.search_pending = False
         self.icon_dict = icon_dict
         self.selected = False
+
+        self.is_searching = True #Used to remember if we are currently searching
+        self.currentsearch = False #Used to remember the current qued search term (helps with search lag)
+        self.lastsearch = False #Used to remember the last term searched
+        self.searchtimer = None
+
         tk.Frame.__init__(self, parent, background = style.w, border = 0, highlightthickness = 0)
 
         #Shared images for the squares
@@ -71,13 +75,16 @@ class categoryFrame(tk.Frame):
     def is_selected(self):
         return self.selected
 
-    def rebuild(self, new_repos):
-        print("Rebuilding")
-        self.repos = new_repos
-        self.current_buttons = None
+    def rebuild(self):
         self.clear()
-        self.makeButtonList()
         self.buildFrame()
+
+    def remake(self, new_repos):
+        print("Remaking")
+        self.repos = new_repos
+        self.current_buttons = []
+        self.buttons = []
+        self.rebuild()
 
     def makeButtonList(self):
         self.buttons = []
@@ -97,6 +104,7 @@ class categoryFrame(tk.Frame):
         if self.selected:
             #if there is content to build with
             if self.current_buttons:
+                buildstart = timer()
                 _spacing = style.thumbnailwidth+2*style.tileoffset
                 #Set the width 
                 _framewidth = self.winfo_width() - self.scrollbar.winfo_width()
@@ -117,7 +125,11 @@ class categoryFrame(tk.Frame):
                 _x = 0
 
                 for button in self.current_buttons:
-                    button.place(x=_x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset, height = style.thumbnailwidth, width = style.thumbnailwidth)
+                    origin_y = _y * _spacing + style.tileoffset
+                    base_y = origin_y + style.thumbnailwidth - style.buttontextheight + 3
+                    base_x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset)
+
+                    button.place(x=base_x, y = origin_y, height = style.thumbnailwidth, width = style.thumbnailwidth)
                     
                     if not button.buttontitlelabel:
                         button.buttontitlelabel = ThemedLabel(self.canvas_frame,button.repo["title"],anchor="e",label_font=style.mediumboldtext,foreground=style.b,background=style.w)
@@ -138,11 +150,11 @@ class categoryFrame(tk.Frame):
                     if not button.buttonseparator:
                         button.buttonseparator = tk.Label(self.canvas_frame, background=style.lg, borderwidth= 0)
 
-                    button.buttontitlelabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth - 2.5 * style.buttontextheight + 3, width = style.thumbnailwidth)
-                    button.buttonauthorlabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth - style.buttontextheight + 3, width = style.thumbnailwidth)
-                    button.buttonversionlabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth - style.buttontextheight + 3)
-                    button.buttonseparator.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth + 8, height = 1, width = style.thumbnailwidth)
-                    button.buttonstatuslabel.place(x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset), y = _y * _spacing + style.tileoffset + style.thumbnailwidth - 2.5 * style.buttontextheight + 3)
+                    button.buttontitlelabel.place(x = base_x, y =  base_y - 1.5 * style.buttontextheight, width = style.thumbnailwidth)
+                    button.buttonauthorlabel.place(x = base_x, y = base_y, width = style.thumbnailwidth)
+                    button.buttonversionlabel.place(x = base_x, y = base_y)
+                    button.buttonseparator.place(x = base_x, y = base_y + 5, height = 1, width = style.thumbnailwidth)
+                    button.buttonstatuslabel.place(x = base_x, y = base_y - 1.5 * style.buttontextheight + 4)
 
                     status = None
                     package = button.repo["name"]
@@ -174,16 +186,32 @@ class categoryFrame(tk.Frame):
                         _y += 1
 
                 #Update the size of the canvas and configure the scrollable area
-                _canvasheight = (_y + 1) * (style.thumbnailwidth+2*style.tileoffset)
+                _canvasheight = (_y + 1) * (_spacing)
                 if _canvasheight < self.winfo_height():
                     _canvasheight = self.winfo_height()
                 self.canvas_frame.config(height = _canvasheight,width= _framewidth)
                 self.canvas.config(scrollregion=(0,0,_framewidth, _canvasheight))
                 self.canvas_frame.update_idletasks()
+                buildend = timer()
+                print("build took {} seconds".format(buildend - buildstart))
 
     def search(self, searchterm):
-        def doSearch():
-            search_categories = ["name", "title", "author"]
+        self.is_searching = True
+        self.currentsearch = searchterm
+        self.searchtimer = timer()
+        self.controller.after(100, self.search_poll())
+
+    def search_poll(self):
+        if self.is_searching:
+            #.4 second delay on search debouncer
+            if (timer() - self.searchtimer) > (0.4):
+                self.do_search_query()
+            else:
+                self.controller.after(100, self.search_poll)
+
+    def do_search_query(self):
+        def doSearch(searchterm):
+            search_categories = ["name", "title", "author", "description"]
 
             new_buttons = []
 
@@ -197,33 +225,23 @@ class categoryFrame(tk.Frame):
 
             return new_buttons
 
-        if searchterm:
-            result = doSearch()
+        if self.currentsearch:
+            result = doSearch(self.currentsearch)
         else:
             result = self.buttons[:]
 
         self.current_buttons = result
 
-        #Clear button layout
-        self.clear()
+        self.is_searching = False
+        self.lastsearch = self.currentsearch
+        self.currentsearch = None
 
-        self.buildFrame()
+        self.rebuild()
 
+        #Most efficiant way to un-place items on the canvas
     def clear(self):
-        # for child in self.scroller.winfo_children():
-        #     child.grid_forget()
-        for button in self.buttons:
-            button.place_forget()
-            if button.buttontitlelabel:
-                button.buttontitlelabel.place_forget()
-            if button.buttonauthorlabel:
-                button.buttonauthorlabel.place_forget()
-            if button.buttonversionlabel:
-                button.buttonversionlabel.place_forget()
-            if button.buttonseparator:
-                button.buttonseparator.place_forget()
-            if button.buttonstatuslabel:
-                button.buttonstatuslabel.place_forget()
+        for child in self.canvas_frame.winfo_children():
+            child.place_forget()
 
     def configure(self, event):
         self.framework.refresh()

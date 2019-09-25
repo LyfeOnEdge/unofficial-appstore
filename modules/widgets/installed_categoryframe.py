@@ -7,7 +7,7 @@ class installed_categoryFrame(categoryFrame):
         categoryFrame.__init__(self, parent,controller,framework, all_repos, appstore_handler, icon_dict)
         framework.add_on_refresh_callback(lambda: self.rebuild(self.repos))
         
-    def makeButtonList(self):
+    def remakeButtonList(self):
         self.packages = []
 
         if self.appstore_handler.packages:
@@ -25,7 +25,6 @@ class installed_categoryFrame(categoryFrame):
                 self.current_buttons = self.buttons
 
     def rebuild(self, _):
-        print("Rebuilding")
         self.clear()
-        self.makeButtonList()
+        self.remakeButtonList()
         self.buildFrame()
