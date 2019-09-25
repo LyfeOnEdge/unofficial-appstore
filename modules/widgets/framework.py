@@ -51,11 +51,11 @@ class activeFrame(tk.Frame):
             
     def do_callbacks_list(self, callbacks_list):
         if callbacks_list:
-            try:
-                for callback in callbacks_list:
-                    self.controller.after(1,callback())
-            except Exception as e:
-                print("do_callbacks_list error %s" % e)
+            # try:
+            for callback in callbacks_list:
+                self.controller.after(1,callback())
+            # except Exception as e:
+            #     print("do_callbacks_list error %s" % e)
 
     def schedule_callback(self, callback, delay = 1):
         self.controller.after(delay, callback)

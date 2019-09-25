@@ -1,5 +1,5 @@
-version = "1.4"
-print("Unofficial appstore version {}".format(version))
+version = "1.5"
+print("Unofficial appstore version %s" % version)
 
 import os, sys, platform, json, threading
 print("Using Python {}.{}".format(sys.version_info[0],sys.version_info[1]))
@@ -20,6 +20,7 @@ except:
 
 print("Using tkinter version {}".format(tk.Tcl().eval('info patchlevel')))
 
+#Import local modules
 from modules.widgets import frameManager
 from modules.appstore import getPackageIcon, parser, appstore_handler
 from modules.webhandler import getJson
@@ -50,6 +51,24 @@ def startGUI(update_status):
 	pre_load_icons()
 	gui = frameManager(pagelist,geometry,store_handler,repo_parser,threader,update_status)
 	gui.title("unofficial appstore %s" % version)
+
+	#Set icon
+	favicon = None
+	if platform.system() == 'Windows':
+		print("Windows detected, setting icon")
+	elif platform.system() == "Linux":
+		print("Linux detected, setting icon")
+		favicon = os.path.join("assets", 'favicon.xbm')
+	elif platform.system() == "Darwin":
+		print("Mac detected, not setting icon as it is not supported")
+
+	if favicon:
+		if os.path.exists(favicon):
+			#Set icon
+			gui.iconbitmap(favicon)
+		else:
+			print("Icon file not found, not setting favicon")
+
 	gui.mainloop()
 
 #Helps by pre-downloading the various icons

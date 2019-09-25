@@ -1,10 +1,10 @@
 from .categoryframe import categoryFrame
 
 class installed_categoryFrame(categoryFrame):
-    def __init__(self,parent,controller,framework, all_repos, appstore_handler, icon_dict):
+    def __init__(self,parent,controller,framework, all_repos, appstore_handler, icon_dict, async_threader):
         self.icon_dict = icon_dict
         self.last_packages = None
-        categoryFrame.__init__(self, parent,controller,framework, all_repos, appstore_handler, icon_dict)
+        categoryFrame.__init__(self, parent,controller,framework, all_repos, appstore_handler, icon_dict, async_threader)
         framework.add_on_refresh_callback(lambda: self.rebuild(self.repos))
         
     def remakeButtonList(self):

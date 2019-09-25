@@ -15,6 +15,9 @@ class asyncThreader():
         reference = url
         return url
 
+    def async_button_place(self, button_build_function, button, base_x, base_y):
+       buttonPlaceThread(button_build_function, button, base_x, base_y)
+
     def install_package(self, repo, appstore_handler_object, progress_function, reload_function):
         installThread(self.queue, repo, appstore_handler_object, progress_function, reload_function)
 
@@ -70,4 +73,9 @@ class installThread():
         self.queue = queue
         self.repo = repo
         thread = threading.Thread(target=appstore_handler_object.install_package, args=(self.repo, progress_function, reload_function))
+        thread.start()
+
+class buttonPlaceThread():
+    def __init__(self, button_build_function, button, base_x, base_y):
+        thread = threading.Thread(target=button_build_function, args=(button, base_x, base_y))
         thread.start()

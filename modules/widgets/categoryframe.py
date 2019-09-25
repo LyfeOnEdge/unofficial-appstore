@@ -8,7 +8,7 @@ from modules.appstore import getPackageIcon
 from modules.locations import notfoundimage
 
 class categoryFrame(tk.Frame):
-    def __init__(self,parent,controller,framework, repos, appstore_handler, icon_dict):
+    def __init__(self,parent,controller,framework, repos, appstore_handler, icon_dict, async_threader):
         #list of repos to be displayed by this frame
         self.repos = repos
         self.parent = parent
@@ -19,6 +19,7 @@ class categoryFrame(tk.Frame):
         self.current_buttons = [] #list to hold currently displayed buttons
         self.icon_dict = icon_dict
         self.selected = False
+        self.async_threader = async_threader
 
         self.is_searching = True #Used to remember if we are currently searching
         self.currentsearch = False #Used to remember the current qued search term (helps with search lag)
@@ -104,7 +105,7 @@ class categoryFrame(tk.Frame):
         if self.selected:
             #if there is content to build with
             if self.current_buttons:
-                buildstart = timer()
+                # buildstart = timer()
                 _spacing = style.thumbnailwidth+2*style.tileoffset
                 #Set the width 
                 _framewidth = self.winfo_width() - self.scrollbar.winfo_width()
@@ -125,60 +126,9 @@ class categoryFrame(tk.Frame):
                 _x = 0
 
                 for button in self.current_buttons:
-                    origin_y = _y * _spacing + style.tileoffset
-                    base_y = origin_y + style.thumbnailwidth - style.buttontextheight + 3
+                    base_y = _y * _spacing + style.tileoffset
                     base_x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset)
-
-                    button.place(x=base_x, y = origin_y, height = style.thumbnailwidth, width = style.thumbnailwidth)
-                    
-                    if not button.buttontitlelabel:
-                        button.buttontitlelabel = ThemedLabel(self.canvas_frame,button.repo["title"],anchor="e",label_font=style.mediumboldtext,foreground=style.b,background=style.w)
-                        button.buttontitlelabel.bind("<MouseWheel>", self.on_mouse_wheel)
-
-                    if not button.buttonauthorlabel:
-                        button.buttonauthorlabel = ThemedLabel(self.canvas_frame,button.repo["author"],anchor="e",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
-                        button.buttonauthorlabel.bind("<MouseWheel>", self.on_mouse_wheel)
-
-                    if not button.buttonstatuslabel:
-                        button.buttonstatuslabel = ThemedLabel(self.canvas_frame,"",anchor="w",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
-                        button.buttonstatuslabel.bind("<MouseWheel>", self.on_mouse_wheel)
-
-                    if not button.buttonversionlabel:
-                        button.buttonversionlabel = ThemedLabel(self.canvas_frame,button.repo["version"],anchor="w",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
-                        button.buttonversionlabel.bind("<MouseWheel>", self.on_mouse_wheel)
-
-                    if not button.buttonseparator:
-                        button.buttonseparator = tk.Label(self.canvas_frame, background=style.lg, borderwidth= 0)
-
-                    button.buttontitlelabel.place(x = base_x, y =  base_y - 1.5 * style.buttontextheight, width = style.thumbnailwidth)
-                    button.buttonauthorlabel.place(x = base_x, y = base_y, width = style.thumbnailwidth)
-                    button.buttonversionlabel.place(x = base_x, y = base_y)
-                    button.buttonseparator.place(x = base_x, y = base_y + 5, height = 1, width = style.thumbnailwidth)
-                    button.buttonstatuslabel.place(x = base_x, y = base_y - 1.5 * style.buttontextheight + 4)
-
-                    status = None
-                    package = button.repo["name"]
-                    if self.appstore_handler.packages:
-                        if package in self.appstore_handler.packages:
-                            installed_version = self.appstore_handler.get_package_version(package)
-
-                            if self.appstore_handler.clean_version(installed_version, package) == self.appstore_handler.clean_version(installed_version, package):
-                                status = "UPTODATE"
-                            elif self.appstore_handler.clean_version(installed_version, package) < self.appstore_handler.clean_version(installed_version, package):
-                                status = "NEEDSUPDATE"
-                        else:
-                            status = "NOTINSTALLED"
-                    else:
-                        status = "NOTINSTALLED"
-
-                    status_map = {
-                    "UPTODATE" : self.installed_image,
-                    "NEEDSUPDATE" : self.update_image,
-                    "NOTINSTALLED" : self.get_image
-                    }
-
-                    button.buttonstatuslabel.configure(image=status_map[status])
-
+                    self.async_threader.async_button_place(self.buildButton, button, base_x, base_y)
                     _x += 1
 
                     if _x == _maxperrow:
@@ -192,8 +142,62 @@ class categoryFrame(tk.Frame):
                 self.canvas_frame.config(height = _canvasheight,width= _framewidth)
                 self.canvas.config(scrollregion=(0,0,_framewidth, _canvasheight))
                 self.canvas_frame.update_idletasks()
-                buildend = timer()
-                print("build took {} seconds".format(buildend - buildstart))
+                # buildend = timer()
+                # print("build took {} seconds".format(buildend - buildstart))
+
+    def buildButton(self, button, base_x, base_y):
+        label_y = base_y + style.thumbnailwidth - style.buttontextheight + 3
+
+        button.place(x=base_x, y = base_y, height = style.thumbnailwidth, width = style.thumbnailwidth)
+        
+        if not button.buttontitlelabel:
+            button.buttontitlelabel = ThemedLabel(self.canvas_frame,button.repo["title"],anchor="e",label_font=style.mediumboldtext,foreground=style.b,background=style.w)
+            button.buttontitlelabel.bind("<MouseWheel>", self.on_mouse_wheel)
+
+        if not button.buttonauthorlabel:
+            button.buttonauthorlabel = ThemedLabel(self.canvas_frame,button.repo["author"],anchor="e",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
+            button.buttonauthorlabel.bind("<MouseWheel>", self.on_mouse_wheel)
+
+        if not button.buttonstatuslabel:
+            button.buttonstatuslabel = ThemedLabel(self.canvas_frame,"",anchor="w",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
+            button.buttonstatuslabel.bind("<MouseWheel>", self.on_mouse_wheel)
+
+        if not button.buttonversionlabel:
+            button.buttonversionlabel = ThemedLabel(self.canvas_frame,button.repo["version"],anchor="w",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
+            button.buttonversionlabel.bind("<MouseWheel>", self.on_mouse_wheel)
+
+        if not button.buttonseparator:
+            button.buttonseparator = tk.Label(self.canvas_frame, background=style.lg, borderwidth= 0)
+
+        button.buttontitlelabel.place(x = base_x, y =  label_y - 1.5 * style.buttontextheight, width = style.thumbnailwidth)
+        button.buttonauthorlabel.place(x = base_x, y = label_y, width = style.thumbnailwidth)
+        button.buttonversionlabel.place(x = base_x, y = label_y)
+        button.buttonseparator.place(x = base_x, y = label_y + 5, height = 1, width = style.thumbnailwidth)
+        button.buttonstatuslabel.place(x = base_x, y = label_y - 1.5 * style.buttontextheight + 4)
+
+        status = None
+        package = button.repo["name"]
+        if self.appstore_handler.packages:
+            if package in self.appstore_handler.packages:
+                installed_version = self.appstore_handler.get_package_version(package)
+
+                if self.appstore_handler.clean_version(installed_version, package) == self.appstore_handler.clean_version(installed_version, package):
+                    status = "UPTODATE"
+                elif self.appstore_handler.clean_version(installed_version, package) < self.appstore_handler.clean_version(installed_version, package):
+                    status = "NEEDSUPDATE"
+            else:
+                status = "NOTINSTALLED"
+        else:
+            status = "NOTINSTALLED"
+
+        status_map = {
+        "UPTODATE" : self.installed_image,
+        "NEEDSUPDATE" : self.update_image,
+        "NOTINSTALLED" : self.get_image
+        }
+
+        button.buttonstatuslabel.configure(image=status_map[status])
+
 
     def search(self, searchterm):
         self.is_searching = True
