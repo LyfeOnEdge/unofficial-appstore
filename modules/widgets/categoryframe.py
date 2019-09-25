@@ -128,6 +128,7 @@ class categoryFrame(tk.Frame):
                 for button in self.current_buttons:
                     base_y = _y * _spacing + style.tileoffset
                     base_x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset)
+
                     self.async_threader.async_button_place(self.buildButton, button, base_x, base_y)
                     _x += 1
 
@@ -141,7 +142,6 @@ class categoryFrame(tk.Frame):
                     _canvasheight = self.winfo_height()
                 self.canvas_frame.config(height = _canvasheight,width= _framewidth)
                 self.canvas.config(scrollregion=(0,0,_framewidth, _canvasheight))
-                self.canvas_frame.update_idletasks()
                 # buildend = timer()
                 # print("build took {} seconds".format(buildend - buildstart))
 
@@ -197,7 +197,6 @@ class categoryFrame(tk.Frame):
         }
 
         button.buttonstatuslabel.configure(image=status_map[status])
-
 
     def search(self, searchterm):
         self.is_searching = True

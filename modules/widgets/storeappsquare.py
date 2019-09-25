@@ -77,7 +77,7 @@ class storeAppSquare(ThemedFrame):
     def image_loop(self):
         if self.framework.loaded_status():
             self.imageset = True
-            self.framework.after(1, self.set_image)
+            self.set_image()
 
         #Until the image has been set
         if not self.imageset:
