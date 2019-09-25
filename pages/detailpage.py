@@ -182,14 +182,18 @@ class detailPage(activeFrame):
                 self.column_install_button.settext("INSTALL")
 
     def update_banner(self,image_path):
-        art_image = Image.open(image_path)
-        # art_image = art_image.resize((infoframewidth, infoframewidth), Image.ANTIALIAS)
-        art_image = ImageTk.PhotoImage(art_image)
-        self.content_banner_image.configure(image=art_image)
-        self.content_banner_image.image = art_image
+        def do_update_banner(path):
+            art_image = Image.open(path)
+            art_image = ImageTk.PhotoImage(art_image)
+            self.content_banner_image.configure(image=art_image)
+            self.content_banner_image.image = art_image
+
+        self.async_threader.do_async(do_update_banner, [image_path])
 
     def show(self, repo):
-        self.update_page(repo)
+        self.async_threader.do_async(self.update_page, [repo])
+        self.update_banner(locations.notfoundimage)
+        # self.update_page(repo)
         self.tkraise()
 
     def reload_function(self):
