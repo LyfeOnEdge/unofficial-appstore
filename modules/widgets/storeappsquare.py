@@ -41,7 +41,7 @@ class storeAppSquare(ThemedFrame):
         self.buttonseparator = None #Placeholder for underline in each button
         self.buttonstatuslabel = None #Placeholder for download / version status
         
-        self.framework.after(50, self.image_loop)
+        self.controller.async_threader.do_async(self.set_image(), [])
 
     def open_details(self, repo):
         self.controller.frames["detailPage"].show(repo)
@@ -72,13 +72,3 @@ class storeAppSquare(ThemedFrame):
                 self.button_image = ImageTk.PhotoImage(Image.open(notfoundimage).resize((style.thumbnailwidth, style.thumbnailheight - 10), Image.ANTIALIAS))
 
         self.buttonobj.setimage(self.button_image)
-
-    #This function polls until the image has been set
-    def image_loop(self):
-        if self.framework.loaded_status():
-            self.imageset = True
-            self.set_image()
-
-        #Until the image has been set
-        if not self.imageset:
-            self.framework.after(50, self.image_loop)

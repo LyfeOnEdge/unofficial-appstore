@@ -4,22 +4,20 @@ from timeit import default_timer as timer
 import modules.style as style
 from .storeappsquare import storeAppSquare
 from .customwidgets import ThemedLabel
-from modules.appstore import getPackageIcon
 from modules.locations import notfoundimage
 
 class categoryFrame(tk.Frame):
-    def __init__(self,parent,controller,framework, repos, appstore_handler, icon_dict, async_threader):
+    def __init__(self,parent,controller,framework, repos):
         #list of repos to be displayed by this frame
         self.repos = repos
         self.parent = parent
         self.controller = controller #Frame manager
         self.framework = framework #**Scheduler
-        self.appstore_handler = appstore_handler #Tool to get installed package data etc
+        self.appstore_handler = controller.appstore_handler #Tool to get installed package data etc
         self.buttons = []   #List to hold buttons for this page
         self.current_buttons = [] #list to hold currently displayed buttons
-        self.icon_dict = icon_dict
+        self.icon_dict = self.controller.image_sharer
         self.selected = False
-        self.async_threader = async_threader
 
         self.is_searching = True #Used to remember if we are currently searching
         self.currentsearch = False #Used to remember the current qued search term (helps with search lag)
@@ -69,7 +67,7 @@ class categoryFrame(tk.Frame):
 
         #Build buttons from passed repo
         self.makeButtonList()
-        self.async_threader.do_async(self.buildFrame, [])
+        self.controller.async_threader.do_async(self.buildFrame, [])
         # self.buildFrame()
 
         self.framework.add_on_refresh_callback(self.buildFrame)
@@ -136,7 +134,7 @@ class categoryFrame(tk.Frame):
                     base_y = _y * _spacing + style.tileoffset
                     base_x = _x * (_spacing) + style.tileoffset + (_x + 1) * (space_offset)
 
-                    self.async_threader.do_async(self.buildButton, [button, base_x, base_y])
+                    self.controller.async_threader.do_async(self.buildButton, [button, base_x, base_y])
                     _x += 1
 
                     if _x == _maxperrow:
@@ -203,11 +201,16 @@ class categoryFrame(tk.Frame):
                 button.buttonseparator = tk.Label(self.canvas_frame, background=style.lg, borderwidth= 0)
             button.buttonseparator.place(x = base_x, y = label_y + 5 + style.buttontextheight, height = 1, width = style.thumbnailwidth)
 
-        self.async_threader.do_async(place_buttontitlelabel, [])
-        self.async_threader.do_async(place_buttonauthorlabel, [])
-        self.async_threader.do_async(place_buttonstatuslabel, [])
-        self.async_threader.do_async(place_buttonversionlabel, [])
-        self.async_threader.do_async(place_buttonseparator, [])
+        async_button_placing_tasks = [
+            place_buttontitlelabel,
+            place_buttonauthorlabel,
+            place_buttonstatuslabel,
+            place_buttonversionlabel,
+            place_buttonseparator
+        ]
+
+        for task in async_button_placing_tasks:
+            self.controller.async_threader.do_async(task, [])
 
     def search(self, searchterm):
         self.is_searching = True
@@ -219,7 +222,7 @@ class categoryFrame(tk.Frame):
         if self.is_searching:
             #.4 second delay on search debouncer
             if (timer() - self.searchtimer) > (0.4):
-                self.do_search_query()
+                self.controller.async_threader.do_async(self.do_search_query)
             else:
                 self.controller.after(100, self.search_poll)
 

@@ -1,10 +1,9 @@
 from .categoryframe import categoryFrame
 
 class installed_categoryFrame(categoryFrame):
-    def __init__(self,parent,controller,framework, all_repos, appstore_handler, icon_dict, async_threader):
-        self.icon_dict = icon_dict
+    def __init__(self,parent,controller,framework, repos):
         self.last_packages = []
-        categoryFrame.__init__(self, parent,controller,framework, all_repos, appstore_handler, icon_dict, async_threader)
+        categoryFrame.__init__(self, parent,controller,framework, repos)
         framework.add_on_refresh_callback(lambda: self.rebuild())
         
     def makeButtonList(self):
@@ -27,7 +26,8 @@ class installed_categoryFrame(categoryFrame):
         else:
             self.buttons = []
 
+        self.buildFrame()
+
     def rebuild(self):
         self.clear()
-        self.makeButtonList()
-        self.buildFrame()
+        self.controller.async_threader.do_async(self.makeButtonList(), [])

@@ -10,11 +10,11 @@ from .yesnopage import yesnoPage
 from PIL import Image, ImageTk
 
 class detailPage(activeFrame):
-    def __init__(self, parent, controller, page_name, appstore_handler, repo_parser, async_threader):
+    def __init__(self, parent, controller):
         activeFrame.__init__(self,parent,controller)
         self.controller = controller
-        self.appstore_handler = appstore_handler
-        self.async_threader = async_threader
+        self.appstore_handler = controller.appstore_handler
+        self.repo_parser = controller.repo_parser
         self.repo = None
 
         #Primary layout
@@ -174,8 +174,11 @@ class detailPage(activeFrame):
         #get_package_entry returns none if no package is found or if the sd path is not set
         if self.appstore_handler.get_package_entry(package):
             self.column_uninstall_button.place(rely=1,relx=0.5,x = - 1.5 * (style.buttonsize), y = - 2 * (style.buttonsize + style.offset), width = 3 * style.buttonsize, height = style.buttonsize)
-            if self.column_install_button:    
-                self.column_install_button.settext("UPDATE")
+            if self.column_install_button:
+                if self.appstore_handler.clean_version(self.appstore_handler.get_package_version(package), package) > self.appstore_handler.clean_version(self.appstore_handler.get_package_version(self.repo["version"]), package):
+                    self.column_install_button.settext("UPDATE")
+                else:
+                    self.column_install_button.settext("REINSTALL")
         else:
             self.column_uninstall_button.place_forget()
             if self.column_install_button:
@@ -188,10 +191,10 @@ class detailPage(activeFrame):
             self.content_banner_image.configure(image=art_image)
             self.content_banner_image.image = art_image
 
-        self.async_threader.do_async(do_update_banner, [image_path])
+        self.controller.async_threader.do_async(do_update_banner, [image_path])
 
     def show(self, repo):
-        self.async_threader.do_async(self.update_page, [repo])
+        self.controller.async_threader.do_async(self.update_page, [repo])
         self.update_banner(locations.notfoundimage)
         # self.update_page(repo)
         self.tkraise()
@@ -212,7 +215,7 @@ class detailPage(activeFrame):
             self.set_sd()
         if self.appstore_handler.check_if_get_init():
             if self.repo:
-                self.async_threader.do_async(self.appstore_handler.install_package, [self.repo, self.progress_bar.update, self.reload_function])
+                self.controller.async_threader.do_async(self.appstore_handler.install_package, [self.repo, self.progress_bar.update, self.reload_function])
         else:
             self.yesnoPage.getanswer("The homebrew appstore has not been initiated here yet, would you like to initiate it?", self.init_get_then_continue)
 
@@ -222,12 +225,12 @@ class detailPage(activeFrame):
 
     def trigger_uninstall(self):
         if self.repo:
-            self.async_threader.do_async(self.appstore_handler.uninstall_package, [self.repo])
+            self.controller.async_threader.do_async(self.appstore_handler.uninstall_package, [self.repo])
             self.controller.frames["appstorePage"].reload_category_frames()
             self.schedule_callback(self.reload(), 100)
 
     def reload(self):
-        self.async_threader.do_async(self.update_page, [self.repo])
+        self.controller.async_threader.do_async(self.update_page, [self.repo])
 
     def trigger_open_tab(self):
         if self.repo:

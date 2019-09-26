@@ -4,7 +4,7 @@ class asyncThreader():
     def __init__(self):
         pass
 
-    def do_async(self, func, arglist):
+    def do_async(self, func, arglist = []):
         vanillaThread(func, arglist)
 
     def async_button_place(self, button_build_function, button, base_x, base_y):

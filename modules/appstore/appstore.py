@@ -57,32 +57,56 @@ class appstore_handler(object):
 
     #Installs an appstore package, pass and optional progress function for gui feed back or the reload function to reload at the end of the install process
     def install_package(self, repo_entry, progress_funtion = None, reload_function = None):
+        def do_progress_function(text_string, progress_precent):
+            if progress_funtion:
+                progress_funtion(text_string, progress_precent)
+
         if not self.check_path(): return self.warn_path_not_set()
-        if progress_funtion:
-            progress_funtion("Paths set", 10)
+
+        do_progress_function("Paths set", 10)
 
         if not repo_entry:
             print("No repo entry data passed to appstore handler.")
             print("Not continuing with install")
             return
-        if progress_funtion:
-            progress_funtion("Package data passed", 20)
-
-        if not self.check_if_get_init():
-            print("Appstore get folder not initiated.")
+        try:
+            package = repo_entry["name"]
+        except:
+            print("Error - package name not found in repo data")
+            do_progress_function("Error - package name not found in repo data", 15)
             print("Not continuing with install")
             return
-        if progress_funtion:
-            progress_funtion("Get folder found", 30)
+
+        do_progress_function("Package data passed", 20)
+
+        if not self.check_if_get_init():
+            print("Get folder not initiated.")
+            print("Not continuing with install")
+            do_progress_function("Get folder not initiated, not continuing with install.", 20)
+            return
+
+        do_progress_function("Get folder found", 30)
+
+        #Uninstall if already installed
+        if package in self.get_packages(silent=True):
+            print("Package already installed, removing for upgrade")
+            if not self.uninstall_package(repo_entry):
+                #If uninstall fails
+                print("Uninstall failed.")
+                print("Not continuing with install")
+                do_progress_function("Uninstall failed, not continuing with install.", 35) 
+                return
+
+            do_progress_function("Updating .", 35) 
+        else:
+            print("Package not previously installed, proceeding...")
 
         install_message = "Beginning install for package %s" % repo_entry["name"]
 
         print(install_message)
 
-        if progress_funtion:
-            progress_funtion(install_message, 35)
+        do_progress_function(install_message, 50)
 
-        package = repo_entry["name"]
         #Append base directory to packages directory
         packagesdir = os.path.join(self.base_install_path, PACKAGES_DIR)
         if not os.path.isdir(packagesdir):
@@ -92,8 +116,7 @@ class appstore_handler(object):
         if not os.path.isdir(packagedir):
             os.mkdir(packagedir)
 
-        if progress_funtion:
-            progress_funtion("Downloading package %s" % package, 40)
+        do_progress_function("Downloading package %s" % package, 60)
 
         #Download the package from the switchbru site
         appstore_zip = getPackage(package)
@@ -101,8 +124,7 @@ class appstore_handler(object):
             print("Failed to download zip for package {}".format(package))
             return
 
-        if progress_funtion:
-            progress_funtion("Extracting...", 60)
+        do_progress_function("Extracting...", 70)
 
         with ZipFile(appstore_zip) as zipObj:
             namelist = zipObj.namelist()
@@ -125,20 +147,17 @@ class appstore_handler(object):
 
             print("Extracted: {}".format(json.dumps(extract_manifest, indent = 4)))
 
-            if progress_funtion:
-                progress_funtion("Extract complete", 80)
+            do_progress_function("Extract complete", 80)
                 
             #Extract manifest
             zipObj.extract(PACKAGE_MANIFEST, path = packagedir)
             print("Wrote package manifest.")
-            if progress_funtion:
-                progress_funtion("Wrote package manifest", 90)
+            do_progress_function("Wrote package manifest", 90)
 
             #Extract info file
             zipObj.extract(PACKAGE_INFO, path = packagedir)
             print("Wrote package info.")
-            if progress_funtion:
-                progress_funtion("Wrote package info", 100)
+            do_progress_function("Wrote package info", 100)
 
         print("Installed {} version {}".format(repo_entry["title"], repo_entry["version"]))
 
@@ -185,11 +204,13 @@ class appstore_handler(object):
                         os.rmdir(file)
                         print("removed empty directory {}".format(file))
 
-            self.remove_store_entry(package)
+        self.remove_store_entry(package)
 
-            print("Uninstalled package {}".format(package))
+        print("Uninstalled package {}".format(package))
 
-            self.reload()
+        self.reload()
+
+        return True
 
 
     #THIS DOES NOT UNINSTALL THE CONTENT

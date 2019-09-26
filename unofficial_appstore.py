@@ -2,16 +2,20 @@ version = "1.5"
 print("Unofficial appstore version %s" % version)
 
 import os, sys, platform, json, threading
+from timeit import default_timer as timer
+#print version, exit if minimum version requirements aren't met
 print("Using Python {}.{}".format(sys.version_info[0],sys.version_info[1]))
 if sys.version_info[0] < 3 or sys.version_info[1] < 6: #Trying to import tkinter in the new syntax after python 2 causes a crash
 	sys.exit("Python 3.6 or greater is required to run this program.")
 
+#This is called before the below module imports to ensure no exception is encountered trying to import tk
 try:
 	import tkinter as tk
 except:
-	input("Cannot start: Tkinter not installed, try `pip install Pillow` consult the readme for more information.")
+	input("Cannot start: Tkinter not installed, consult the readme for more information.")
 	sys.exit()
 
+#This is called before the below module imports to ensure no exception is encountered trying to import pil
 try:
 	import PIL #Import pillow library
 except:
@@ -27,8 +31,9 @@ from modules.webhandler import getJson
 from modules.locations import appstore_repo_url
 from modules.async_threader import asyncThreader
 from modules.updater import check_for_update
+from modules.tk_image_sharer import icon_dict
 from pages import pagelist
-from timeit import default_timer as timer
+
 
 #Async threader tool for getting downloads and other functions asyncronously
 threader = asyncThreader()
@@ -42,14 +47,19 @@ threader.do_async(repo_parser.load, [store_json])
 #Shared tool for installing and managing hbas apps via the switchbru site on the sd card
 store_handler = appstore_handler()
 
+image_sharer = icon_dict()
+
 geometry = {
 	"width" : 780,
-	"height" : 575,
+	"height" : 575
 }
 
 def startGUI(update_status):
-	pre_load_icons()
-	gui = frameManager(pagelist,geometry,store_handler,repo_parser,threader,update_status)
+	#frameManager serves to load all pages and stack them on top of each other (all 2 of them)
+	#also serves to make many important objects and functions easily available to children frames
+	gui = frameManager(pagelist,geometry,store_handler,repo_parser,threader,image_sharer,update_status)
+
+	#Set title formattedwith version
 	gui.title("unofficial appstore %s" % version)
 
 	#Set icon

@@ -1,17 +1,25 @@
+#Heavily customized class to manage frames in the outermost layer
 import tkinter as tk
 
-#Frame handler, raises and pages in z layer
+#Frame handler, raises and pages in z layer,
+#also
 class frameManager(tk.Tk):
     def __init__(self, 
-        pages, #List of pages to put in outermost z-layer
-        geometry, #Startup size
-        appstore_handler, #Object to manage appstore sd content
-        repo_parser, #Object to deal with the appstore json
-        async_threader, #object to easily deal with a few async function
-        update_status): #Whether or not the app needs an update
+                pages, #List of pages to put in outermost z-layer
+                geometry, #Startup size
+                appstore_handler, #Object to manage appstore sd content
+                repo_parser, #Object to deal with the appstore json
+                async_threader, #object to easily deal with a few async function
+                image_sharer, #Simple tool to have one base location to lookup images
+                update_status #Whether or not the app needs an update
+                ): 
 
         tk.Tk.__init__(self)
         self.update_status = update_status
+        self.async_threader = async_threader
+        self.appstore_handler = appstore_handler
+        self.repo_parser = repo_parser
+        self.image_sharer = image_sharer
         self.geometry("{}x{}".format(geometry["width"],geometry["height"])) 
         # self.resizable(False, False)
 
@@ -27,10 +35,11 @@ class frameManager(tk.Tk):
         self.frames = {}
         if pages:
             for F in (pages):
+                frame = F(parent=container, controller=self)
                 page_name = F.__name__
-                frame = F(parent=container, controller=self, page_name=page_name, appstore_handler = appstore_handler, repo_parser = repo_parser, async_threader = async_threader) 
                 self.frames[page_name] = frame
 
+                #place the frame to fill the whole window, stack them all in the same place
                 frame.grid(row=0, column=0, sticky="nsew")
 
 

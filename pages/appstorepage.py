@@ -3,21 +3,19 @@ import tkinter.filedialog
 import modules.style as style
 import modules.locations as locations
 from modules.widgets import ThemedFrame, ThemedListbox, ThemedLabel, searchBox, categoryFrame, installed_categoryFrame, activeFrame, scrolledText, button
-from modules.tk_image_sharer import icon_dict
 from modules.updater import update
 from .yesnopage import yesnoPage
 
 
 
 class appstorePage(activeFrame):
-    def __init__(self, parent, controller, page_name, appstore_handler, repo_parser, async_threader):
+    def __init__(self, parent, controller):
+        self.controller = controller
+        self.appstore_handler = controller.appstore_handler
+        self.repo_parser = controller.repo_parser
+        self.image_sharer = controller.image_sharer
         self.current_frame = None
         self.last_selection = None
-        self.controller = controller
-        self.appstore_handler = appstore_handler
-        self.repo_parser = repo_parser
-        self.icon_dict = icon_dict()
-        self.async_threader = async_threader
         activeFrame.__init__(self,parent,controller)
 
         self.column = ThemedFrame(self, background = style.light_color)
@@ -68,13 +66,13 @@ class appstorePage(activeFrame):
         self.content_stacking_frame = ThemedFrame(self.content_frame)
         self.content_stacking_frame.place(relx = 0, y=(style.searchboxheight + style.offset), relwidth = 1, relheight = 1, height=-(style.searchboxheight + style.offset))
 
-        all_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.all, self.appstore_handler, self.icon_dict, self.async_threader)
-        advanced_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.advanced, self.appstore_handler, self.icon_dict, self.async_threader)
-        emus_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.emus, self.appstore_handler, self.icon_dict, self.async_threader)
-        games_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.games, self.appstore_handler, self.icon_dict, self.async_threader)
-        tools_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.tools, self.appstore_handler, self.icon_dict, self.async_threader)
-        misc_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.misc, self.appstore_handler, self.icon_dict, self.async_threader)
-        installed_frame = installed_categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.all, self.appstore_handler, self.icon_dict, self.async_threader)
+        all_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.all)
+        advanced_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.advanced)
+        emus_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.emus)
+        games_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.games)
+        tools_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.tools)
+        misc_frame = categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.misc)
+        installed_frame = installed_categoryFrame(self.content_stacking_frame, self.controller, self, self.repo_parser.all)
         about_frame = aboutFrame(self.content_stacking_frame)
 
         self.category_frames = [all_frame,advanced_frame,emus_frame,games_frame,tools_frame,misc_frame, installed_frame]
