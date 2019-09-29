@@ -6,7 +6,6 @@ import modules.style as style
 class progBar(tk.Frame):
 	def __init__(self, frame):
 		tk.Frame.__init__(self,frame,background=style.w)
-
 		self.progress = tk.Frame(self, background=style.dark_color)
 		self.geo = None
 		self.placed = False

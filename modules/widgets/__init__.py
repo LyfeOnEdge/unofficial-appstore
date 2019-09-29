@@ -8,3 +8,4 @@ from .framemanager import frameManager
 from .installed_categoryframe import installed_categoryFrame
 from .progbar import progBar
 from .progressframe import progressFrame
+from .themedscrollingtext import themedScrollingText

@@ -2,7 +2,7 @@ import modules.style as style
 import tkinter as tk
 
 class searchBox(tk.Frame):
-    def __init__(self, master, entry_width=30, 
+    def __init__(self, frame, entry_width=30, 
         entry_font=style.mediumboldtext, 
         entry_background=style.w, 
         entry_foreground=style.b,
@@ -13,7 +13,7 @@ class searchBox(tk.Frame):
         command_on_keystroke = True,
         ):
 
-        tk.Frame.__init__(self, master, borderwidth=0, highlightthickness=0,background=entry_background)
+        tk.Frame.__init__(self, frame, borderwidth=0, highlightthickness=0,background=entry_background)
 
         self._command = command
 

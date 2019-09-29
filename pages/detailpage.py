@@ -17,7 +17,6 @@ class detailPage(activeFrame):
         self.repo_parser = controller.repo_parser
         self.repo = None
 
-        #Primary layout
         #------------------------------
         self.column = ThemedFrame(self, background = style.light_color)
         self.column.place(relx = 1, rely = 0, width = style.sidecolumnwidth, relheight = 1, x = - style.sidecolumnwidth)
@@ -191,7 +190,8 @@ class detailPage(activeFrame):
             self.content_banner_image.configure(image=art_image)
             self.content_banner_image.image = art_image
 
-        self.controller.async_threader.do_async(do_update_banner, [image_path])
+        do_update_banner(image_path)
+        # self.controller.async_threader.do_async(do_update_banner, [image_path])
 
     def show(self, repo):
         self.controller.async_threader.do_async(self.update_page, [repo])
@@ -213,11 +213,12 @@ class detailPage(activeFrame):
     def trigger_install(self):
         if not self.appstore_handler.check_path():
             self.set_sd()
-        if self.appstore_handler.check_if_get_init():
-            if self.repo:
-                self.controller.async_threader.do_async(self.appstore_handler.install_package, [self.repo, self.progress_bar.update, self.reload_function])
-        else:
-            self.yesnoPage.getanswer("The homebrew appstore has not been initiated here yet, would you like to initiate it?", self.init_get_then_continue)
+        if self.appstore_handler.check_path():
+            if self.appstore_handler.check_if_get_init():
+                if self.repo:
+                    self.controller.async_threader.do_async(self.appstore_handler.install_package, [self.repo, self.progress_bar.update, self.reload_function, self.progress_bar.set_title])
+            else:
+                self.yesnoPage.getanswer("The homebrew appstore has not been initiated here yet, would you like to initiate it?", self.init_get_then_continue)
 
     def init_get_then_continue(self):
         self.appstore_handler.init_get()

@@ -22,7 +22,7 @@ class ThemedFrame(tk.Frame):
 
 #themed author/ etc label
 class ThemedLabel(tk.Label):
-	def __init__(self,frame,label_text,label_font=smalltext,text_variable=None,background = light_color,foreground=lg,anchor="w",wraplength = None):
+	def __init__(self,frame,label_text="",label_font=smalltext,text_variable=None,background = light_color,foreground=lg,anchor="w",wraplength = None):
 		tk.Label.__init__(self,frame,
 			background = background,
 			highlightthickness=0,
@@ -39,13 +39,13 @@ class ThemedLabel(tk.Label):
 
 #themed author/ etc label
 class ThemedListbox(tk.Listbox):
-	def __init__(self,frame):
+	def __init__(self,frame, foreground = lg, highlightthickness = 0, background = light_color):
 		tk.Listbox.__init__(self,frame,
-			background = light_color,
+			background = background,
 			selectbackground = dark_color,
 			borderwidth = 0,
-			highlightthickness=0,
-			foreground= lg,
+			highlightthickness=highlightthickness,
+			foreground= foreground,
 			font = largeboldtext,
 			activestyle=None
 		)
@@ -59,37 +59,34 @@ class ThemedListbox(tk.Listbox):
 #an on_click event. Feel free to use this in other projects where mac
 #compatibility is an issue, also special thanks to Kabiigon for testing
 #this widget until I got it right since I don't have a mac
-class navbutton(tk.Label):
-	def __init__(self,frame,command_name=None,image_object= None,text_string=None,background=dark_color):
-		self.command = command_name
+class button(tk.Label):
+    def __init__(self,frame,callback=None,image_object= None,text_string=None,background=dark_color, font=smallboldtext):
+        self.callback = callback
 
-		tk.Label.__init__(self,frame,
-			background=background,
-			foreground= w,
-			borderwidth= 0,
-			activebackground=light_color,
-			image=image_object,
-			text = text_string,
-			font = smallboldtext,
-			)
-		self.bind('<Button-1>', self.on_click)
+        tk.Label.__init__(self,frame,
+            background=background,
+            foreground= w,
+            borderwidth= 0,
+            activebackground=light_color,
+            image=image_object,
+            text = text_string,
+            font = font,
+            anchor="N"
+            )
+        self.bind('<Button-1>', self.on_click)
 
-	#Use callback when our makeshift "button" clicked
-	def on_click(self, event=None):
-		if self.command:
-			self.command()
+    #Use callback when our makeshift "button" clicked
+    def on_click(self, event=None):
+        if self.callback:
+            self.callback()
 
-	#Function to update the button's set command
-	def setcommand(self,command):
-		self.command = command
+    #Function to set the button's image
+    def setimage(self,image):
+        self.configure(image=image)
 
-	#Function to set the button's image
-	def setimage(self,image):
-		self.configure(image=image)
-
-	#Function to set the button's text
-	def settext(self,text):
-		self.configure(text=text)
+    #Function to set the button's text
+    def settext(self,text):
+        self.configure(text=text)
 
 #Tooltip
 class ToolTipBase:

@@ -21,7 +21,7 @@ class installed_categoryFrame(categoryFrame):
 
                 self.buttons = []
                 for repo in self.packages:
-                    self.makeButton(self.canvas_frame, self.framework, repo, self.icon_dict)
+                    self.makeButton(self.canvas_frame, self.framework, repo)
                 self.current_buttons = self.buttons
         else:
             self.buttons = []

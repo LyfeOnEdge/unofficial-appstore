@@ -1,7 +1,7 @@
 import os
 import tkinter as tk
 from tkinter.constants import *
-from modules.widgets import scrolledText, navbutton
+from modules.widgets import scrolledText, button
 import modules.style as style
 
 class yesnoPage(tk.Frame):
@@ -15,10 +15,10 @@ class yesnoPage(tk.Frame):
         self.yesnobuttonframe = tk.Frame(self,background=style.w, borderwidth = 0, highlightthickness = 0)
         self.yesnobuttonframe.place(relx=0.5,rely=1,y=- (style.buttonsize + style.offset),width=300,x=-150,height=style.buttonsize)
 
-        self.yesbutton = navbutton(self.yesnobuttonframe, command_name=self.on_yes,text_string="Yes",background=style.lg)
+        self.yesbutton = button(self.yesnobuttonframe, callback=self.on_yes,text_string="Yes",background=style.lg)
         self.yesbutton.place(relx=0,relwidth=0.33,relheight=1)
 
-        self.nobutton = navbutton(self.yesnobuttonframe, command_name=self.on_no,text_string="No",background=style.lg)
+        self.nobutton = button(self.yesnobuttonframe, callback=self.on_no,text_string="No",background=style.lg)
         self.nobutton.place(relx=0.67,relwidth=0.33,relheight=1)
 
     def show(self):

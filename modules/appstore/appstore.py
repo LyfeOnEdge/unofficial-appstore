@@ -1,6 +1,8 @@
 #Some basic scripts for installing appstore zips given the package name
+#Loosely based on vgmoose's libget here: https://github.com/vgmoose/libget
 #Copyright LyfeOnEdge 2019
 #Licensed under GPL3
+
 import sys, os, shutil, json
 from zipfile import ZipFile
 from .appstore_web import getPackage
@@ -55,11 +57,31 @@ class appstore_handler(object):
     def check_path(self):
         return self.base_install_path
 
-    #Installs an appstore package, pass and optional progress function for gui feed back or the reload function to reload at the end of the install process
-    def install_package(self, repo_entry, progress_funtion = None, reload_function = None):
+
+
+    #Installs an appstore package
+    #Paramaters:
+    #The repo_entry is a chunk from the appstore json that corresponds to a libget package
+
+    #Optional Parameters:
+    #Title function is a call to a gui to set a title for an install screen
+    #Progress function is a call to the gui to 
+    #The reload function will call a gui reload at the end of the install process
+    #Note: don't try to be clever and use a for loop and lambda functions passed to reload_function to essentially chain installs together. It *will* crash.
+    def install_package(self, repo_entry, progress_function = None, reload_function = None, title_function = None, silent = False):
         def do_progress_function(text_string, progress_precent):
-            if progress_funtion:
-                progress_funtion(text_string, progress_precent)
+            if progress_function:
+                try:
+                    progress_function(text_string, progress_precent)
+                except:
+                    pass
+
+        def do_title_function(title_string):
+            if title_function:
+                try:
+                    title_function(title_string)
+                except:
+                    pass
 
         if not self.check_path(): return self.warn_path_not_set()
 
@@ -79,10 +101,24 @@ class appstore_handler(object):
 
         do_progress_function("Package data passed", 20)
 
+        try:
+            version = repo_entry["version"]
+        except:
+            print("Error - package version not found in repo data")
+            do_progress_function("Error - package name not found in repo data", 25)
+            print("Not continuing with install")
+            return
+
+        title = "Installing %s" % package
+        if version:
+            title +=  " - %s" % version
+
+        do_title_function(title)
+
         if not self.check_if_get_init():
             print("Get folder not initiated.")
             print("Not continuing with install")
-            do_progress_function("Get folder not initiated, not continuing with install.", 20)
+            do_progress_function("Get folder not initiated, not continuing with install.", 25)
             return
 
         do_progress_function("Get folder found", 30)
@@ -159,7 +195,7 @@ class appstore_handler(object):
             print("Wrote package info.")
             do_progress_function("Wrote package info", 100)
 
-        print("Installed {} version {}".format(repo_entry["title"], repo_entry["version"]))
+        print("Installed {} version {}".format(repo_entry["title"], version))
 
         #Refreshes the current packages
         if reload_function:
@@ -209,7 +245,6 @@ class appstore_handler(object):
         print("Uninstalled package {}".format(package))
 
         self.reload()
-
         return True
 
 

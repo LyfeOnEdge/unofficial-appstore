@@ -6,8 +6,6 @@ from modules.widgets import ThemedFrame, ThemedListbox, ThemedLabel, searchBox, 
 from modules.updater import update
 from .yesnopage import yesnoPage
 
-
-
 class appstorePage(activeFrame):
     def __init__(self, parent, controller):
         self.controller = controller
