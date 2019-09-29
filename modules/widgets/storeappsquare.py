@@ -46,8 +46,6 @@ class storeAppSquare(ThemedFrame):
         self.buttonversionlabel = None #Placeholder for the current cersion
         self.buttonseparator = None #Placeholder for underline in each button
         self.buttonstatuslabel = None #Placeholder for download / version status
-        
-        self.controller.async_threader.do_async(self.set_image(), [])
 
     def open_details(self, repo):
         self.controller.frames["detailPage"].show(repo)
@@ -73,10 +71,11 @@ class storeAppSquare(ThemedFrame):
                     self.image_sharer.set_image(package, self.button_image)
 
             except Exception as e:
-                print(e)
-                self.button_image = ImageTk.PhotoImage(Image.open(notfoundimage).resize((style.thumbnailwidth, style.thumbnailheight - 10), Image.ANTIALIAS))
+                self.button_image = self.category_frame.notfoundimage
+                self.image_sharer.set_image(package, self.button_image)
 
         self.buttonobj.setimage(self.button_image)
+        self.imageset = True
 
     def set_xy_canvas(self, base_x, base_y, canvas):
         self.base_x = base_x
@@ -88,7 +87,9 @@ class storeAppSquare(ThemedFrame):
 
     def build_button(self):
         if self.base_y and self.base_x and self.canvas:
-            print("building {}".format(self.repo["name"]))
+            if not self.imageset:
+                self.set_image()
+
             label_y = self.base_y + style.thumbnailheight - style.buttontextheight + 40
 
             self.place(x=self.base_x, y = self.base_y, height = style.thumbnailwidth + 2 * style.offset, width = style.thumbnailwidth)
@@ -139,9 +140,9 @@ class storeAppSquare(ThemedFrame):
                     self.buttonseparator = tk.Label(self.canvas, background=style.lg, borderwidth= 0)
                 self.buttonseparator.place(x = self.base_x, y = label_y + 2 * style.offset + style.buttontextheight, height = 1, width = style.thumbnailwidth)
 
-            self.controller.async_threader.do_async(place_buttonauthorlabel)
+            place_buttonauthorlabel()
             place_buttontitlelabel()
             place_buttonstatuslabel()
             place_buttonversionlabel()
-            place_buttonseparator()
+            self.controller.async_threader.do_async(place_buttonseparator)
             self.placed = True

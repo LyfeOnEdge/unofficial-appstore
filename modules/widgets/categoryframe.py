@@ -1,6 +1,6 @@
 import tkinter as tk
 from PIL import Image, ImageTk
-# from timeit import default_timer as timer #<---- Uncomment this and the below timer() functions when optimizing frame rebuild times 
+from timeit import default_timer as timer
 import modules.style as style
 from .storeappsquare import storeAppSquare
 from .customwidgets import ThemedLabel
@@ -19,7 +19,7 @@ class categoryFrame(tk.Frame):
         self.current_buttons = [] #list to hold currently displayed buttons
         self.icon_dict = self.controller.image_sharer
         self.selected = False
-
+        self.is_displaying = False #Debounce used for the display function to prevent multiple threads grabbing an updated image
         self.is_searching = True #Used to remember if we are currently searching
         self.currentsearch = False #Used to remember the current qued search term (helps with search lag)
         self.lastsearch = False #Used to remember the last term searched
@@ -31,6 +31,7 @@ class categoryFrame(tk.Frame):
         self.get_image = ImageTk.PhotoImage(Image.open("assets/GET.png").resize((style.statussize, style.statussize), Image.ANTIALIAS))
         self.installed_image = ImageTk.PhotoImage(Image.open("assets/INSTALLED.png").resize((style.statussize, style.statussize), Image.ANTIALIAS))
         self.update_image = ImageTk.PhotoImage(Image.open("assets/UPDATE.png").resize((style.statussize, style.statussize), Image.ANTIALIAS))
+        self.notfoundimage = ImageTk.PhotoImage(Image.open(notfoundimage).resize((style.thumbnailwidth, style.thumbnailheight - 10), Image.ANTIALIAS))
 
         self.status_map = {
             "UPTODATE" : self.installed_image,
@@ -75,6 +76,7 @@ class categoryFrame(tk.Frame):
 
     def select(self):
         self.selected = True
+        self.rebuild()
 
     def deselect(self):
         self.selected = False
@@ -85,6 +87,7 @@ class categoryFrame(tk.Frame):
     def rebuild(self):
         self.clear()
         self.buildFrame()
+        self.update_displayed_buttons()
 
     def remake(self, new_repos):
         print("Remaking")
@@ -164,37 +167,40 @@ class categoryFrame(tk.Frame):
                 # print("build took {} seconds".format(buildend - buildstart))
 
     def update_displayed_buttons(self):
-        #If frame is visible
-        if self.selected:
-            button_height = style.thumbnailheight + 13 * style.offset
-            canvas_height = self.canvas_frame.winfo_height()
-            if not canvas_height:
-                print("canvas height is zero")
-                return
-            # #The smallest a frame can be is one pixel, which means the canvas unpopulated
-            # if not canvas_height > 1:
-            #     print("unpopulated canvas")
-            #     return
+        if not self.is_displaying:
+            self.is_displaying = True
+            #If frame is visible
+            if self.selected:
+                button_height = style.thumbnailheight + 13 * style.offset
+                canvas_height = self.canvas_frame.winfo_height()
+                if not canvas_height:
+                    print("canvas height is zero")
+                    return
+                # #The smallest a frame can be is one pixel, which means the canvas unpopulated
+                # if not canvas_height > 1:
+                #     print("unpopulated canvas")
+                #     return
 
-            ratio = 1 / canvas_height
+                ratio = 1 / canvas_height
 
-            viewable_buffer = (1.25 * button_height) * ratio
+                viewable_buffer = (1.25 * button_height) * ratio
 
-            #add a buffer to the range to search for buttons that need placing
-            canvas_top = self.canvas.yview()[0] - viewable_buffer
-            if canvas_top < 0:
-                canvas_top = 0
+                #add a buffer to the range to search for buttons that need placing
+                canvas_top = self.canvas.yview()[0] - viewable_buffer
+                if canvas_top < 0:
+                    canvas_top = 0
 
-            canvas_bottom = self.canvas.yview()[1] + viewable_buffer
-            if canvas_bottom > 1:
-                canvas_bottom = 1
+                canvas_bottom = self.canvas.yview()[1] + viewable_buffer
+                if canvas_bottom > 1:
+                    canvas_bottom = 1
 
-            for button in self.buttons:
-                if not button.placed:
-                    if button.get_xy()[1]:
-                        button_y_proportion = button.get_xy()[1] * ratio
-                        if canvas_top < button_y_proportion and button_y_proportion < canvas_bottom:
-                            self.controller.async_threader.do_async(button.build_button)
+                for button in self.buttons:
+                    if not button.placed:
+                        if button.get_xy()[1]:
+                            button_y_proportion = button.get_xy()[1] * ratio
+                            if canvas_top < button_y_proportion and button_y_proportion < canvas_bottom:
+                                self.controller.async_threader.do_async(button.build_button)
+            self.is_displaying = False
 
     def clear_then_update(self):
         self.clear()

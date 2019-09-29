@@ -60,33 +60,33 @@ class ThemedListbox(tk.Listbox):
 #compatibility is an issue, also special thanks to Kabiigon for testing
 #this widget until I got it right since I don't have a mac
 class button(tk.Label):
-    def __init__(self,frame,callback=None,image_object= None,text_string=None,background=dark_color, font=smallboldtext):
-        self.callback = callback
+	def __init__(self,frame,callback=None,image_object= None,text_string=None,background=dark_color, font=smallboldtext):
+		self.callback = callback
 
-        tk.Label.__init__(self,frame,
-            background=background,
-            foreground= w,
-            borderwidth= 0,
-            activebackground=light_color,
-            image=image_object,
-            text = text_string,
-            font = font,
-            anchor="N"
-            )
-        self.bind('<Button-1>', self.on_click)
+		tk.Label.__init__(self,frame,
+			background=background,
+			foreground= w,
+			borderwidth= 0,
+			activebackground=light_color,
+			image=image_object,
+			text = text_string,
+			font = font,
+			anchor="N"
+			)
+		self.bind('<Button-1>', self.on_click)
 
-    #Use callback when our makeshift "button" clicked
-    def on_click(self, event=None):
-        if self.callback:
-            self.callback()
+	#Use callback when our makeshift "button" clicked
+	def on_click(self, event=None):
+		if self.callback:
+			self.callback()
 
-    #Function to set the button's image
-    def setimage(self,image):
-        self.configure(image=image)
+	#Function to set the button's image
+	def setimage(self,image):
+		self.configure(image=image)
 
-    #Function to set the button's text
-    def settext(self,text):
-        self.configure(text=text)
+	#Function to set the button's text
+	def settext(self,text):
+		self.configure(text=text)
 
 #Tooltip
 class ToolTipBase:
@@ -152,36 +152,39 @@ class tooltip(ToolTipBase):
 		self.text = text
 
 	def showcontents(self):
-		ToolTipBase.showcontents(self, self.text)
+		try:
+		  ToolTipBase.showcontents(self, self.text)
+		except:
+			print("Failed to set tooltip {}".format(self.text))
 
 
 class button(tk.Label):
-    def __init__(self,frame,callback=None,image_object= None,text_string=None,background=dark_color, font=smallboldtext):
-        self.callback = callback
+	def __init__(self,frame,callback=None,image_object= None,text_string=None,background=dark_color, font=smallboldtext):
+		self.callback = callback
 
-        tk.Label.__init__(self,frame,
-            background=background,
-            foreground= w,
-            borderwidth= 0,
-            activebackground=light_color,
-            image=image_object,
-            text = text_string,
-            font = font,
-            )
-        self.bind('<Button-1>', self.on_click)
+		tk.Label.__init__(self,frame,
+			background=background,
+			foreground= w,
+			borderwidth= 0,
+			activebackground=light_color,
+			image=image_object,
+			text = text_string,
+			font = font,
+			)
+		self.bind('<Button-1>', self.on_click)
 
-    #Use callback when our makeshift "button" clicked
-    def on_click(self, event=None):
-        if self.callback:
-            self.callback()
+	#Use callback when our makeshift "button" clicked
+	def on_click(self, event=None):
+		if self.callback:
+			self.callback()
 
-    #Function to set the button's image
-    def setimage(self,image):
-        self.configure(image=image)
+	#Function to set the button's image
+	def setimage(self,image):
+		self.configure(image=image)
 
-    #Function to set the button's text
-    def settext(self,text):
-        self.configure(text=text)
+	#Function to set the button's text
+	def settext(self,text):
+		self.configure(text=text)
 
 
 #Widgets with scroll bars that appear when needed and supporting code

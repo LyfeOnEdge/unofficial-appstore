@@ -81,13 +81,6 @@ def startGUI(update_status):
 
 	gui.mainloop()
 
-#Helps by pre-downloading the various icons
-def pre_load_icons():
-	threads = [] 
-	for repo in repo_parser.all:
-		threader.do_async(getPackageIcon, [repo["name"]])
-
 if __name__ == '__main__':
 	update_status = check_for_update(version)
-	pre_load_icons()
 	startGUI(update_status)
