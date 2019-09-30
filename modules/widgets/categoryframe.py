@@ -100,13 +100,16 @@ class categoryFrame(tk.Frame):
         self.buttons = []
         for repo in self.repos:
             self.makeButton(self.canvas_frame, self.framework, repo)
+        for button in self.buttons:
+            for item in button.items:
+                if item:
+                    item.bind("<MouseWheel>", self.on_mouse_wheel)
         self.current_buttons = self.buttons
+        self.sort("name")
 
     #instantiates button, adds it to list
     def makeButton(self,frame, framework, repo):
         button = storeAppSquare(frame, self.controller, framework, self, repo)
-        button.buttonobj.bind("<MouseWheel>", self.on_mouse_wheel)
-        button.appstore_handler = self.appstore_handler
         self.buttons.append(button)
 
         #Tiles buttons
@@ -272,3 +275,6 @@ class categoryFrame(tk.Frame):
         if move_type == "moveto":
             self.update_displayed_buttons()
             self.canvas.yview("moveto", move_units)
+
+    def sort(self, sort_key, reversed = False):
+        self.current_buttons.sort(key=lambda x: x.name, reverse = reversed)

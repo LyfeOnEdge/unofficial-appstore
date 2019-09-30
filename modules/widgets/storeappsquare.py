@@ -12,6 +12,7 @@ class storeAppSquare(ThemedFrame):
         self.framework = framework
         self.category_frame = category_frame
         self.repo = repo
+        self.name = repo["name"]
         self.image_sharer = self.controller.image_sharer
         self.imageset = False
         self.base_x = None #Stores the base x location to build the button from for dynamic building
@@ -20,25 +21,8 @@ class storeAppSquare(ThemedFrame):
         self.placed = False
         ThemedFrame.__init__(self, parent, background = style.w)
 
-
-        # button_image = ImageTk.PhotoImage(Image.open(notfoundimage).resize((style.thumbnailwidth, style.thumbnailheight), Image.ANTIALIAS))
-        
         self.buttonobj = button(self,image_object=None,callback=lambda: self.open_details(repo),background = style.w)
-        self.buttonobj.place(relx=0,y=-50,relwidth=1,relheight=1)
-
-        try:
-            web_dls = repo["web_dls"]
-        except:
-            web_dls = 0
-
-        try:
-            app_dls = repo["app_dls"]
-        except:
-            app_dls = 0
-
-        ttl_dls = web_dls + app_dls
-        ttp = "{}\nAuthor: {}\nDownloads: {}".format(repo["description"], repo["author"], ttl_dls)
-        self.button_ttp = tooltip(self.buttonobj,ttp)
+        self.buttonobj.place(relheight=1,relwidth=1)
         
         #Placeholders used by the category frame when building the button, fixes the disappearing text issue
         self.buttontitlelabel = None #Placeholder used for the button title
@@ -46,6 +30,17 @@ class storeAppSquare(ThemedFrame):
         self.buttonversionlabel = None #Placeholder for the current cersion
         self.buttonseparator = None #Placeholder for underline in each button
         self.buttonstatuslabel = None #Placeholder for download / version status
+
+        self.items = [
+            self,
+            self.buttonobj,
+            self.buttontitlelabel,
+            self.buttonauthorlabel,
+            self.buttonversionlabel,
+            self.buttonseparator,
+            self.buttonstatuslabel
+        ]
+
 
     def open_details(self, repo):
         self.controller.frames["detailPage"].show(repo)
@@ -86,13 +81,30 @@ class storeAppSquare(ThemedFrame):
         return((self.base_x, self.base_y))
 
     def build_button(self):
-        if not self.placed:
-            self.placed = True
+        if not self.placed:            
             if self.base_y and self.base_x and self.canvas:
-                if not self.imageset:
-                    self.set_image()
+                self.placed = True
+                repo = self.repo
 
                 label_y = self.base_y + style.thumbnailheight - style.buttontextheight + 40
+
+                def place_button():
+                    self.place(x=self.base_x, y = self.base_y, height = style.thumbnailheight + 2 * style.offset, width = style.thumbnailwidth)
+                    self.buttonobj.bind("<MouseWheel>", self.canvas.on_mouse_wheel)
+                    self.bind("<MouseWheel>", self.canvas.on_mouse_wheel)
+                    try:
+                        web_dls = repo["web_dls"]
+                    except:
+                        web_dls = 0
+
+                    try:
+                        app_dls = repo["app_dls"]
+                    except:
+                        app_dls = 0
+
+                    ttl_dls = web_dls + app_dls
+                    ttp = "{}\nAuthor: {}\nDownloads: {}".format(repo["description"], repo["author"], ttl_dls)
+                    self.button_ttp = tooltip(self.buttonobj,ttp)
                 
                 def place_buttontitlelabel():
                     if not self.buttontitlelabel:
@@ -138,12 +150,15 @@ class storeAppSquare(ThemedFrame):
                 def place_buttonseparator():
                     if not self.buttonseparator:
                         self.buttonseparator = tk.Label(self.canvas, background=style.lg, borderwidth= 0)
+                        self.buttonseparator.bind("<MouseWheel>", self.canvas.on_mouse_wheel)
                     self.buttonseparator.place(x = self.base_x, y = label_y + 2 * style.offset + style.buttontextheight, height = 1, width = style.thumbnailwidth)
 
+                place_button()
                 place_buttonauthorlabel()
                 place_buttontitlelabel()
                 place_buttonstatuslabel()
                 place_buttonversionlabel()
                 place_buttonseparator()
-                self.place(x=self.base_x, y = self.base_y, height = style.thumbnailwidth + 2 * style.offset, width = style.thumbnailwidth)
-                self.placed = True
+
+                if not self.imageset:
+                    self.set_image()
