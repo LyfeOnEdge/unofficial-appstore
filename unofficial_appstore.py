@@ -1,4 +1,4 @@
-version = "1.6"
+version = "1.7"
 print("Unofficial appstore version %s" % version)
 
 import os, sys, platform, json, threading
