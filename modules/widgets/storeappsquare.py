@@ -13,6 +13,7 @@ class storeAppSquare(ThemedFrame):
         self.category_frame = category_frame
         self.repo = repo
         self.name = repo["name"]
+        self.active = True
         self.image_sharer = self.controller.image_sharer
         self.imageset = False
         self.base_x = None #Stores the base x location to build the button from for dynamic building

@@ -212,3 +212,50 @@ class aboutFrame(ThemedFrame):
         self.abouttext.place(relwidth=1, relheight =1)
         self.abouttext.insert("1.0", abouttext)
         self.abouttext.configure(state="disabled")
+
+
+
+# self.selected_sort_method = tk.StringVar()
+# self.selected_sort_method.set(SORT_OPTIONS[0])
+# self.content_frame_header_sort_method_dropdown = tk.OptionMenu(self.content_frame_header,self.selected_sort_method,*SORT_OPTIONS)
+# self.content_frame_header_sort_method_dropdown.bind("<Configure>", self.update_sort)
+# sort_option_default = "Sort: Default"
+# sort_option_package_title_ascending = "A -> Z"
+# sort_option_package_title_descending = "Z -> A"
+# sort_option_package_size_ascending = "Smallest first"
+# sort_option_package_size_descending = "Largest first"
+# sort_option_package_author_ascending = "Author (A->Z)"
+# sort_option_package_author_descending = "Author (Z->A)"
+# sort_option_package_updated_ascending = "Updated (Recent first)"
+# sort_option_package_updated_descending = "Updated (Recent last)"
+
+# SORT_OPTIONS = [
+#     sort_option_default,
+#     sort_option_package_title_ascending,
+#     sort_option_package_title_descending,
+#     sort_option_package_size_ascending,
+#     sort_option_package_size_descending,
+#     sort_option_package_author_ascending,
+#     sort_option_package_author_descending,
+#     sort_option_package_updated_ascending,
+#     sort_option_package_updated_descending
+# ]
+
+# SORT_MAP = {
+#     sort_option_default : None,
+#     sort_option_package_title_ascending : "name",
+#     sort_option_package_title_descending : "name-",
+#     sort_option_package_size_ascending : "extracted-",
+#     sort_option_package_size_descending : "extracted",
+#     sort_option_package_author_ascending : "author",
+#     sort_option_package_author_descending : "author-",
+#     sort_option_package_updated_ascending : "updated",
+#     sort_option_package_updated_descending : "updated-"
+# }
+# def sort_check_loop(self):
+#     if not self.last_sort_option == self.selected_sort_method.get():
+#         self.last_sort_option = self.selected_sort_method.get()
+#         self.update_sort()
+
+#     #schedule self
+#     self.schedule_callback(self.sort_check_loop, 100)

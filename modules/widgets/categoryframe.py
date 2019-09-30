@@ -16,7 +16,6 @@ class categoryFrame(tk.Frame):
         self.framework = framework #**Scheduler
         self.appstore_handler = controller.appstore_handler #Tool to get installed package data etc
         self.buttons = []   #List to hold buttons for this page
-        self.current_buttons = [] #list to hold currently displayed buttons
         self.icon_dict = self.controller.image_sharer
         self.selected = False
         self.is_displaying = False #Debounce used for the display function to prevent multiple threads grabbing an updated image
@@ -89,13 +88,6 @@ class categoryFrame(tk.Frame):
         self.buildFrame()
         self.update_displayed_buttons()
 
-    def remake(self, new_repos):
-        print("Remaking")
-        self.repos = new_repos
-        self.current_buttons = []
-        self.buttons = []
-        self.rebuild()
-
     def makeButtonList(self):
         self.buttons = []
         for repo in self.repos:
@@ -104,8 +96,6 @@ class categoryFrame(tk.Frame):
             for item in button.items:
                 if item:
                     item.bind("<MouseWheel>", self.on_mouse_wheel)
-        self.current_buttons = self.buttons
-        self.sort("name")
 
     #instantiates button, adds it to list
     def makeButton(self,frame, framework, repo):
@@ -117,7 +107,7 @@ class categoryFrame(tk.Frame):
         #If frame is visible
         if self.selected:
             #if there is content to build with
-            if self.current_buttons:
+            if self.buttons:
                 # buildstart = timer()
                 x_spacing = style.thumbnailwidth + 2 * style.offset
                 y_spacing = style.thumbnailheight + 13 * style.offset
@@ -139,24 +129,19 @@ class categoryFrame(tk.Frame):
                 _y = 0
                 _x = 0
 
-                
-                for realbutton in self.buttons:
-                    for button in self.current_buttons:
-                        found = False
-                        if realbutton.repo["name"] == button.repo["name"]:
-                            found = True
-                            base_y = _y * y_spacing + style.offset
-                            base_x = _x * (x_spacing) + style.offset + (_x + 1) * (space_offset)
+                for button in self.buttons:
+                    if button.active:
+                        base_y = _y * y_spacing + style.offset
+                        base_x = _x * (x_spacing) + style.offset + (_x + 1) * (space_offset)
 
-                            realbutton.set_xy_canvas(base_x, base_y, self.canvas_frame)
-                            _x += 1
+                        button.set_xy_canvas(base_x, base_y, self.canvas_frame)
+                        _x += 1
 
-                            if _x == _maxperrow:
-                                _x = 0
-                                _y += 1
-                            break
-                        else:
-                            realbutton.set_xy_canvas(None, None, None)
+                        if _x == _maxperrow:
+                            _x = 0
+                            _y += 1
+                    else:
+                        button.set_xy_canvas(None, None, None)
 
                 #Update the size of the canvas and configure the scrollable area
                 _canvasheight = (_y + 1) * (y_spacing)
@@ -167,6 +152,8 @@ class categoryFrame(tk.Frame):
                 self.canvas.config(scrollregion=(0,0,_framewidth, _canvasheight))
                 # buildend = timer()
                 # print("build took {} seconds".format(buildend - buildstart))
+            else:
+                self.clear()
 
     def update_displayed_buttons(self):
         if not self.is_displaying:
@@ -178,10 +165,6 @@ class categoryFrame(tk.Frame):
                 if not canvas_height:
                     print("canvas height is zero")
                     return
-                # #The smallest a frame can be is one pixel, which means the canvas unpopulated
-                # if not canvas_height > 1:
-                #     print("unpopulated canvas")
-                #     return
 
                 ratio = 1 / canvas_height
 
@@ -226,25 +209,20 @@ class categoryFrame(tk.Frame):
     def do_search_query(self):
         def doSearch(searchterm):
             search_categories = ["name", "title", "author", "description"]
-
-            new_buttons = []
-
             for button in self.buttons:
+                button.active = False
                 for category in search_categories:
                     compare_string = button.repo[category]
                     if compare_string:
                         if searchterm.lower() in compare_string.lower():
-                            if not button in new_buttons:
-                                new_buttons.append(button)
-
-            return new_buttons
+                            button.active = True
+                            break
 
         if self.currentsearch:
-            result = doSearch(self.currentsearch)
+            doSearch(self.currentsearch)
         else:
-            result = self.buttons[:]
-
-        self.current_buttons = result
+            for button in self.buttons:
+                button.active = True
 
         self.is_searching = False
         self.lastsearch = self.currentsearch
@@ -276,5 +254,6 @@ class categoryFrame(tk.Frame):
             self.update_displayed_buttons()
             self.canvas.yview("moveto", move_units)
 
-    def sort(self, sort_key, reversed = False):
-        self.current_buttons.sort(key=lambda x: x.name, reverse = reversed)
+    # def sort(self, sort_key, reversed = False):
+    #     if sort_key:
+    #         self.current_buttons.sort(key=lambda x: x.name, reverse = reversed)
