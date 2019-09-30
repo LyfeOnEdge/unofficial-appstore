@@ -43,7 +43,7 @@ store_json = getJson("appstore_repo",appstore_repo_url)
 #Parse the json into categories
 repo_parser = parser()
 repo_parser.blacklist_categories(["loader", "theme"])
-threader.do_async(repo_parser.load, [store_json])
+threader.do_async(repo_parser.load, [store_json], priority = "high")
 #Shared tool for installing and managing hbas apps via the switchbru site on the sd card
 store_handler = appstore_handler()
 

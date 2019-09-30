@@ -86,63 +86,64 @@ class storeAppSquare(ThemedFrame):
         return((self.base_x, self.base_y))
 
     def build_button(self):
-        if self.base_y and self.base_x and self.canvas:
-            if not self.imageset:
-                self.set_image()
+        if not self.placed:
+            self.placed = True
+            if self.base_y and self.base_x and self.canvas:
+                if not self.imageset:
+                    self.set_image()
 
-            label_y = self.base_y + style.thumbnailheight - style.buttontextheight + 40
+                label_y = self.base_y + style.thumbnailheight - style.buttontextheight + 40
+                
+                def place_buttontitlelabel():
+                    if not self.buttontitlelabel:
+                        self.buttontitlelabel = ThemedLabel(self.canvas,self.repo["title"],anchor="e",label_font=style.mediumboldtext,foreground=style.b,background=style.w)
+                        self.buttontitlelabel.bind("<MouseWheel>", self.canvas.on_mouse_wheel)
+                    self.buttontitlelabel.place(x = self.base_x, y =  label_y - 1.5 * style.buttontextheight, width = style.thumbnailwidth)
 
-            self.place(x=self.base_x, y = self.base_y, height = style.thumbnailwidth + 2 * style.offset, width = style.thumbnailwidth)
-            
-            def place_buttontitlelabel():
-                if not self.buttontitlelabel:
-                    self.buttontitlelabel = ThemedLabel(self.canvas,self.repo["title"],anchor="e",label_font=style.mediumboldtext,foreground=style.b,background=style.w)
-                    self.buttontitlelabel.bind("<MouseWheel>", self.canvas.on_mouse_wheel)
-                self.buttontitlelabel.place(x = self.base_x, y =  label_y - 1.5 * style.buttontextheight, width = style.thumbnailwidth)
+                def place_buttonauthorlabel():
+                    if not self.buttonauthorlabel:
+                        self.buttonauthorlabel = ThemedLabel(self.canvas,self.repo["author"],anchor="e",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
+                        self.buttonauthorlabel.bind("<MouseWheel>", self.canvas.on_mouse_wheel)
+                    self.buttonauthorlabel.place(x = self.base_x, y = label_y, width = style.thumbnailwidth)
 
-            def place_buttonauthorlabel():
-                if not self.buttonauthorlabel:
-                    self.buttonauthorlabel = ThemedLabel(self.canvas,self.repo["author"],anchor="e",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
-                    self.buttonauthorlabel.bind("<MouseWheel>", self.canvas.on_mouse_wheel)
-                self.buttonauthorlabel.place(x = self.base_x, y = label_y, width = style.thumbnailwidth)
+                def place_buttonstatuslabel():
+                    if not self.buttonstatuslabel:
+                        self.buttonstatuslabel = ThemedLabel(self.canvas,"",anchor="w",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
+                        self.buttonstatuslabel.bind("<MouseWheel>", self.canvas.on_mouse_wheel)
+                    self.buttonstatuslabel.place(x = self.base_x, y = label_y - 1.5 * style.buttontextheight + 4)
 
-            def place_buttonstatuslabel():
-                if not self.buttonstatuslabel:
-                    self.buttonstatuslabel = ThemedLabel(self.canvas,"",anchor="w",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
-                    self.buttonstatuslabel.bind("<MouseWheel>", self.canvas.on_mouse_wheel)
-                self.buttonstatuslabel.place(x = self.base_x, y = label_y - 1.5 * style.buttontextheight + 4)
+                    status = None
+                    package = self.repo["name"]
+                    if self.controller.appstore_handler.packages:
+                        if package in self.controller.appstore_handler.packages:
+                            installed_version = self.controller.appstore_handler.get_package_version(package)
 
-                status = None
-                package = self.repo["name"]
-                if self.controller.appstore_handler.packages:
-                    if package in self.controller.appstore_handler.packages:
-                        installed_version = self.controller.appstore_handler.get_package_version(package)
-
-                        if self.controller.appstore_handler.clean_version(installed_version, package) == self.controller.appstore_handler.clean_version(installed_version, package):
-                            status = "UPTODATE"
-                        elif self.controller.appstore_handler.clean_version(installed_version, package) < self.controller.appstore_handler.clean_version(installed_version, package):
-                            status = "NEEDSUPDATE"
+                            if self.controller.appstore_handler.clean_version(installed_version, package) == self.controller.appstore_handler.clean_version(installed_version, package):
+                                status = "UPTODATE"
+                            elif self.controller.appstore_handler.clean_version(installed_version, package) < self.controller.appstore_handler.clean_version(installed_version, package):
+                                status = "NEEDSUPDATE"
+                        else:
+                            status = "NOTINSTALLED"
                     else:
                         status = "NOTINSTALLED"
-                else:
-                    status = "NOTINSTALLED"
 
-                self.buttonstatuslabel.configure(image=self.category_frame.status_map[status])
+                    self.buttonstatuslabel.configure(image=self.category_frame.status_map[status])
 
-            def place_buttonversionlabel():
-                if not self.buttonversionlabel:
-                    self.buttonversionlabel = ThemedLabel(self.canvas,self.repo["version"],anchor="w",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
-                    self.buttonversionlabel.bind("<MouseWheel>", self.canvas.on_mouse_wheel)
-                self.buttonversionlabel.place(x = self.base_x, y = label_y)
+                def place_buttonversionlabel():
+                    if not self.buttonversionlabel:
+                        self.buttonversionlabel = ThemedLabel(self.canvas,self.repo["version"],anchor="w",label_font=style.smallboldtext,foreground=style.lg,background=style.w)
+                        self.buttonversionlabel.bind("<MouseWheel>", self.canvas.on_mouse_wheel)
+                    self.buttonversionlabel.place(x = self.base_x, y = label_y)
 
-            def place_buttonseparator():
-                if not self.buttonseparator:
-                    self.buttonseparator = tk.Label(self.canvas, background=style.lg, borderwidth= 0)
-                self.buttonseparator.place(x = self.base_x, y = label_y + 2 * style.offset + style.buttontextheight, height = 1, width = style.thumbnailwidth)
+                def place_buttonseparator():
+                    if not self.buttonseparator:
+                        self.buttonseparator = tk.Label(self.canvas, background=style.lg, borderwidth= 0)
+                    self.buttonseparator.place(x = self.base_x, y = label_y + 2 * style.offset + style.buttontextheight, height = 1, width = style.thumbnailwidth)
 
-            place_buttonauthorlabel()
-            place_buttontitlelabel()
-            place_buttonstatuslabel()
-            place_buttonversionlabel()
-            self.controller.async_threader.do_async(place_buttonseparator)
-            self.placed = True
+                place_buttonauthorlabel()
+                place_buttontitlelabel()
+                place_buttonstatuslabel()
+                place_buttonversionlabel()
+                place_buttonseparator()
+                self.place(x=self.base_x, y = self.base_y, height = style.thumbnailwidth + 2 * style.offset, width = style.thumbnailwidth)
+                self.placed = True

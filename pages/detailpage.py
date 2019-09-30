@@ -161,14 +161,6 @@ class detailPage(activeFrame):
         self.header_label.set(repo["title"])
         self.header_author.set(repo["author"])
 
-        self.bannerimage = getScreenImage(package)
-
-        if self.bannerimage:
-            self.update_banner(self.bannerimage)
-        else:
-            self.update_banner(locations.notfoundimage)
-            print("failed to download screenshot for {}".format(package))
-
         #Hides or places the uninstalll button if not installed or installed respectively
         #get_package_entry returns none if no package is found or if the sd path is not set
         if self.appstore_handler.get_package_entry(package):
@@ -183,20 +175,25 @@ class detailPage(activeFrame):
             if self.column_install_button:
                 self.column_install_button.settext("INSTALL")
 
-    def update_banner(self,image_path):
-        def do_update_banner(path):
-            art_image = Image.open(path)
-            art_image = ImageTk.PhotoImage(art_image)
-            self.content_banner_image.configure(image=art_image)
-            self.content_banner_image.image = art_image
+        def do_update_banner():
+            self.bannerimage = getScreenImage(package)
+            if self.bannerimage:
+                self.update_banner(self.bannerimage)
+            else:
+                self.update_banner(locations.notfoundimage)
+                print("failed to download screenshot for {}".format(package))
+            
+        self.controller.async_threader.do_async(do_update_banner, [])
 
-        do_update_banner(image_path)
-        # self.controller.async_threader.do_async(do_update_banner, [image_path])
+    def update_banner(self,image_path):
+        art_image = Image.open(image_path)
+        art_image = ImageTk.PhotoImage(art_image)
+        self.content_banner_image.configure(image=art_image)
+        self.content_banner_image.image = art_image
 
     def show(self, repo):
-        self.controller.async_threader.do_async(self.update_page, [repo])
         self.update_banner(locations.notfoundimage)
-        # self.update_page(repo)
+        self.controller.async_threader.do_async(self.update_page, [repo], priority = "medium")
         self.tkraise()
         for child in self.winfo_children():
             child.bind("<Escape>", self.leave)
@@ -216,7 +213,7 @@ class detailPage(activeFrame):
         if self.appstore_handler.check_path():
             if self.appstore_handler.check_if_get_init():
                 if self.repo:
-                    self.controller.async_threader.do_async(self.appstore_handler.install_package, [self.repo, self.progress_bar.update, self.reload_function, self.progress_bar.set_title])
+                    self.controller.async_threader.do_async(self.appstore_handler.install_package, [self.repo, self.progress_bar.update, self.reload_function, self.progress_bar.set_title], priority = "high")
             else:
                 self.yesnoPage.getanswer("The homebrew appstore has not been initiated here yet, would you like to initiate it?", self.init_get_then_continue)
 
@@ -226,7 +223,7 @@ class detailPage(activeFrame):
 
     def trigger_uninstall(self):
         if self.repo:
-            self.controller.async_threader.do_async(self.appstore_handler.uninstall_package, [self.repo])
+            self.controller.async_threader.do_async(self.appstore_handler.uninstall_package, [self.repo], priority = "high")
             self.controller.frames["appstorePage"].reload_category_frames()
             self.schedule_callback(self.reload(), 100)
 

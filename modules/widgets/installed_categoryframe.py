@@ -31,3 +31,4 @@ class installed_categoryFrame(categoryFrame):
     def rebuild(self):
         self.clear()
         self.controller.async_threader.do_async(self.makeButtonList(), [])
+        self.update_displayed_buttons()

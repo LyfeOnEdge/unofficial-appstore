@@ -64,7 +64,7 @@ class categoryFrame(tk.Frame):
 
         #Bind resize
         self.bind("<Configure>", self.configure)
-
+        self.bind("<MouseWheel>", self.on_mouse_wheel)
         #Bind frame raise
         self.bind("<<ShowFrame>>", self.configure)
 
@@ -145,7 +145,6 @@ class categoryFrame(tk.Frame):
                             base_y = _y * y_spacing + style.offset
                             base_x = _x * (x_spacing) + style.offset + (_x + 1) * (space_offset)
 
-                            # self.controller.async_threader.do_async(self.buildButton, [button, base_x, base_y])
                             realbutton.set_xy_canvas(base_x, base_y, self.canvas_frame)
                             _x += 1
 
@@ -199,16 +198,13 @@ class categoryFrame(tk.Frame):
                         if button.get_xy()[1]:
                             button_y_proportion = button.get_xy()[1] * ratio
                             if canvas_top < button_y_proportion and button_y_proportion < canvas_bottom:
-                                self.controller.async_threader.do_async(button.build_button)
+                                self.controller.async_threader.do_async(button.build_button, [], priority = "low")
             self.is_displaying = False
 
     def clear_then_update(self):
         self.clear()
         self.update_displayed_buttons()
 
-    # def clear_then_update_displayed_buttons(self):
-    #     self.clear()
-    #     self.controller.async_threader.do_async(self.update_displayed_buttons)
 
     def search(self, searchterm):
         self.is_searching = True
@@ -220,7 +216,7 @@ class categoryFrame(tk.Frame):
         if self.is_searching:
             #.4 second delay on search debouncer
             if (timer() - self.searchtimer) > (0.4):
-                self.controller.async_threader.do_async(self.do_search_query)
+                self.controller.async_threader.do_async(self.do_search_query, [], priority = "low")
             else:
                 self.controller.after(100, self.search_poll)
 
@@ -265,11 +261,14 @@ class categoryFrame(tk.Frame):
         self.framework.refresh()
 
     def on_mouse_wheel(self, event):
-        self.canvas.yview_scroll(int(-1*(event.delta/120)), "units") #Scrolls the canvas
-        self.update_displayed_buttons()
-        return "break"
+        try:
+            self.canvas.yview_scroll(int(-1*(event.delta/120)), "units") #Scrolls the canvas
+            self.update_displayed_buttons()
+            return "break"
+        except:
+            pass
 
-    def on_scroll_bar(self, b, c):
-        self.update_displayed_buttons()
-        self.canvas.yview(b, c)
-
+    def on_scroll_bar(self, move_type, move_units, __ = None):
+        if move_type == "moveto":
+            self.update_displayed_buttons()
+            self.canvas.yview("moveto", move_units)
