@@ -23,14 +23,14 @@ https://github.com/LyfeOnEdge/unofficial-appstore/releases
  - Opening project pages
  - Threaded operations mean the app no longer becomes unresponsive with big downloads
  - Self-updater
+ - Buttons load dynamically so only what you need to see loads, this reduces startup time to only a few seconds. 
 
 #### Future plans:
  - Add sorting to lists
- - Thread window drawing
  - Improve look and feel with google's material design
  - Add "esc" and "backspace" as hotkeys to exit the details window
- - Direct memloader integration (SD only) for installation directly over usb 
-
+ - Direct memloader integration (SD only) for installation directly over USB. 
+ 
 ***
 
 # How to run:
