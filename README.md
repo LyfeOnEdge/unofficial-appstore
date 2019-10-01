@@ -1,6 +1,6 @@
 # unofficial-appstore
 
-![Unofficial Appstore](https://i.imgur.com/QrzIkjk.png)
+![Unofficial Appstore](https://i.imgur.com/0Bw3E7j.png)
 
 
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)]() [![Releases](https://img.shields.io/github/downloads/LyfeOnEdge/unofficial-appstore/total.svg)]() [![LatestVer](https://img.shields.io/github/release-pre/LyfeOnEdge/unofficial-appstore.svg)]()
@@ -24,6 +24,7 @@ https://github.com/LyfeOnEdge/unofficial-appstore/releases
  - Threaded operations mean the app no longer becomes unresponsive with big downloads
  - Self-updater
  - Buttons load dynamically so only what you need to see loads, this reduces startup time to only a few seconds. 
+ - Sort by title or author name
 
 #### Future plans:
  - Add sorting to lists
