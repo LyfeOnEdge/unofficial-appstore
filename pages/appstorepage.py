@@ -1,10 +1,39 @@
 import os
 import tkinter.filedialog
+import tkinter as tk
 import modules.style as style
 import modules.locations as locations
 from modules.widgets import ThemedFrame, ThemedListbox, ThemedLabel, searchBox, categoryFrame, installed_categoryFrame, activeFrame, scrolledText, button
 from modules.updater import update
 from .yesnopage import yesnoPage
+
+sort_option_default = "Sort: Default"
+sort_option_package_title_ascending = "Title A -> Z"
+sort_option_package_title_descending = "Title Z -> A"
+sort_option_package_author_ascending = "Author (A->Z)"
+sort_option_package_author_descending = "Author (Z->A)"
+# sort_option_package_updated_ascending = "Updated (Recent first)"
+# sort_option_package_updated_descending = "Updated (Recent last)"
+
+SORT_OPTIONS = [
+    sort_option_default,
+    sort_option_package_title_ascending,
+    sort_option_package_title_descending,
+    sort_option_package_author_ascending,
+    sort_option_package_author_descending,
+    # sort_option_package_updated_ascending,
+    # sort_option_package_updated_descending
+]
+
+SORT_MAP = {
+    sort_option_default : None,
+    sort_option_package_title_ascending : "name",
+    sort_option_package_title_descending : "name-",
+    sort_option_package_author_ascending : "author",
+    sort_option_package_author_descending : "author-",
+    # sort_option_package_updated_ascending : "updated",
+    # sort_option_package_updated_descending : "updated-"
+}
 
 class appstorePage(activeFrame):
     def __init__(self, parent, controller):
@@ -14,6 +43,7 @@ class appstorePage(activeFrame):
         self.image_sharer = controller.image_sharer
         self.current_frame = None
         self.last_selection = None
+        self.last_sort_option = None
         activeFrame.__init__(self,parent,controller)
 
         self.column = ThemedFrame(self, background = style.light_color)
@@ -59,6 +89,10 @@ class appstorePage(activeFrame):
         self.category_label.place(relheight = 1, rely=0.5, y=-0.5*style.searchboxheight)
 
         self.content_frame_header_search_bar = searchBox(self.content_frame_header, command = self.search)
+
+        self.selected_sort_method = tk.StringVar()
+        self.selected_sort_method.set(SORT_OPTIONS[0])
+        self.content_frame_header_sort_method_dropdown = tk.OptionMenu(self.content_frame_header,self.selected_sort_method,*SORT_OPTIONS)
         
         #The various content gets stacked on top of each other here.
         self.content_stacking_frame = ThemedFrame(self.content_frame)
@@ -129,6 +163,7 @@ class appstorePage(activeFrame):
 
         self.loaded()
         self.add_on_refresh_callback(self.update_sd_path)
+        self.sort_check_loop()
 
     def show_frame(self, page_name):
         #Show a frame for the given page name
@@ -152,7 +187,8 @@ class appstorePage(activeFrame):
             category_label_offset = self.category_label.winfo_width()
             #If the category label has been populated, otherwise the offset is usually just a few pixels (prevents an ugly draw on launch)
             if category_label_offset > style.offset:
-                self.content_frame_header_search_bar.place(x = category_label_offset, rely=0.5, y=-0.5*style.searchboxheight + style.offset,relheight =1, relwidth = 1, width = - (category_label_offset + 2 * style.offset), height = - 2 *style.offset)
+                self.content_frame_header_sort_method_dropdown.place(relx = 1, x = -(style.offset + style.sortdropdownwidth), width = style.sortdropdownwidth, rely=0.5, y=-0.5*style.searchboxheight + style.offset, relheight =1, height = - 2 *style.offset)
+                self.content_frame_header_search_bar.place(x = category_label_offset, rely=0.5, y=-0.5*style.searchboxheight + style.offset,relheight =1, relwidth = 1, width = - (category_label_offset + 3 * style.offset + style.sortdropdownwidth), height = - 2 *style.offset)
             else:
                 self.content_frame_header_search_bar.place_forget()
                 self.controller.after(20, self.update_search_bar_position)
@@ -199,6 +235,20 @@ class appstorePage(activeFrame):
             basepath = "Not Set"
         self.column_sd_status_label.set("SD: {}".format(basepath))
 
+    def update_sort(self):
+        for frame in self.category_frames:
+            frame.set_sort_type(SORT_MAP[self.selected_sort_method.get()])
+        self.current_frame.rebuild()
+
+    #loop to check if the sorting methog has been applied yet
+    def sort_check_loop(self):
+        if not self.last_sort_option == self.selected_sort_method.get():
+            self.last_sort_option = self.selected_sort_method.get()
+            self.update_sort()
+
+        #schedule self
+        self.schedule_callback(self.sort_check_loop, 100)
+
 
 #Super basic about frame, pulls from about.txt
 class aboutFrame(ThemedFrame):
@@ -212,50 +262,3 @@ class aboutFrame(ThemedFrame):
         self.abouttext.place(relwidth=1, relheight =1)
         self.abouttext.insert("1.0", abouttext)
         self.abouttext.configure(state="disabled")
-
-
-
-# self.selected_sort_method = tk.StringVar()
-# self.selected_sort_method.set(SORT_OPTIONS[0])
-# self.content_frame_header_sort_method_dropdown = tk.OptionMenu(self.content_frame_header,self.selected_sort_method,*SORT_OPTIONS)
-# self.content_frame_header_sort_method_dropdown.bind("<Configure>", self.update_sort)
-# sort_option_default = "Sort: Default"
-# sort_option_package_title_ascending = "A -> Z"
-# sort_option_package_title_descending = "Z -> A"
-# sort_option_package_size_ascending = "Smallest first"
-# sort_option_package_size_descending = "Largest first"
-# sort_option_package_author_ascending = "Author (A->Z)"
-# sort_option_package_author_descending = "Author (Z->A)"
-# sort_option_package_updated_ascending = "Updated (Recent first)"
-# sort_option_package_updated_descending = "Updated (Recent last)"
-
-# SORT_OPTIONS = [
-#     sort_option_default,
-#     sort_option_package_title_ascending,
-#     sort_option_package_title_descending,
-#     sort_option_package_size_ascending,
-#     sort_option_package_size_descending,
-#     sort_option_package_author_ascending,
-#     sort_option_package_author_descending,
-#     sort_option_package_updated_ascending,
-#     sort_option_package_updated_descending
-# ]
-
-# SORT_MAP = {
-#     sort_option_default : None,
-#     sort_option_package_title_ascending : "name",
-#     sort_option_package_title_descending : "name-",
-#     sort_option_package_size_ascending : "extracted-",
-#     sort_option_package_size_descending : "extracted",
-#     sort_option_package_author_ascending : "author",
-#     sort_option_package_author_descending : "author-",
-#     sort_option_package_updated_ascending : "updated",
-#     sort_option_package_updated_descending : "updated-"
-# }
-# def sort_check_loop(self):
-#     if not self.last_sort_option == self.selected_sort_method.get():
-#         self.last_sort_option = self.selected_sort_method.get()
-#         self.update_sort()
-
-#     #schedule self
-#     self.schedule_callback(self.sort_check_loop, 100)

@@ -22,7 +22,7 @@ class installed_categoryFrame(categoryFrame):
                 self.buttons = []
                 for repo in self.packages:
                     self.makeButton(self.canvas_frame, self.framework, repo)
-                self.current_buttons = self.buttons
+                self.original_button_order = self.buttons[:]
         else:
             self.buttons = []
 
@@ -30,5 +30,5 @@ class installed_categoryFrame(categoryFrame):
 
     def rebuild(self):
         self.clear()
-        self.controller.async_threader.do_async(self.makeButtonList(), [])
+        self.makeButtonList()
         self.update_displayed_buttons()

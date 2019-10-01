@@ -16,6 +16,7 @@ class categoryFrame(tk.Frame):
         self.framework = framework #**Scheduler
         self.appstore_handler = controller.appstore_handler #Tool to get installed package data etc
         self.buttons = []   #List to hold buttons for this page
+        self.original_button_order = []
         self.icon_dict = self.controller.image_sharer
         self.selected = False
         self.is_displaying = False #Debounce used for the display function to prevent multiple threads grabbing an updated image
@@ -23,6 +24,7 @@ class categoryFrame(tk.Frame):
         self.currentsearch = False #Used to remember the current qued search term (helps with search lag)
         self.lastsearch = False #Used to remember the last term searched
         self.searchtimer = None
+        self.sort_type = None
 
         tk.Frame.__init__(self, parent, background = style.w, border = 0, highlightthickness = 0)
 
@@ -67,6 +69,8 @@ class categoryFrame(tk.Frame):
         #Bind frame raise
         self.bind("<<ShowFrame>>", self.configure)
 
+        self.set_sort_type("name-")
+
         #Build buttons from passed repo
         self.makeButtonList()
         self.buildFrame()
@@ -96,6 +100,7 @@ class categoryFrame(tk.Frame):
             for item in button.items:
                 if item:
                     item.bind("<MouseWheel>", self.on_mouse_wheel)
+        self.original_button_order = self.buttons[:]
 
     #instantiates button, adds it to list
     def makeButton(self,frame, framework, repo):
@@ -108,6 +113,16 @@ class categoryFrame(tk.Frame):
         if self.selected:
             #if there is content to build with
             if self.buttons:
+                self.buttons = self.original_button_order[:]
+                reverse = False
+                if self.sort_type:
+                    sort_type = self.sort_type
+                    if sort_type.endswith("-"):
+                        sort_type = sort_type.strip("-")
+                        reverse = True
+
+                    self.buttons.sort(key=lambda x: x.repo[sort_type], reverse = reverse)
+
                 # buildstart = timer()
                 x_spacing = style.thumbnailwidth + 2 * style.offset
                 y_spacing = style.thumbnailheight + 13 * style.offset
@@ -168,7 +183,7 @@ class categoryFrame(tk.Frame):
 
                 ratio = 1 / canvas_height
 
-                viewable_buffer = (1.25 * button_height) * ratio
+                viewable_buffer = (1.5 * button_height) * ratio
 
                 #add a buffer to the range to search for buttons that need placing
                 canvas_top = self.canvas.yview()[0] - viewable_buffer
@@ -254,6 +269,5 @@ class categoryFrame(tk.Frame):
             self.update_displayed_buttons()
             self.canvas.yview("moveto", move_units)
 
-    # def sort(self, sort_key, reversed = False):
-    #     if sort_key:
-    #         self.current_buttons.sort(key=lambda x: x.name, reverse = reversed)
+    def set_sort_type(self, sort_type):
+        self.sort_type = sort_type
