@@ -31,34 +31,34 @@ class detailPage(activeFrame):
 
         #------------------------------
         self.column_author = ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
-        self.column_author.place(x = 5, width = - 5, y = style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
+        self.column_author.place(x = 5, width = - 5, y = style.detailspagemultiplier, relwidth = 1, height = 0.333 * style.detailspagemultiplier)
 
         self.column_version = ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
-        self.column_version.place(x = 5, width = - 5, y = 1.333 * style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
+        self.column_version.place(x = 5, width = - 5, y = 1.333 * style.detailspagemultiplier, relwidth = 1, height = 0.333 * style.detailspagemultiplier)
 
         self.column_license = ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
-        self.column_license.place(x = 5, width = - 5, y = 1.666 * style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
+        self.column_license.place(x = 5, width = - 5, y = 1.666 * style.detailspagemultiplier, relwidth = 1, height = 0.333 * style.detailspagemultiplier)
         #------------------------------
 
 
         #------------------------------
         self.column_package = ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
-        self.column_package.place(x = 5, width = - 5, y = 2.333 * style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
+        self.column_package.place(x = 5, width = - 5, y = 2.333 * style.detailspagemultiplier, relwidth = 1, height = 0.333 * style.detailspagemultiplier)
 
         self.column_downloads = ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
-        self.column_downloads.place(x = 5, width = - 5, y = 2.666 * style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
+        self.column_downloads.place(x = 5, width = - 5, y = 2.666 * style.detailspagemultiplier, relwidth = 1, height = 0.333 * style.detailspagemultiplier)
 
         self.column_updated = ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
-        self.column_updated.place(x = 5, width = - 5, y = 3.00 * style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
+        self.column_updated.place(x = 5, width = - 5, y = 3.00 * style.detailspagemultiplier, relwidth = 1, height = 0.333 * style.detailspagemultiplier)
         #------------------------------
 
         #------------------------------
         self.column_downloaded = ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
-        self.column_downloaded.place(x = 5, width = - 5, y = 3.66 * style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
+        self.column_downloaded.place(x = 5, width = - 5, y = 3.66 * style.detailspagemultiplier, relwidth = 1, height = 0.333 * style.detailspagemultiplier)
         #------------------------------
 
         self.column_extracted = ThemedLabel(self.column_body,"",anchor="w",label_font=style.smalltext, foreground = style.w, background = style.light_color)
-        self.column_extracted.place(x = 5, width = - 5, y = 4 * style.headerheight, relwidth = 1, height = 0.333 * style.headerheight)
+        self.column_extracted.place(x = 5, width = - 5, y = 4 * style.detailspagemultiplier, relwidth = 1, height = 0.333 * style.detailspagemultiplier)
 
         self.column_open_url_button = button(self.column_body, 
             callback = self.trigger_open_tab, 
@@ -92,10 +92,10 @@ class detailPage(activeFrame):
         self.content_frame.place(x = 0, width = -style.sidecolumnwidth, rely = 0, relheight = 1, relwidth = 1)
 
         self.content_frame_header = ThemedFrame(self.content_frame, background = style.w)
-        self.content_frame_header.place(x = style.offset, width = - 2 * style.offset, rely = 0, relwidth = 1, height = style.headerheight)
+        self.content_frame_header.place(x = style.offset, width = - 2 * style.offset, rely = 0, relwidth = 1, height = style.detailspagemultiplier)
 
         self.content_frame_body = ThemedFrame(self.content_frame, background = style.w)
-        self.content_frame_body.place(x = style.offset, width = - 2 * style.offset, y = style.headerheight,relwidth = 1, height = -style.headerheight, relheight=1)
+        self.content_frame_body.place(x = style.offset, width = - 2 * style.offset, y = style.detailspagemultiplier,relwidth = 1, height = -style.detailspagemultiplier, relheight=1)
 
         self.content_banner_image = ThemedLabel(self.content_frame_body,"",background = style.w,foreground=style.w,anchor="center",wraplength = None)
         self.content_banner_image.place(x=0, y = 0, relwidth=1, relheight = 0.5)

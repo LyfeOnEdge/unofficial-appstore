@@ -14,6 +14,7 @@ statussize = buttontextheight
 progressbarheight = 80
 yesnopagefooterheight = 70
 sortdropdownwidth = 150
+detailspagemultiplier = 70
 ##Text Styles
 #Normal Text
 smallertext = ("Trebuchet MS",8)

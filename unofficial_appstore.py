@@ -34,7 +34,6 @@ from modules.updater import check_for_update
 from modules.tk_image_sharer import icon_dict
 from pages import pagelist
 
-
 #Async threader tool for getting downloads and other functions asyncronously
 threader = asyncThreader()
 #Download the appstore json, uses etagging to check if it needs an update to minimize bandwidth

@@ -20,11 +20,8 @@ class categoryFrame(tk.Frame):
         self.icon_dict = self.controller.image_sharer
         self.selected = False
         self.is_displaying = False #Debounce used for the display function to prevent multiple threads grabbing an updated image
-        self.is_searching = True #Used to remember if we are currently searching
         self.currentsearch = False #Used to remember the current qued search term (helps with search lag)
-        self.lastsearch = False #Used to remember the last term searched
-        self.searchtimer = None
-        self.sort_type = None
+
 
         tk.Frame.__init__(self, parent, background = style.w, border = 0, highlightthickness = 0)
 
@@ -206,24 +203,9 @@ class categoryFrame(tk.Frame):
         self.clear()
         self.update_displayed_buttons()
 
-
     def search(self, searchterm):
-        self.is_searching = True
-        self.currentsearch = searchterm
-        self.searchtimer = timer()
-        self.controller.after(100, self.search_poll())
-
-    def search_poll(self):
-        if self.is_searching:
-            #.4 second delay on search debouncer
-            if (timer() - self.searchtimer) > (0.4):
-                self.controller.async_threader.do_async(self.do_search_query, [], priority = "low")
-            else:
-                self.controller.after(100, self.search_poll)
-
-    def do_search_query(self):
         def doSearch(searchterm):
-            search_categories = ["name", "title", "author", "description"]
+            search_categories = ["name", "title", "author", "description", "details"]
             for button in self.buttons:
                 button.active = False
                 for category in search_categories:
@@ -233,15 +215,12 @@ class categoryFrame(tk.Frame):
                             button.active = True
                             break
 
-        if self.currentsearch:
-            doSearch(self.currentsearch)
+        if searchterm:
+            doSearch(searchterm)
+            print("Time elapsed: {}".format(endsearch - startsearch))
         else:
             for button in self.buttons:
                 button.active = True
-
-        self.is_searching = False
-        self.lastsearch = self.currentsearch
-        self.currentsearch = None
 
         self.rebuild()
 

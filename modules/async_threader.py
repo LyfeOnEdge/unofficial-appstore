@@ -13,7 +13,7 @@ class asyncThread(threading.Thread):
 #super basic thread manager
 #Only start threads you have no intention of retrieving data from with this
 class asyncThreader():
-    def __init__(self, max_threads = 20):
+    def __init__(self, max_threads = 10):
         self.high_priority_threads = []
         self.medium_priority_threads = []
         self.low_priority_threads = []
