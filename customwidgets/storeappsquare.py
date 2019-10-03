@@ -1,7 +1,7 @@
 from PIL import Image, ImageTk
 import tkinter as tk
-import modules.style as style
-from .customwidgets import ThemedFrame, button, tooltip, ThemedLabel 
+import widgets.style as style
+from widgets import ThemedFrame, button, tooltip, ThemedLabel 
 from appstore import getPackageIcon
 from modules.locations import notfoundimage
 

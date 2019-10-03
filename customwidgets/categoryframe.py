@@ -1,9 +1,9 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from timeit import default_timer as timer
-import modules.style as style
+import widgets.style as style
 from .storeappsquare import storeAppSquare
-from .customwidgets import ThemedLabel
+from widgets import ThemedLabel
 from modules.locations import notfoundimage
 
 

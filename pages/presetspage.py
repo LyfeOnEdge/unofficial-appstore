@@ -1,6 +1,5 @@
 import os, json
-import modules.style as style
-from modules.widgets import ThemedFrame, ThemedListbox, ThemedLabel, searchBox, button, themedScrollingText
+from widgets import ThemedFrame, ThemedListbox, ThemedLabel, searchBox, button, themedScrollingText, style
 
 #modified searchbox that calls a function to update the json printout
 class entrybox(searchBox):

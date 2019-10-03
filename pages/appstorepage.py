@@ -1,9 +1,9 @@
 import os
 import tkinter.filedialog
 import tkinter as tk
-import modules.style as style
 import modules.locations as locations
-from modules.widgets import ThemedFrame, ThemedListbox, ThemedLabel, searchBox, categoryFrame, installed_categoryFrame, activeFrame, scrolledText, button
+from widgets import ThemedFrame, ThemedListbox, ThemedLabel, searchBox, activeFrame, scrolledText, button, style
+from customwidgets import categoryFrame, installed_categoryFrame
 from modules.updater import update
 from .yesnopage import yesnoPage
 

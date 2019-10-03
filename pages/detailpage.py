@@ -1,8 +1,7 @@
 import os
 import tkinter.filedialog
-import modules.style as style
 import modules.locations as locations
-from modules.widgets import ThemedFrame, ThemedLabel, activeFrame, scrolledText, button, tooltip, progressFrame
+from widgets import ThemedFrame, ThemedLabel, activeFrame, scrolledText, button, tooltip, progressFrame, style
 from appstore import getScreenImage
 from modules.webhandler import opentab
 from .yesnopage import yesnoPage

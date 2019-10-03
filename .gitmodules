@@ -2,3 +2,7 @@
 	path = appstore
 	url = https://github.com/LyfeOnEdge/appstore.git
 	ignore = untracked
+[submodule "widgets"]
+	path = widgets
+	url = https://github.com/LyfeOnEdge/widgets.git
+	ignore = untracked

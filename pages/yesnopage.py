@@ -1,8 +1,7 @@
 import os
 import tkinter as tk
 from tkinter.constants import *
-from modules.widgets import scrolledText, button
-import modules.style as style
+from widgets import scrolledText, button, style
 
 class yesnoPage(tk.Frame):
     def __init__(self, parent):
