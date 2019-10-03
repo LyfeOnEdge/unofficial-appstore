@@ -3,7 +3,7 @@ import tkinter.filedialog
 import modules.style as style
 import modules.locations as locations
 from modules.widgets import ThemedFrame, ThemedLabel, activeFrame, scrolledText, button, tooltip, progressFrame
-from modules.appstore import parser, getScreenImage
+from appstore import getScreenImage
 from modules.webhandler import opentab
 from .yesnopage import yesnoPage
 

@@ -1,0 +1,4 @@
+[submodule "appstore"]
+	path = appstore
+	url = https://github.com/LyfeOnEdge/appstore.git
+	ignore = untracked

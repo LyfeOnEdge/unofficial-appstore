@@ -2,7 +2,7 @@ from PIL import Image, ImageTk
 import tkinter as tk
 import modules.style as style
 from .customwidgets import ThemedFrame, button, tooltip, ThemedLabel 
-from modules.appstore import getPackageIcon
+from appstore import getPackageIcon
 from modules.locations import notfoundimage
 
 class storeAppSquare(ThemedFrame):
