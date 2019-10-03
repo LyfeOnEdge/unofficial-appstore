@@ -1,4 +1,7 @@
-#A tool to minimize unnecessary copies of the same image object with multiple icons sharing the same image
+#A tool to minimize unnecessary
+#Copies of the same image object
+#With multiple icons sharing the same image
+#Yes it's just a glorified dict to pass around
 class icon_dict():
     def __init__(self):
         self.images = {}

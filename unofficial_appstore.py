@@ -29,7 +29,7 @@ from widgets import frameManager
 from appstore import getPackageIcon, parser, appstore_handler
 from modules.webhandler import getJson
 from modules.locations import appstore_repo_url
-from modules.async_threader import asyncThreader
+from asyncthreader import asyncThreader
 from modules.updater import check_for_update
 from modules.tk_image_sharer import icon_dict
 from pages import pagelist
