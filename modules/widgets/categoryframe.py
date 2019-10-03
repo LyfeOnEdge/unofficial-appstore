@@ -217,7 +217,6 @@ class categoryFrame(tk.Frame):
 
         if searchterm:
             doSearch(searchterm)
-            print("Time elapsed: {}".format(endsearch - startsearch))
         else:
             for button in self.buttons:
                 button.active = True
