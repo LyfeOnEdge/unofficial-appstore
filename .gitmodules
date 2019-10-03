@@ -6,3 +6,6 @@
 	path = widgets
 	url = https://github.com/LyfeOnEdge/widgets
 	ignore = untracked
+[submodule "asyncthreader"]
+	path = asyncthreader
+	url = https://github.com/LyfeOnEdge/asyncthreader.git
