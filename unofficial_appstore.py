@@ -25,13 +25,13 @@ except:
 print("Using tkinter version {}".format(tk.Tcl().eval('info patchlevel')))
 
 #Import local modules
-from widgets import frameManager
+from customwidgets import frameManager
 from appstore import getPackageIcon, parser, appstore_handler
 from modules.webhandler import getJson
 from modules.locations import appstore_repo_url
 from asyncthreader import asyncThreader
 from modules.updater import check_for_update
-from modules.tk_image_sharer import icon_dict
+from widgets import icon_dict
 from pages import pagelist
 
 #Async threader tool for getting downloads and other functions asyncronously
