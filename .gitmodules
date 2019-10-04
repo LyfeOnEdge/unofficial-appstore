@@ -9,3 +9,4 @@
 [submodule "asyncthreader"]
 	path = asyncthreader
 	url = https://github.com/LyfeOnEdge/asyncthreader.git
+	ignore = untracked

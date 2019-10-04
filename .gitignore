@@ -1,5 +1,6 @@
 /cache/*
 /downloads/*
+__pycache__*
 *.pyc
 docu/python_setup_config.PNG
 modules/setting_handler.py
