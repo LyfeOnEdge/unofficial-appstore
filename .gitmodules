@@ -13,3 +13,4 @@
 [submodule "webhandler"]
 	path = webhandler
 	url = https://github.com/LyfeOnEdge/webhandler
+	ignore = untracked
