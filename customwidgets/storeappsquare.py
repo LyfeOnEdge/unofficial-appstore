@@ -104,8 +104,8 @@ class storeAppSquare(ThemedFrame):
                         app_dls = 0
 
                     ttl_dls = web_dls + app_dls
-                    ttp = "{}\nAuthor: {}\nDownloads: {}".format(repo["description"], repo["author"], ttl_dls)
-                    self.button_ttp = tooltip(self.buttonobj,ttp)
+                    # ttp = "{}\nAuthor: {}\nDownloads: {}".format(repo["description"], repo["author"], ttl_dls)
+                    # self.button_ttp = tooltip(self.buttonobj,ttp)
                 
                 def place_buttontitlelabel():
                     if not self.buttontitlelabel:

@@ -4,7 +4,6 @@ import tkinter as tk
 import modules.locations as locations
 from widgets import ThemedFrame, ThemedListbox, ThemedLabel, searchBox, activeFrame, scrolledText, button, style
 from customwidgets import categoryFrame, installed_categoryFrame
-from modules.updater import update
 from .yesnopage import yesnoPage
 
 sort_option_default = "Sort: Default"
@@ -157,9 +156,10 @@ class appstorePage(activeFrame):
 
         self.show_frame("All Apps")
 
-        if self.controller.update_status:
+        if self.controller.updater.status:
+            print(self.controller.updater.status)
             self.yesnoPage = yesnoPage(self)
-            self.yesnoPage.getanswer("An update is available, would you like to download it?\nPatch notes:\n{}".format(self.controller.update_status), update)
+            self.yesnoPage.getanswer("An update is available, would you like to download it?\nPatch notes:\n{}".format(self.controller.updater.status), self.controller.updater.update)
 
         self.loaded()
         self.add_on_refresh_callback(self.update_sd_path)

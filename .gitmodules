@@ -14,3 +14,6 @@
 	path = webhandler
 	url = https://github.com/LyfeOnEdge/webhandler
 	ignore = untracked
+[submodule "github_updater"]
+	path = github_updater
+	url = https://github.com/LyfeOnEdge/github_updater.git

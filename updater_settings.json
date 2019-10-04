@@ -1,0 +1,10 @@
+{
+    "UPDATENAME": "unofficial-appstore",
+    "UPDATEURL": "https://api.github.com/repos/LyfeOnEdge/unofficial-appstore/releases",
+    "ASSETPATTERN": [
+        [
+            "unofficial-appstore"
+        ],
+        ".zip"
+    ]
+}

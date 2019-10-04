@@ -30,9 +30,13 @@ from appstore import getPackageIcon, parser, appstore_handler
 from webhandler import getJson
 from modules.locations import appstore_repo_url
 from asyncthreader import asyncThreader
-from modules.updater import check_for_update
+from github_updater import updater
 from widgets import icon_dict
 from pages import pagelist
+
+print("Checking for updates...")
+if updater.check_for_update(version):
+	print("Update detected.")
 
 #Async threader tool for getting downloads and other functions asyncronously
 threader = asyncThreader()
@@ -53,10 +57,10 @@ geometry = {
 	"height" : 575
 }
 
-def startGUI(update_status):
+def startGUI():
 	#frameManager serves to load all pages and stack them on top of each other (all 2 of them)
 	#also serves to make many important objects and functions easily available to children frames
-	gui = frameManager(pagelist,geometry,store_handler,repo_parser,threader,image_sharer,update_status)
+	gui = frameManager(pagelist,geometry,store_handler,repo_parser,threader,image_sharer,updater)
 
 	#Set title formattedwith version
 	gui.title("unofficial appstore %s" % version)
@@ -81,5 +85,4 @@ def startGUI(update_status):
 	gui.mainloop()
 
 if __name__ == '__main__':
-	update_status = check_for_update(version)
-	startGUI(update_status)
+	startGUI()

@@ -11,11 +11,11 @@ class frameManager(tk.Tk):
                 repo_parser, #Object to deal with the appstore json
                 async_threader, #object to easily deal with a few async function
                 image_sharer, #Simple tool to have one base location to lookup images
-                update_status #Whether or not the app needs an update
+                updater #Tool to handle updating
                 ): 
 
         tk.Tk.__init__(self)
-        self.update_status = update_status
+        self.updater = updater
         self.async_threader = async_threader
         self.appstore_handler = appstore_handler
         self.repo_parser = repo_parser
