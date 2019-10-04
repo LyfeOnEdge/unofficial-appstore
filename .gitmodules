@@ -17,3 +17,4 @@
 [submodule "github_updater"]
 	path = github_updater
 	url = https://github.com/LyfeOnEdge/github_updater.git
+	ignore = untracked
