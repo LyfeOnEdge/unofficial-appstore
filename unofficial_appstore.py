@@ -27,7 +27,7 @@ print("Using tkinter version {}".format(tk.Tcl().eval('info patchlevel')))
 #Import local modules
 from customwidgets import frameManager
 from appstore import getPackageIcon, parser, appstore_handler
-from modules.webhandler import getJson
+from webhandler import getJson
 from modules.locations import appstore_repo_url
 from asyncthreader import asyncThreader
 from modules.updater import check_for_update

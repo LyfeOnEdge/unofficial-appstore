@@ -10,3 +10,6 @@
 	path = asyncthreader
 	url = https://github.com/LyfeOnEdge/asyncthreader.git
 	ignore = untracked
+[submodule "webhandler"]
+	path = webhandler
+	url = https://github.com/LyfeOnEdge/webhandler
